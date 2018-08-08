@@ -1,0 +1,29 @@
+{
+    "name": "/slack-sales",
+    "description": "Slack Sales Example Endpoint",
+    "properties": {
+        "resource": "/slack-sales",
+        "methods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE"
+        ],
+        "plugins": {
+            "rateLimit": {
+                "enabled": false,
+                "perMinute": 60
+            },
+            "gestaltSecurity": {
+                "enabled": false,
+                "users": [
+
+                ],
+                "groups": [
+
+                ]
+            }
+        },
+        "synchronous": true
+    }
+}

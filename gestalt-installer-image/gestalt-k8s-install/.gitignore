@@ -1,0 +1,10 @@
+helm
+fog
+tmp
+*.log
+*.zip
+gestalt-config.yaml
+gestalt-config.json
+my.*
+test
+__*

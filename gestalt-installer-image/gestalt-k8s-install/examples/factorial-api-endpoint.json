@@ -1,0 +1,29 @@
+{
+    "name": "/factorial-example",
+    "description": "Factorial Example Endpoint",
+    "properties": {
+        "resource": "/factorial-example",
+        "methods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE"
+        ],
+        "plugins": {
+            "rateLimit": {
+                "enabled": false,
+                "perMinute": 60
+            },
+            "gestaltSecurity": {
+                "enabled": false,
+                "users": [
+
+                ],
+                "groups": [
+
+                ]
+            }
+        },
+        "synchronous": true
+    }
+}

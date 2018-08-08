@@ -1,0 +1,29 @@
+{
+    "name": "/sms-hello",
+    "description": "SMS Hello Example Endpoint",
+    "properties": {
+        "resource": "/sms-hello",
+        "methods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE"
+        ],
+        "plugins": {
+            "rateLimit": {
+                "enabled": false,
+                "perMinute": 60
+            },
+            "gestaltSecurity": {
+                "enabled": false,
+                "users": [
+
+                ],
+                "groups": [
+
+                ]
+            }
+        },
+        "synchronous": true
+    }
+}

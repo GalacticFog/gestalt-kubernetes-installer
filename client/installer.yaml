@@ -1,0 +1,24 @@
+# This is a pod w/ restartPolicy=Never so that the installer only runs once.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gestalt-installer
+  labels:
+    gestalt-app: installer
+spec:
+  restartPolicy: Never
+  containers:
+  - name: gestalt-installer
+    image: "{{ .Values.installer.image }}"
+    imagePullPolicy: Always
+    # imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+    # 'deploy' arg signals deployment of gestalt platform
+    # 'debug' arg signals debug output
+    args: ["install", "{{ .Values.installer.mode }}"]
+    volumeMounts:
+    - mountPath: /config
+      name: config
+  volumes:
+    - name: config
+      configMap:
+        name: installer-config

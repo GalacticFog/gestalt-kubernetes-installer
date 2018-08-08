@@ -1,0 +1,20 @@
+{
+  "name": "default-postgres",
+  "description": "The gestalt database",
+  "resource_type": "Gestalt::Configuration::Provider::Data::PostgreSQL",
+  "properties": {
+    "config": {
+      "env": {
+        "public": {
+          "USER": "#{Config database-username}",
+          "PASSWORD": "#{Config database-password}",
+          "HOSTNAME": "#{Config database-hostname}",
+          "PORT": "5432",
+          "PROTOCOL": "http"
+        },
+        "private": {}
+      }
+    },
+    "services": []
+  }
+}

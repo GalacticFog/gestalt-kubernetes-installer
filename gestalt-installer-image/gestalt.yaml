@@ -1,0 +1,450 @@
+---
+# Source: gestalt/charts/postgresql/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gestalt-postgresql
+  labels:
+    app: gestalt-postgresql
+    chart: "postgresql-0.8.7"
+    release: "gestalt"
+    heritage: "Tiller"
+type: Opaque
+data:
+  
+  postgres-password:  "czFscjduT0dRWG1UYW9hSA=="
+  
+
+---
+# Source: gestalt/templates/gestalt-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gestalt-secrets
+type: Opaque
+data:
+  db-username: "cG9zdGdyZXM="
+  db-password: "czFscjduT0dRWG1UYW9hSA=="
+  admin-username: "Z2VzdGFsdC1hZG1pbg=="
+  admin-password: "QloycEFjcFJRMHB5QVNNbg=="
+
+---
+# Source: gestalt/charts/postgresql/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gestalt-postgresql
+  labels:
+    app: gestalt-postgresql
+    chart: "postgresql-0.8.7"
+    release: "gestalt"
+    heritage: "Tiller"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "100Mi"
+  storageClassName: "hostpath"
+---
+# Source: gestalt/charts/postgresql/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-postgresql
+  labels:
+    app: gestalt-postgresql
+    chart: "postgresql-0.8.7"
+    release: "gestalt"
+    heritage: "Tiller"
+spec:
+  type: ClusterIP
+  ports:
+  - name: postgresql
+    port: 5432
+    targetPort: postgresql
+  selector:
+    app: gestalt-postgresql
+---
+# Source: gestalt/templates/elastic-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-elastic
+  labels:
+    gestalt-app: elastic
+spec:
+  selector:
+    gestalt-app: elastic
+  ports:
+    - name: service-api
+      port: 9200
+      targetPort: rest
+    - name: http-api
+      port: 9300
+      targetPort: transport
+
+---
+# Source: gestalt/templates/meta-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-meta
+  labels:
+    gestalt-app: meta
+spec:
+  type: NodePort
+  # type: NodePort
+  selector:
+    gestalt-app: meta
+  ports:
+    - name: http-api
+      port: 10131
+      targetPort: service-api
+
+---
+# Source: gestalt/templates/rabbit-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-rabbit
+  labels:
+    gestalt-app: rabbit
+spec:
+  selector:
+    gestalt-app: rabbit
+  ports:
+    - name: service-api
+      port: 5672
+      targetPort: service-api
+    - name: http-api
+      port: 15672
+      targetPort: http-api
+
+---
+# Source: gestalt/templates/security-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-security
+  labels:
+    gestalt-app: security
+spec:
+  # type: NodePort
+  selector:
+    gestalt-app: security
+  ports:
+    - name: service-api
+      port: 9455
+      targetPort: service-api
+
+---
+# Source: gestalt/templates/ui-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-ui
+  labels:
+    gestalt-app: ui
+spec:
+  type: NodePort
+  selector:
+    gestalt-app: ui
+  ports:
+    - name: http
+      port: 80
+      nodePort: 31112
+
+---
+# Source: gestalt/charts/postgresql/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-postgresql
+  labels:
+    app: gestalt-postgresql
+    chart: "postgresql-0.8.7"
+    release: "gestalt"
+    heritage: "Tiller"
+spec:
+  template:
+    metadata:
+      labels:
+        app: gestalt-postgresql
+    spec:
+      containers:
+      - name: gestalt-postgresql
+        image: "postgres:9.6.2"
+        imagePullPolicy: ""
+        env:
+        - name: POSTGRES_USER
+          value: "postgres"
+          # Required for pg_isready in the health probes.
+        - name: PGUSER
+          value: "postgres"
+        - name: POSTGRES_DB
+          value: "postgres"
+        - name: POSTGRES_INITDB_ARGS
+          value: ""
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gestalt-postgresql
+              key: postgres-password
+        - name: POD_IP
+          valueFrom: { fieldRef: { fieldPath: status.podIP } }
+        ports:
+        - name: postgresql
+          containerPort: 5432
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - exec pg_isready --host $POD_IP
+          initialDelaySeconds: 5
+          timeoutSeconds: 3
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data/pgdata
+          subPath: 
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: gestalt-postgresql
+
+---
+# Source: gestalt/templates/elastic.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-elastic
+  labels:
+    gestalt-app: elastic
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: elastic
+    spec:
+      containers:
+      - name: gestalt-elastic
+        image: "galacticfog/elasticsearch-docker:5.3.1"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9200
+          name: rest
+        - containerPort: 9300
+          name: transport
+        env:
+        - name: cluster.name
+          value: "myesdb"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: transport.tcp.port
+          value: "9300"
+        - name: ES_JAVA_OPTS
+          value: "-Xms1536m -Xmx1536m"
+
+---
+# Source: gestalt/templates/meta.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-meta
+spec:
+  replicas: 1
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        gestalt-app: meta
+    spec:
+      containers:
+      - name: gestalt-meta
+        image: "galacticfog/gestalt-meta:release-2.1.0"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          name: service-api
+        # TODO - 
+        # resources:
+        #   requests:
+        #     cpu: 250m
+        #     memory: "2Gi"
+        #   limits:
+        #     memory: "2Gi"
+        env:
+        - name: DATABASE_HOSTNAME
+          value: "gestalt-postgresql.gestalt-system.svc.cluster.local"
+        - name: DATABASE_NAME
+          value: "gestalt-meta"
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gestalt-secrets
+              key: db-password
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: gestalt-secrets
+              key: db-username
+        - name: GESTALT_SECURITY_HOSTNAME
+          value: "gestalt-security.gestalt-system"
+        - name: GESTALT_SECURITY_PORT
+          value: "9455"
+        - name: GESTALT_SECURITY_PROTOCOL
+          value: "http"
+        - name: RABBIT_HOST
+          value: "gestalt-rabbit.gestalt-system"
+        - name: RABBIT_PORT
+          value: "5672"
+        - name: RABBIT_HTTP_PORT
+          value: "15672"
+        - name: RABBIT_EXCHANGE
+          value: "policy-exchange"
+        - name: RABBIT_ROUTE
+          value: "policy"
+        - name: META_AUDIT_ENABLED
+          value: "false"
+
+---
+# Source: gestalt/templates/rabbit.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-rabbit
+  labels:
+    gestalt-app: rabbit
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: rabbit
+    spec:
+      containers:
+      - name: gestalt-rabbit
+        image: "galacticfog/rabbit:release-2.1.0"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5672
+          name: service-api
+        - containerPort: 15672
+          name: http-api
+
+---
+# Source: gestalt/templates/security.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-security
+  labels:
+    gestalt-app: security
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: security
+    spec:
+      containers:
+      - name: gestalt-security
+        image: "galacticfog/gestalt-security:release-2.1.0"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9000
+          name: service-api
+        env:
+        - name: DATABASE_HOSTNAME
+          value: "gestalt-postgresql.gestalt-system.svc.cluster.local"
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: gestalt-secrets
+              key: db-username
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gestalt-secrets
+              key: db-password
+        - name: DATABASE_NAME
+          value: "gestalt-security"
+        - name: OAUTH_RATE_LIMITING_AMOUNT
+          value: "100"
+        - name: OAUTH_RATE_LIMITING_PERIOD
+          value: "1"
+
+---
+# Source: gestalt/templates/ui.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-ui
+  labels:
+    gestalt-app: ui
+spec:
+  replicas: 1
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        gestalt-app: ui
+    spec:
+      containers:
+      - name: gestalt-ui
+        image: "galacticfog/gestalt-ui-react:release-2.1.0"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: META_API_URL
+          value: "http://gestalt-meta.gestalt-system:10131"
+        - name: SEC_API_URL
+          value: "http://gestalt-security.gestalt-system:9455"
+
+---
+# Source: gestalt/templates/ui-ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    gestalt-app: ui
+  name: gestalt-ui
+spec:
+  rules:
+  - host: "localhost"
+    http:
+      paths:
+      - backend:
+          serviceName: gestalt-ui
+          servicePort: 80
+
+---
+# Source: gestalt/charts/postgresql/templates/networkpolicy.yaml
+
+

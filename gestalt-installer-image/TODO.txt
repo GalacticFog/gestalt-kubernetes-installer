@@ -1,0 +1,1 @@
+Run the install container as a kubernetes Batch Job instead of a Pod.
