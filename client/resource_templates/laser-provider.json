@@ -1,0 +1,172 @@
+{
+  "name": "default-laser",
+  "description": "The default laser provider",
+  "resource_type": "Gestalt::Configuration::Provider::Lambda",
+  "properties": {
+    "config": {
+      "endpoints": [
+        {
+          "actions": [
+            "provider.viewmetrics"
+          ],
+          "http": {
+            "method": "GET",
+            "url": "http://<resource.properties.config.env.public.SERVICE_HOST>:<resource.properties.config.env.public.SERVICE_PORT>/status"
+          }
+        }
+      ],
+      "env": {
+        "public": {},
+        "private": {
+          "ES_HOST": "gestalt-elastic.gestalt-system",
+          "ES_PORT": "9200",
+          "ES_PROTOCOL": "http",
+          "EXECUTOR_HEARTBEAT_MILLIS": "5000",
+          "EXECUTOR_HEARTBEAT_TIMEOUT": "5000",
+          "GESTALT_SCHEDULER": "true",
+          "HYPER_EXECUTOR_IMG": "galacticfog/gestalt-laser-executor-hyper:release-2.1.0",
+          "LAMBDA_DATABASE_NAME": "laser-db",
+          "MANAGEMENT_PROTOCOL": "ws",
+          "MAX_COOL_CONNECTION_TIME": "60",
+          "META_COMPUTE_FQON": "/root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/containers",
+          "META_COMPUTE_HOST": "http://gestalt-meta.gestalt-system:10131",
+          "META_COMPUTE_PASSWORD": "#{Config meta-api-secret}",
+          "META_COMPUTE_PROVIDER_ID": "#{Provider /root/default-kubernetes id}",
+          "META_COMPUTE_USERNAME": "#{Config meta-api-key}",
+          "META_HOSTNAME": "gestalt-meta.gestalt-system",
+          "META_NETWORK_NAME": "BRIDGE",
+          "META_PASSWORD": "#{Config meta-api-key}",
+          "META_PORT": "10131",
+          "META_PROTOCOL": "http",
+          "META_USER": "#{Config meta-secret}",
+          "MIN_COOL_EXECUTORS": "1",
+          "RABBIT_EXCHANGE": "default-listen-exchange",
+          "RABBIT_LISTEN_ROUTE": "default-listen-route",
+          "RABBIT_MONITOR_EXCHANGE": "default-monitor-echange",
+          "RABBIT_MONITOR_TOPIC": "default-monitor-topic",
+          "RABBIT_RESPONSE_EXCHANGE": "default-laser-exchange",
+          "RABBIT_RESPONSE_TOPIC": "default-response-topic",
+          "SCALE_DOWN_TIME_SECONDS": "15"
+        }
+      }
+    },
+    "linked_providers": [
+      {
+        "name": "LAMBDA_DATABASE",
+        "id": "#{Provider /root/default-postgres id}",
+        "location": "dcos"
+      },
+      {
+        "name": "GESTALT_SECURITY",
+        "id": "#{Provider /root/default-security id}",
+        "location": "dcos"
+      },
+      {
+        "name": "RABBIT",
+        "id": "#{Provider /root/default-rabbit id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_0",
+        "id": "#{Provider /root/js-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_1",
+        "id": "#{Provider /root/jvm-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_2",
+        "id": "#{Provider /root/nodejs-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_3",
+        "id": "#{Provider /root/dotnet-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_4",
+        "id": "#{Provider /root/golang-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_5",
+        "id": "#{Provider /root/python-executor id}",
+        "location": "dcos"
+      },
+      {
+        "name": "EXECUTOR_6",
+        "id": "#{Provider /root/ruby-executor id}",
+        "location": "dcos"
+      }
+    ],
+    "services": [
+      {
+        "init": {
+          "binding": "eager",
+          "singleton": true
+        },
+        "container_spec": {
+          "name": "lsr",
+          "properties": {
+            "cpus": 0.25,
+            "memory": 1024,
+            "accepted_resource_roles": [
+              "production",
+              "*"
+            ],
+            "env": {},
+            "num_instances": 1,
+            "network": "BRIDGE",
+            "container_type": "DOCKER",
+            "image": "galacticfog/gestalt-laser:release-2.1.0",
+            "force_pull": true,
+            "health_checks": [
+              {
+                "grace_period_seconds": 300,
+                "interval_seconds": 60,
+                "max_consecutive_failures": 3,
+                "path": "/health",
+                "port_index": 0,
+                "port_type": "index",
+                "protocol": "HTTP",
+                "timeout_seconds": 20
+              }
+            ],
+            "provider": {
+              "id": "#{Provider /root/default-kubernetes id}"
+            },
+            "labels": {},
+            "port_mappings": [
+              {
+                "name": "service",
+                "protocol": "tcp",
+                "expose_endpoint": true,
+                "virtual_hosts": [],
+                "container_port": 9000,
+                "lb_port": 9000
+              },
+              {
+                "name": "executor-bind",
+                "protocol": "tcp",
+                "expose_endpoint": true,
+                "container_port": 9001,
+                "lb_port": 9001
+              },
+              {
+                "name": "hyper-bind",
+                "protocol": "tcp",
+                "expose_endpoint": true,
+                "container_port": 9002,
+                "lb_port": 9002
+              }
+            ],
+            "cmd": "./bin/gestalt-laser"
+          }
+        }
+      }
+    ]
+  }
+}
