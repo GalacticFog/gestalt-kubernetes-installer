@@ -11,7 +11,9 @@ check_for_required_variables \
   gestalt_docker_release_tag \
   gestalt_install_mode
   
-
+# razzy-20180815-001
+#     image: "${docker_registry}/gestalt-installer:${gestalt_docker_release_tag}"
+#    image: "${docker_registry}/gestalt-installer:razzy-20180815-001"
 
 cat > ${GENERATED_CONF_FILE} << EOF
 # This is a pod w/ restartPolicy=Never so that the installer only runs once.
@@ -25,7 +27,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: gestalt-installer
-    image: "${docker_registry}/gestalt-installer:${gestalt_docker_release_tag}"
+    image: "${docker_registry}/gestalt-installer:razzy-20180815-001"
     imagePullPolicy: Always
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output

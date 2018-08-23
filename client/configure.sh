@@ -71,6 +71,7 @@
   case $OS in
     'Linux')
       kubectl="./bin/kubectl"
+      [ "${logging_lvl}" == "debug" ] && echo "[Debug] '${OS}' detected will use packaged kubectl '${kubectl}'"
       ;;
     'Darwin')
       check_if_installed "kubectl"
@@ -80,8 +81,6 @@
       exit_with_error "Unsupported OS '{OS}'"
     ;;
   esac
-
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug] '${OS}' detected will use packaged kubectl '${kubectl}'"
 
   #Check for required tools
   check_for_required_tools

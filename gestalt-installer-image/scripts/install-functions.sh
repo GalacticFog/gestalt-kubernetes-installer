@@ -12,6 +12,28 @@ exit_with_error() {
   exit 1
 }
 
+
+log_debug () {
+  [ "${logging_lvl}" == "debug" ] && echo && echo "[Debug] $@"
+}
+
+log_info () {
+  [[ "${logging_lvl}" =~ (debug|info) ]] && echo && echo "[Info] $@"
+}
+
+log_error () {
+  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
+}
+
+check_for_required_files () {
+echo "aaa"
+}
+
+default_gestalt_variables () {
+  echo "bbb"
+}
+
+
 http_post() {
   # store the whole response with the status as last line
   if [ -z "$2" ]; then
@@ -69,7 +91,8 @@ wait_for_database() {
   secs=30
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
-    ./psql.sh -c '\l'
+    chmod +x ${scripts_folder}/psql.sh
+    ${scripts_folder}/psql.sh -c '\l'
     if [ $? -eq 0 ]; then
       echo "Database is available."
       return 0
@@ -96,12 +119,14 @@ init_database() {
   echo "Dropping existing databases..."
 
   for db in gestalt-meta $kongdb $laserdb $gatewaydb $SECURITY_DB_NAME ; do
-    ./drop_database.sh $db --yes
+    chmod +x ${scripts_folder}/drop_database.sh
+    ${scripts_folder}/drop_database.sh $db --yes
     exit_on_error "Failed to initialize database, aborting."
   done
 
   echo "Attempting to initalize database..."
-  ./create_initial_databases.sh
+    chmod +x ${scripts_folder}/create_initial_databases.sh
+    ${scripts_folder}/create_initial_databases.sh
   exit_on_error "Failed to initialize database, aborting."
   echo "Database initialized."
 }
