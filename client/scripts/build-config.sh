@@ -44,6 +44,8 @@ EOF
 
 cat > ${GENERATED_CONF_FILE} << EOF
 {
+    "ADMIN_USERNAME": "${admin_username}",
+    "ADMIN_PASSWORD": "${admin_password}",
     "provision_internal_database": "${provision_internal_database}",
     "DATABASE_USERNAME": "${database_username}",
     "DATABASE_PASSWORD": "${database_password}",
@@ -53,6 +55,7 @@ cat > ${GENERATED_CONF_FILE} << EOF
     "js-executor-image": "${docker_registry}/gestalt-laser-executor-js:${gestalt_docker_release_tag}",
     "jvm-executor-image": "${docker_registry}/gestalt-laser-executor-jvm:${gestalt_docker_release_tag}",
     "nodejs-executor-image": "${docker_registry}/gestalt-laser-executor-nodejs:${gestalt_docker_release_tag}",
+    "golang-executor-image": "${docker_registry}/gestalt-laser-executor-golang:${gestalt_docker_release_tag}",
     "python-executor-image": "${docker_registry}/gestalt-laser-executor-python:${gestalt_docker_release_tag}",
     "ruby-executor-image": "${docker_registry}/gestalt-laser-executor-ruby:${gestalt_docker_release_tag}",
     "gwm-image": "${docker_registry}/gestalt-api-gateway:${gestalt_docker_release_tag}",

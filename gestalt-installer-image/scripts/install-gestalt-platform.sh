@@ -68,10 +68,40 @@ provision_internal_database=`jq '.["provision_internal_database"]' ${base_config
 use_dynamic_loadbalancers=`jq '.["use_dynamic_loadbalancers"]' ${base_config_map}`
 export DATABASE_PORT=5432
 
+env | sort
+
+
+export SECURITY_URL='http://gestalt-security.gestalt-system.svc.cluster.local:9455'
+export META_URL='http://gestalt-meta.gestalt-system.svc.cluster.local:10131'
+export UI_URL='http://gestalt-ui.gestalt-system.svc.cluster.local:80'
+
+
+
 check_for_required_variables \
   DATABASE_HOSTNAME \
   DATABASE_USERNAME \
-  DATABASE_PASSWORD 
+  DATABASE_PASSWORD \
+  DATABASE_PASSWORD \
+  DATABASE_HOSTNAME \
+  RABBIT_HOST \
+  DOTNET_EXECUTOR_IMAGE \
+  JS_EXECUTOR_IMAGE \
+  JVM_EXECUTOR_IMAGE \
+  NODEJS_EXECUTOR_IMAGE \
+  PYTHON_EXECUTOR_IMAGE \
+  RUBY_EXECUTOR_IMAGE \
+  GOLANG_EXECUTOR_IMAGE \
+  GWM_IMAGE \
+  KONG_IMAGE \
+  LOGGING_IMAGE \
+  POLICY_IMAGE \
+  KONG_VIRTUAL_HOST \
+  ELASTICSEARCH_HOST \
+  KUBECONFIG_BASE64 \
+  SECURITY_URL \
+  META_URL \
+  UI_URL
+
 #
 # [INFO][RABBIT_HOST=gestalt-rabbit.gestalt-system]
 # All required variables found.
@@ -162,7 +192,6 @@ run wait_for_security_init
 run init_meta
 
 ####GOOD
-run setup_license #ERIC
 # run setup_ingress_controller
 run create_providers #ERIC
 # run create_kong_ingress #  AWS approach

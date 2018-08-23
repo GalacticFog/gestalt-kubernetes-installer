@@ -86,6 +86,12 @@ check_for_required_namespace() {
     fi
   done
 
+
+# TODO: Make a function
+echo "Checking for valid JSON in '${conf_install}'"
+cat ${conf_install} | jq
+exit_on_error "Invalid JSON document: '${conf_install}', aborting"
+
 # Check that the generated files exist, otherwise abort (User should have run ./configure.sh first)
 
 # Check that the `gestalt-system` namespace exists.  If not, print some commands to create it

@@ -5,10 +5,10 @@ if [ "$1" == 'install' ]; then
   echo "Installing Gestalt platform... ('install' container argument specified)"
 
   SECONDS=0
-  log=/gestalt/install-gestalt-platform.log
+  log=/scripts/install-gestalt-platform.log
 
   echo "Initiating Gestalt platform installation at `date`" | tee -a $log
-  cd /gestalt && ./install-gestalt-platform.sh $2 | tee -a $log
+  cd /scripts && ./install.sh $2 | tee -a $log
   echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 else
   echo "Skipping Gestalt installation ('install' container argument not specified)."

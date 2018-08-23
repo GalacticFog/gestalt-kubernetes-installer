@@ -41,13 +41,16 @@ use_dynamic_loadbalancers=`jq '.["use_dynamic_loadbalancers"]' ${base_config_map
 export DATABASE_PORT=5432
 
 check_for_required_variables \
+  ADMIN_USERNAME \
+  ADMIN_PASSWORD \
   DATABASE_HOSTNAME \
   DATABASE_USERNAME \
   DATABASE_PASSWORD 
 
 
-SECURITY_URL='http://gestalt-security.gestalt-system.svc.cluster.local:9455'
-META_URL='http://gestalt-meta.gestalt-system.svc.cluster.local:10131'
+export SECURITY_URL='http://gestalt-security.gestalt-system.svc.cluster.local:9455'
+export META_URL='http://gestalt-meta.gestalt-system.svc.cluster.local:10131'
+export UI_URL='http://gestalt-ui.gestalt-system.svc.cluster.local:80'
 
 
 ## Assume that 'installer-config.json' is present.
@@ -136,3 +139,4 @@ exit_on_error "Failed ./bin/kubectl apply -n gestalt-system -f gestalt.yaml, abo
 
 cd ./scripts
 ./install-gestalt-platform.sh
+

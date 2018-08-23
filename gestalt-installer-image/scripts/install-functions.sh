@@ -151,7 +151,7 @@ do_invoke_security_init() {
   echo "Invoking $SECURITY_URL/init..."
 
   # sets HTTP_STATUS and HTTP_BODY
-  http_post $SECURITY_URL/init "{\"username\":\"$SECURITY_ADMIN_USERNAME\",\"password\":\"$SECURITY_ADMIN_PASSWORD\"}"
+  http_post $SECURITY_URL/init "{\"username\":\"$ADMIN_USERNAME\",\"password\":\"$ADMIN_PASSWORD\"}"
 
   if [ ! "$HTTP_STATUS" -eq "200" ]; then
     echo "Error invoking $SECURITY_URL/init ($HTTP_STATUS returned)"
@@ -270,43 +270,6 @@ do_get_loadbalancer_hostname() {
   exit_with_error "Could not get '$service_name' load balancer hostname"
 }
 
-setup_license() {
-  echo "Initilizing Gestalt client..."
-  /gestalt/gestaltctl login --meta $META_URL --security $SECURITY_URL $SECURITY_ADMIN_USERNAME $SECURITY_ADMIN_PASSWORD
-  exit_on_error "Gestalt client login did not succeed (error code $?), aborting."
-
-  echo "Deploying Gestalt license..."
-  /gestalt/gestaltctl setup license
-  exit_on_error "License setup did not succeed (error code $?), aborting."
-  echo "License deployed."
-}
-
-# # This approach doesn't work due to a Kubernetes bug or limitation:
-# # A service cannot point to another service's CLUSTER-IP in another namespace..
-#
-# setup_internal_api_gateway_service() {
-#   echo "Setting up internal API Gateway service..."
-#
-#   kubectl get services --all-namespaces | grep $LAMBDA_PROVIDER_SERVICE_NAME > lambda_service
-#   if [ `cat lambda_service | wc -l` -ne 1 ]; then
-#     exit_with_error "Did not find a unique 'lambda-provider' service"
-#   fi
-#   ip=`cat lambda_service | awk '{print $3}'`
-#   port=`cat lambda_service | awk '{print $5}' | awk -F: '{print $1}'`
-#   #namespace=`cat lambda_service | awk '{print $1}'`
-#
-#   name=$API_GATEWAY_SERVICE_NAME ip=$ip port=$port \
-#   ./build_api_gateway_ep_yaml.sh > ep.yaml
-#   exit_on_error "Failed to generate Endpoint resource definition"
-#
-#   kubectl create -f ep.yaml
-#   exit_on_error "Failed to generate Endpoint resource definition"
-#
-#   kubectl describe services gestalt-api-gateway
-#
-#   echo "Internal API Gateway service set up."
-# }
-
 is_dynamic_lb_enabled() {
   # Check for 'yes' or 'true'
   case $USE_DYNAMIC_LOADBALANCERS in
@@ -316,22 +279,6 @@ is_dynamic_lb_enabled() {
 
   return 1
 }
-
-# setup_ingress_controller() {
-#
-#   if ! is_dynamic_lb_enabled ; then
-#     echo "Skipping ingress controller setup, Dynamic Load Balancing is not enabled."
-#     return 0
-#   fi
-#
-#   echo "Setting up ingress controller..."
-#
-#   # create ingress controller, default backend, service(ELB)…
-#   kubectl create -f ./aws/ingress_resources.yaml
-#   exit_on_error "Could not create ingress controller resources (kubectl error code $?), aborting."
-#
-#   echo "Ingress controller resources created."
-# }
 
 create_providers() {
   echo "Creating default providers..."
@@ -351,54 +298,32 @@ create_providers() {
       EXTERNAL_GATEWAY_PROTOCOL
   fi
 
-  # # Build Gestalt config
-  echo "$GESTALT_CLI_DATA" | base64 -d > /gestalt/gestalt.json.tmp
-
-  EXTERNAL_GATEWAY_HOST=$EXTERNAL_GATEWAY_HOST \
-  SECURITY_KEY=$SECURITY_KEY \
-  SECURITY_SECRET=$SECURITY_SECRET \
-  META_URL=$META_URL \
-  envsubst < /gestalt/gestalt.json.tmp | jq . > /gestalt/gestalt.json
-
-  exit_on_error "Could not generate config (error code $?), aborting."
-
   if [ "$DEBUG_OUTPUT" == "1" ]; then
-    debug_flag="-v"
+    debug_flag="--debug"
   fi
 
-  # Invoke the Gestalt CLI
-  /gestalt/gestaltctl $debug_flag setup --secretsFile /gestalt/gestalt.json default kube
+  # Generate config
+  envsubst < /resource_templates/config.json > /resource_templates/config.json.tmp
+  mv /resource_templates/config.json.tmp /resource_templates/config.json
+
+  cat /resource_templates/config.json
+
+  cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
+  echo "Running $cmd"
+  $cmd
+
+  exit_on_error "Failed to login to Gestalt, aborting."
+
+  cd /resource_templates
+
+  ./create_providers.sh
 
   exit_on_error "Provider setup did not succeed (error code $?), aborting."
 
+  cd -
+
   echo "Default providers created."
 }
-
-# create_kong_ingress() {
-#   if ! is_dynamic_lb_enabled ; then
-#     echo "Skipping Kong Ingress setup, Dynamic Load Balancing is not enabled."
-#     return 0
-#   fi
-#
-#   echo "Creating Kubernetes Ingress resource for Kong..."
-#
-#   service_name="default-kong"
-#
-#   kubectl get services --all-namespaces | grep $service_name > kong_service
-#   if [ `cat kong_service | wc -l` -ne 1 ]; then
-#     exit_with_error "Did not find a unique '$service_name' service"
-#   fi
-#   service_namespace=`cat kong_service | awk '{print $1}'`
-#
-#   ingress_name=${service_name}-ingress \
-#   ingress_service_name=$service_name \
-#   ./build_ingress_resource.sh > kong_ingress.yaml
-#
-#   kubectl create -f kong_ingress.yaml --namespace=$service_namespace
-#   exit_on_error "Could not create ingress to $service_namespace/$service_name (kubectl error code $?), aborting."
-#
-#   echo "Kong ingress configured."
-# }
 
 create_kong_ingress_v2() {
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then

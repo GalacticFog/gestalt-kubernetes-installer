@@ -1,32 +1,11 @@
+fog context set --path /root
 
+fog meta POST /root/licenses -f license.json
+# fog meta update-license -f license.json
 
-# sendPost - url: http://gestalt-meta.gestalt-system:10131/root/workspaces
-# payload: {
-#   "name" : "gestalt-system-workspace",
-#   "description" : "Gestalt System Workspace"
-# }
+fog create workspace --name gestalt-system-workspace -d "Gestalt System Workspace"
 
-# 201 - Created
-# creating default environment in workspace (3fc0ba03-a499-40f1-94dd-9b7d8d3adca8)...
-# sendPost - url: http://gestalt-meta.gestalt-system:10131/root/workspaces/3fc0ba03-a499-40f1-94dd-9b7d8d3adca8/environments
-# payload: {
-#   "name" : "gestalt-system-environment",
-#   "description" : "Gestalt System Environment",
-#   "properties" : {
-#     "environment_type" : "development"
-#   }
-# }
-
-# 201 - Created
-# creating environment for laser containers...
-# sendPost - url: http://gestalt-meta.gestalt-system:10131/root/workspaces/3fc0ba03-a499-40f1-94dd-9b7d8d3adca8/environments
-# payload: {
-#   "name" : "gestalt-laser-environment",
-#   "description" : "Gestalt Laser Environment",
-#   "properties" : {
-#     "environment_type" : "development"
-#   }
-# }
+fog create environment -w gestalt-system-workspace -n gestalt-laser-environment -d "Gestalt Laser Environment" -t production
 
 fog create resource -f db-provider.json --config config.json
 
@@ -38,20 +17,7 @@ fog create resource -f rabbit-provider.json --config config.json
 
 fog create resource -f logging-provider.json --config config.json
 
-# Link logging provider to CaaS provider
-
-# sendPatch - url: http://gestalt-meta.gestalt-system:10131/root/providers/e79324a6-b8b8-486d-890b-a9e67307380e
-# payload: [ {
-#   "op" : "replace",
-#   "path" : "/properties/linked_providers",
-#   "value" : [ {
-#     "name" : "logging",
-#     "id" : "07b3b6a4-67b7-4626-b341-2665a8a82dc9",
-#     "typeId" : "e1782fef-4b7c-4f75-b8b8-6e6e2ecd82b2",
-#     "type" : "Gestalt::Configuration::Provider::Logging"
-#   } ]
-# } ]
-
+fog meta patch-provider --provider /root/default-kubernetes -f link-logging-provider.json
 
 # Executors
 fog create resource -f js-executor.json --config config.json

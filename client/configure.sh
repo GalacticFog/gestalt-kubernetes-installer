@@ -128,6 +128,10 @@ exit_on_error "Issue during building '${installer_config}'"
 echo "[Debug] Generated Installer Configuration:" && \
 cat "${conf_install}" && echo
 
+echo "Checking for valid JSON document"
+cat ${conf_install} | jq
+exit_on_error "Invalid JSON document: '${conf_install}', aborting"
+
 
 ############################################
 # Generate Installer Spec

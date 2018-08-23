@@ -1,7 +1,13 @@
 #!/bin/bash
+. ./conf/gestalt-platform-installer.conf
 
 exit_on_error() {
   [ $? -ne 0 ] && echo $1 && exit 1
+}
+
+exit_with_error() {
+  echo "[Error] $@"
+  exit 1
 }
 
 get_kubectl() {
@@ -18,38 +24,24 @@ get_kubectl() {
   fi
 }
 
-get_and_build_gestalt_cli() {
-  if [ ! -f ./deps/gestalt-cli.jar ]; then
+get_fog_cli() {
+  if [ -z fog_download_url ]; then
+    exit_with_error "Fog download URL (fog_download_url) is not set, aborting".
+  fi
 
-    if [ ! -d ./deps/gestalt-cli ]; then
-      cd deps
-      git clone git@gitlab.com:galacticfog/gestalt-cli.git
-      cd -
-    else
-      echo "OK - gestalt-cli already present, skipping"
-    fi
-
-    cli_path=./deps/gestalt-cli/target/scala-2.11/gestalt-cli.jar
-
-    echo "Building gestalt-cli project"
-    cd deps/gestalt-cli
-
-    # git checkout udpate_license
-
-    sbt clean update compile assembly
-    exit_on_error "Failed to build gestalt-cli, aborting."
+  if [ ! -f ./deps/fog ]; then
+    echo "Getting fog from $fog_download_url..."
+    curl -L $fog_download_url -o ./deps/fog.zip
+    cd deps
+    unzip fog.zip
+    rm fog.zip
     cd -
-
-    echo "Copying $cli_path to ./deps"
-    cp $cli_path ./deps/
-    exit_on_error "Failed to copy $cli_path, aborting."
-
-    echo "Cleaning up gestalt-cli source"
-    rm -rf ./deps/gestalt-cli
   else
-    echo "OK - gestalt-cli.jar already present, skipping"
+    echo "OK - 'fog' already present, skipping"
   fi
 }
+
+# TODO: get_helm()
 
 echo "Gathering dependencies..."
 
@@ -58,5 +50,9 @@ mkdir -p ./deps
 # get_and_build_gestalt_cli
 
 get_kubectl
+
+get_fog_cli
+
+# TODO: get_helm
 
 echo "Finished gathering dependencies to ./deps/"

@@ -38,7 +38,7 @@
           "META_PASSWORD": "#{Config meta-api-key}",
           "META_PORT": "10131",
           "META_PROTOCOL": "http",
-          "META_USER": "#{Config meta-secret}",
+          "META_USER": "#{Config meta-api-secret}",
           "MIN_COOL_EXECUTORS": "1",
           "RABBIT_EXCHANGE": "default-listen-exchange",
           "RABBIT_LISTEN_ROUTE": "default-listen-route",

@@ -16,8 +16,8 @@ fi
 [ -f ./deps/kubectl ]
 exit_on_error "./deps/kubectl not found, aborting."
 
-[ -f ./deps/gestalt-cli.jar ]
-exit_on_error "./deps/gestalt-cli.jar not found, aborting."
+[ -f ./deps/fog ]
+exit_on_error "./deps/fog not found, aborting."
 
 echo "Building..."
 docker build -t gestalt-installer . | tee buildoutput
