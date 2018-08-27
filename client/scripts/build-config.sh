@@ -13,7 +13,7 @@ check_for_required_variables \
   gestalt_docker_release_tag \
   external_gateway_host \
   gestalt_kong_service_nodeport
-  
+
 
 
 cat > ${GENERATED_CONF_FILE} << EOF
@@ -34,7 +34,7 @@ cat > ${GENERATED_CONF_FILE} << EOF
     "kong-image": "${docker_registry}/kong:${gestalt_docker_release_tag}",
     "logging-image": "${docker_registry}/gestalt-log:${gestalt_docker_release_tag}",
     "policy-image": "${docker_registry}/gestalt-policy:${gestalt_docker_release_tag}",
-    "kubeconfig-base64": "`cat ${conf_kube}`",
+    "kubeconfig-base64": "${kubeconfig_data}",
     "kong-virtual-host": "${external_gateway_host}:${gestalt_kong_service_nodeport}",
     "elasticsearch-host": "gestalt-elastic.gestalt-system",
     "rabbig-host": "gestalt-rabbit.gestalt-system"
@@ -62,12 +62,9 @@ cat > ${GENERATED_CONF_FILE} << EOF
     "kong-image": "${docker_registry}/kong:${gestalt_docker_release_tag}",
     "logging-image": "${docker_registry}/gestalt-log:${gestalt_docker_release_tag}",
     "policy-image": "${docker_registry}/gestalt-policy:${gestalt_docker_release_tag}",
-    "KUBECONFIG_BASE64": "`cat ${conf_kube}`",
+    "KUBECONFIG_BASE64": "${kubeconfig_data}",
     "kong-virtual-host": "${external_gateway_host}:${gestalt_kong_service_nodeport}",
     "elasticsearch-host": "gestalt-elastic.gestalt-system",
     "rabbit-host": "gestalt-rabbit.gestalt-system"
 }
 EOF
-
-
-

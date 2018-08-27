@@ -26,7 +26,7 @@
 
   conf_install="./install-config.json"
   kube_install="./installer.yaml"
-  conf_kube="./kubeconfig.b64"
+  # conf_kube="./kubeconfig.b64"
 
 ############################################
 # Source Utilities
@@ -89,7 +89,7 @@
 
   all_file="${conf_credential} ${conf_gestalt}"
   [ "${logging_lvl}" == "debug" ] && echo "[Debug] All other files for execution: '${all_file[@]}'"
- 
+
   for curr_file in ${all_file[@]}
   do
     if [ ! -f "${curr_file[@]}" ]; then
@@ -109,12 +109,16 @@ kubectl_context=$($kubectl config current-context)
 exit_on_error "Unable determine current context '${kubectl} config current-context', aborting."
 
 #use process_kubeconfig() { instead
-[[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
-echo "[Info] Obtain kubeconfig from current context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
- | base64 > ${conf_kube}' ..."
-$kubectl config view --raw --minify --flatten | base64 > kubeconfig.b64
-exit_on_error "Unable obtain and encode kubeconfig from context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
- | base64 > ${conf_kube}', aborting."
+# [[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
+# echo "[Info] Obtain kubeconfig from current context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
+#  | base64 > ${conf_kube}' ..."
+# $kubectl config view --raw --minify --flatten | base64 > kubeconfig.b64
+# exit_on_error "Unable obtain and encode kubeconfig from context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
+#  | base64 > ${conf_kube}', aborting."
+
+ process_kubeconfig
+ exit_on_error "Failed to process kubeconfig, aborting."
+
 
 ############################################
 # Generate Configuration

@@ -10,7 +10,7 @@ check_for_required_variables \
   docker_registry \
   gestalt_docker_release_tag \
   gestalt_install_mode
-  
+
 # razzy-20180815-001
 #     image: "${docker_registry}/gestalt-installer:${gestalt_docker_release_tag}"
 #    image: "${docker_registry}/gestalt-installer:razzy-20180815-001"
@@ -32,6 +32,9 @@ spec:
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
     args: ["install", "${gestalt_install_mode}"]
+    env:
+    - name: DEBUG
+      value: "true"
     volumeMounts:
     - mountPath: /config
       name: config

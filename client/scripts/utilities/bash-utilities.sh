@@ -37,7 +37,7 @@ check_for_required_variables() {
   done
 
   if [ $retval -ne 0 ]; then
-    echo 
+    echo
     echo "[Error] One or more required variables not defined, aborting."
     exit 1
   else
@@ -95,3 +95,32 @@ function comma() {
   comma_flag=","
 }
 
+process_kubeconfig() {
+  # echo "Processing kubectl configuration (provided to the installer)..."
+
+  os=`uname`
+
+  if [ -z "$kubeconfig_data" ]; then
+    echo "Obtaining kubeconfig from kubectl context '`kubectl config current-context`'"
+    data=$(kubectl config view --raw --flatten=true --minify=true)
+    kubeurl='https://kubernetes.default.svc'
+    echo "Converting server URL to '$kubeurl'"
+
+    # for 'http'
+    data=$(echo "$data" | sed "s;server: http://.*;server: $kubeurl;g")
+
+    # for 'https'
+    data=$(echo "$data" | sed "s;server: https://.*;server: $kubeurl;g")
+
+    exit_on_error "Could not process kube config, aborting."
+
+    if [ "$os" == "Darwin" ]; then
+      kubeconfig_data=`echo "$data" | base64`
+    elif [ "$os" == "Linux" ]; then
+      kubeconfig_data=`echo "$data" | base64 | tr -d '\n'`
+    else
+      echo "Warning: unknown OS type '$os', treating as Linux"
+      kubeconfig_data=`echo "$data" | base64 | tr -d '\n'`
+    fi
+  fi
+}
