@@ -166,11 +166,20 @@ do_invoke_security_init() {
 }
 
 do_get_security_credentials() {
+
+  echo "[LALALAA 3333 AAAA]"
+  #[{"apiKey":"6dd2d579-72d6-45f6-ac2a-a3ed585eefa8","apiSecret":"IEcKank5f7ReWegke2XHxAjuPcnpgW6DXrp0LuKY","accountId":"2a4248ea-01f5-41c6-a613-6ba95d0acdbf","disabled":false}]
+  cat init_payload
+  echo "[LALALAA 3333 BBBbB]"
   SECURITY_KEY=`cat init_payload | jq '.[] .apiKey' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API key (error code $?), aborting."
 
   SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API secret (error code $?), aborting."
+
+  echo "[SECURITY_KEY=${SECURITY_KEY}]"
+  echo "[SECURITY_SECRET=${SECURITY_SECRET}]"
+
 }
 
 wait_for_security_init() {
@@ -302,11 +311,38 @@ create_providers() {
     debug_flag="--debug"
   fi
 
+
+
+echo "sdsdgdsgsd"
+cat /resource_templates/config.json
+
+echo "jjjjjjjjjj"
+
+env | sort
+
+echo "ssdfsdfsdfs"
+
+export SECURITY_KEY=${SECURITY_KEY}
+  export SECURITY_SECRET=${SECURITY_SECRET}
+
+env | sort
+
+echo "22222222ssdfsdfsdfs"
+
+   echo "[xxxSECURITY_KEY=${SECURITY_KEY}]"
+  echo "[xxxSECURITY_SECRET=${SECURITY_SECRET}]"
+
   # Generate config
   envsubst < /resource_templates/config.json > /resource_templates/config.json.tmp
   mv /resource_templates/config.json.tmp /resource_templates/config.json
 
   cat /resource_templates/config.json
+  
+  echo "222222"
+  
+
+
+
 
   cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
   echo "Running $cmd"
