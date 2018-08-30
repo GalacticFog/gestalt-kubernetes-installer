@@ -10,7 +10,7 @@
   utility_folder_shared="/scripts"
   utility_bash="${utility_folder_shared}/utility-bash.sh"
 
-  script_folder="/scripts"
+  export script_folder="/scripts"
   scipt_install_helper="${script_folder}/install-functions.sh"
 
   gestalt_config="/config/install-config.json"

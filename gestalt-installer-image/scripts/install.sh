@@ -35,7 +35,6 @@ run invoke_security_init
 run wait_for_security_init
 run init_meta
 
-# Getting security keys again, just in case this function is run standalone
 gestalt_cli_set_opts
 do_get_security_credentials
 gestalt_cli_login

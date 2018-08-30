@@ -167,7 +167,7 @@ init_database() {
   done
 
   echo "Attempting to initalize database..."
-    ${script_folder}/create_initial_databases.sh
+  ${script_folder}/create_initial_databases.sh
   exit_on_error "Failed to initialize database, aborting."
   echo "Database initialized."
 }
