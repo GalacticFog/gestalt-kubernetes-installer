@@ -12,6 +12,11 @@
   shared_utility_folder="./../utilities"
   utility_bash="${shared_utility_folder}/utility-bash.sh"
 
+  script_folder="./scripts"
+  installer_config="${script_folder}/build-config.sh"
+  installer_spec="${script_folder}/build-installer-spec.sh"
+
+
   utility_folder="./scripts/utilities"
   utility_gestalt_install="${utility_folder}/utility-gestalt-installer-run.sh"
   utility_kubectl="${utility_folder}/utility-kubectl.sh"

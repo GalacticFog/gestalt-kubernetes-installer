@@ -15,6 +15,7 @@
 
   gestalt_config="/config/install-config.json"
   gestalt_license="/license/gestalt-license.json"
+  gestalt_resource_script="/resource_templates/create_gestalt_resources.sh"
 
   all_source_me="${utility_bash} ${scipt_install_helper}"
 
@@ -28,7 +29,7 @@
       echo "[ERROR] Utility file '${tmp_file}' not found, aborting."
       exit 1
     else
-      . "${tmp_file}"
+      source "${tmp_file}"
       if [ $? -ne 0 ]; then
         echo "[ERROR] Unable source utility file '${tmp_file}', aborting."
         exit 1
@@ -40,7 +41,7 @@
 
   # Now we should have bash utilities
 
-  check_for_required_files ${gestalt_config} ${gestalt_license}
+  check_for_required_files ${gestalt_config} ${gestalt_license} ${gestalt_resource_script}
   
 
 ########################################################################################

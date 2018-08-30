@@ -63,6 +63,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "UI_PORT": "80",
     "UI_PROTOCOL": "http",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
-    "GESTALT_CUSTOM_RESOURCES": ${gestalt_custom_resources}
+    "GESTALT_CUSTOM_RESOURCES": ${gestalt_custom_resources},
+    "GESTALT_INSTALL_LOGGING_LVL": "${gestalt_install_mode}"
 }
 EOF

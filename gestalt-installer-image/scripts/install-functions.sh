@@ -7,11 +7,28 @@ getsalt_installer_load_configmap() {
   check_for_required_variables gestalt_config
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config} #process config map
+  check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
+  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
+  log_set_logging_lvl
+  logging_lvl_validate 
   # print_env_variables #will print only if debug
 
 }
 
 getsalt_installer_setcheck_variables() {
+
+  export EXTERNAL_GATEWAY_HOST=localhost
+  export EXTERNAL_GATEWAY_PROTOCOL=http
+
+  check_for_optional_variables \
+    META_BOOTSTRAP_PARAMS
+
+  if ! is_dynamic_lb_enabled ; then
+    echo "Dynamic load balancing is not enabled, checking for required variables"
+    check_for_required_variables \
+      EXTERNAL_GATEWAY_HOST \
+      EXTERNAL_GATEWAY_PROTOCOL
+  fi
 
   # Acces points - components
   check_for_required_variables \
@@ -51,13 +68,39 @@ getsalt_installer_setcheck_variables() {
     PYTHON_EXECUTOR_IMAGE \
     RUBY_EXECUTOR_IMAGE \
     GOLANG_EXECUTOR_IMAGE \
-    GWM_IMAGE \
+    GWM_EXECUTOR_IMAGE \
     KONG_IMAGE \
     LOGGING_IMAGE \
     POLICY_IMAGE \
     RABBIT_HOST \
     KONG_VIRTUAL_HOST \
     ELASTICSEARCH_HOST
+}
+
+
+gestalt_installer_generate_helm_config() {
+
+  check_for_required_variables \
+    KUBECONFIG_BASE64 \
+    ADMIN_PASSWORD \
+    DATABASE_PASSWORD
+
+#TODO: Move out overrride if needed image and imageTag for postgresql
+  cat > helm-config.yaml <<EOF
+security:
+  adminPassword: "${ADMIN_PASSWORD}"
+
+postgresql:
+  postgresPassword: "${DATABASE_PASSWORD}"
+  image: "postgres"
+  imageTag: "9.6.2"
+
+db:
+  password: "${DATABASE_PASSWORD}"
+
+installer:
+  gestaltCliData: "${KUBECONFIG_BASE64}"
+EOF
 
 }
 
@@ -73,14 +116,6 @@ http_post() {
   HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
   unset HTTP_RESPONSE
-}
-
-check_for_optional_variables() {
-  for e in $@; do
-    if [ -z "${!e}" ]; then
-      echo "Optional variable \"$e\" not defined."
-    fi
-  done
 }
 
 check_for_existing_services() {
@@ -100,8 +135,7 @@ wait_for_database() {
   secs=30
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
-    chmod +x ${scripts_folder}/psql.sh
-    ${scripts_folder}/psql.sh -c '\l'
+    ${script_folder}/psql.sh -c '\l'
     if [ $? -eq 0 ]; then
       echo "Database is available."
       return 0
@@ -128,14 +162,12 @@ init_database() {
   echo "Dropping existing databases..."
 
   for db in gestalt-meta $kongdb $laserdb $gatewaydb $SECURITY_DB_NAME ; do
-    chmod +x ${scripts_folder}/drop_database.sh
-    ${scripts_folder}/drop_database.sh $db --yes
+    ${script_folder}/drop_database.sh $db --yes
     exit_on_error "Failed to initialize database, aborting."
   done
 
   echo "Attempting to initalize database..."
-    chmod +x ${scripts_folder}/create_initial_databases.sh
-    ${scripts_folder}/create_initial_databases.sh
+    ${script_folder}/create_initial_databases.sh
   exit_on_error "Failed to initialize database, aborting."
   echo "Database initialized."
 }
@@ -291,6 +323,52 @@ is_dynamic_lb_enabled() {
   return 1
 }
 
+gestalt_cli_set_opts() {
+
+  if [ "${GESTALT_FOGCLI_DEBUG}" == "true" ]; then
+    GESTALT_FOGCLI_OPTS=''
+  else
+    GESTALT_FOGCLI_OPTS='--debug'
+  fi
+
+}
+
+gestalt_cli_login() {
+
+  cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
+  echo "Running $cmd"
+  $cmd
+  exit_on_error "Failed to login to Gestalt, aborting."
+
+}
+
+gestalt_cli_license_set() {
+
+  check_for_required_files ${gestalt_license}
+  fog meta POST /root/licenses -f ${gestalt_license} ${GESTALT_FOGCLI_OPTS}
+  exit_on_error "Failed to upload license '${gestalt_license}' (error code $?), aborting."
+
+}
+
+gestalt_cli_context_set() {
+
+  fog context set --path /root ${GESTALT_FOGCLI_OPTS}
+  exit_on_error "Failed to set fog context '/root' (error code $?), aborting."
+
+}
+
+gestalt_cli_create_resources() {
+
+  cd /resource_templates
+  ./create_gestalt_resources.sh
+  exit_on_error "Gestalt resource setup did not succeed (error code $?), aborting."
+  cd -
+  echo "Gestalt resource(-s) created."
+
+}
+
+
+# remove afterwards
 create_providers() {
   echo "Creating default providers..."
 

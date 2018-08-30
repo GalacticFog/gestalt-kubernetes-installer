@@ -16,59 +16,34 @@ getsalt_installer_load_configmap
 echo "Default and validate environment variables ..."
 getsalt_installer_setcheck_variables
 
+echo "Generate Help config ..."
+gestalt_installer_generate_helm_config
 
-
-#provision_internal_database=`jq '.["provision_internal_database"]' ${base_config_map}`
-#use_dynamic_loadbalancers=`jq '.["use_dynamic_loadbalancers"]' ${base_config_map}`
-
-
-## Assume that 'installer-config.json' is present.
-
-# Check if installer-config exists, exit with error if not
-
-# Parse the config file usign jq to get all necessary parameters
-
-####database_password="s1lr7nOGQXmTaoaH"
-####admin_password="BZ2pAcpRQ0pyASMn"
-
-# Check to ensure all required parameters are present
-# - kubeconfig (in base64 encoding)
-# - db username, password
-
-# Generate helm-config.yaml
-
-echo "Generating helm configuration..."
-
-#from config map jq
-
-#here overrride if needed image and imageTag for postgresql
-cat > helm-config.yaml <<EOF
-security:
-  adminPassword: "$admin_password"
-
-postgresql:
-  postgresPassword: "$database_password"
-  image: "postgres"
-  imageTag: "9.6.2"
-
-db:
-  password: "$database_password"
-
-installer:
-  gestaltCliData: "${KUBECONFIG_BASE64}"
-EOF
-
+echo "Generate Help config ..."
 helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml
 exit_on_error "Failed: helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml"
 
 kubectl apply -n gestalt-system -f gestalt.yaml
 exit_on_error "Failed kubectl apply -n gestalt-system -f gestalt.yaml, aborting."
 
-
-
-
 # Stage 2 - Orchestrate the Gestalt Platform installation
 
-cd ./scripts
-./install-gestalt-platform.sh
+run check_for_existing_services
+run wait_for_database
+run init_database
+run invoke_security_init
+run wait_for_security_init
+run init_meta
 
+# Getting security keys again, just in case this function is run standalone
+gestalt_cli_set_opts
+do_get_security_credentials
+gestalt_cli_login
+gestalt_cli_license_set
+gestalt_cli_context_set
+
+run gestalt_cli_create_resources #Default or Custom as per config
+# run create_kong_ingress #  AWS approach
+run create_kong_ingress_v2 #
+
+echo "[Success] Gestalt platform installation completed."

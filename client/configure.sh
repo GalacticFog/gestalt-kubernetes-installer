@@ -1,166 +1,31 @@
 #!/bin/bash
 
+# Source common project configuration and utilities
+utility_file='./scripts/utilities/utility-project-check.sh'
+if [ -f ${utility_file} ]; then
+  . ${utility_file}
+else
+  echo "[ERROR] Project initialization script '${utility_file}' can not be located, aborting. "
+  exit 1
+fi
 
+#Check for required tools
+check_for_required_tools_gestalt_installer
 
-
-############################################
-# General Settings and References
-############################################
-
-  logging_lvl="debug" # error, info, debug
-
-  # Credentials and Configs
-  conf_folder="."
-  conf_credential="${conf_folder}/credentials.conf"
-  conf_gestalt="${conf_folder}/gestalt.conf"
-
-  # Scripts and Utilities
-  script_folder="./scripts"
-  script_utility_folder="${script_folder}/utilities"
-
-  shared_utility_folder="./../utilities"
-  utility_bash="${shared_utility_folder}/utility-bash.sh"
-  utility_gestalt_install="${script_utility_folder}/utility-gestalt-installer-run.sh"
-  utility_kubectl="${script_utility_folder}/utility-kubectl.sh"
-
-  installer_config="${script_folder}/build-config.sh"
-  installer_spec="${script_folder}/build-installer-spec.sh"
-
-  # Generated files and folders
-
-  log_folder="./logs"
-  log_configure="${log_folder}/gestalt-configure.log"
-
-  conf_install="./install-config.json"
-  kube_install="./installer.yaml"
-  # conf_kube="./kubeconfig.b64"
-
-############################################
-# Source Utilities
-############################################
-
-#   gestalt-license.json
-
-
-
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug][START] Your current location [`pwd`]"
-
-  ### First source utilities file
-
-  if [ ! -f "${utility_bash}" ]; then
-    echo "[ERROR] Utility file '${utility_bash}' not found, aborting."
-    exit 1
-  else
-    source "${utility_bash}"
-    exit_on_error "Unable source utility file '${utility_bash}', aborting."
-    [ "${logging_lvl}" == "debug" ] && echo "[Debug] Sourced utility file '${utility_bash}'"
-  fi
-
-############################################
-# Validations
-############################################
-
-  ### Then source any other applicable configuration files
-
-  all_file="${conf_credential} ${conf_gestalt} ${utility_gestalt_install} ${utility_kubectl}"
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug] All files for sourcing: '${all_file[@]}'"
-
-  for curr_file in ${all_file[@]}
-  do
-    if [ ! -f "${curr_file[@]}" ]; then
-      exit_with_error "Required file '${curr_file[@]}' not found, aborting."
-    else
-      source "${curr_file}"
-      exit_on_error "Unable source required file '${curr_file}', aborting."
-      [ "${logging_lvl}" == "debug" ] && echo "[Debug] Sourced file '${curr_file}'"
-    fi
-  done
-
-  ### Binaries
-  OS="`uname`"
-  case $OS in
-    'Linux')
-      kubectl="./bin/kubectl"
-      [ "${logging_lvl}" == "debug" ] && echo "[Debug] '${OS}' detected will use packaged kubectl '${kubectl}'"
-      ;;
-    'Darwin')
-      check_if_installed "kubectl"
-      kubectl=`which kubectl`
-      ;;
-    *)
-      exit_with_error "Unsupported OS '{OS}'"
-    ;;
-  esac
-
-  #Check for required tools
- check_for_required_tools_gestalt_installer
-
-  ### Check for presence for other script files
-
-  all_file="${conf_credential} ${conf_gestalt}"
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug] All other files for execution: '${all_file[@]}'"
-
-  for curr_file in ${all_file[@]}
-  do
-    if [ ! -f "${curr_file[@]}" ]; then
-      exit_with_error "File '${curr_file[@]}' not found, aborting."
-    else
-      [ "${logging_lvl}" == "debug" ] && echo "[Debug] File found: '${curr_file}'"
-    fi
-  done
-
-
-############################################
-# Kubectl: Context and Config
-############################################
-
-[[ "${logging_lvl}" =~ (debug|info) ]] && echo && echo "[Info] Obtain current context '$kubectl config current-context' ..."
-kubectl_context=$($kubectl config current-context)
+log_debug "" && log_debug "[Info] Obtain current context 'kubectl config current-context' ..."
+kubectl_context=$(kubectl config current-context)
 exit_on_error "Unable determine current context '${kubectl} config current-context', aborting."
 
-#?target_kube_context
-
-#use process_kubeconfig() { instead
-# [[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
-# echo "[Info] Obtain kubeconfig from current context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
-#  | base64 > ${conf_kube}' ..."
-# $kubectl config view --raw --minify --flatten | base64 > kubeconfig.b64
-# exit_on_error "Unable obtain and encode kubeconfig from context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
-#  | base64 > ${conf_kube}', aborting."
-
 kube_process_kubeconfig
- exit_on_error "Failed to process kubeconfig, aborting."
+exit_on_error "Failed to process kubeconfig, aborting."
 
-
-
-
-############################################
-# Generate Configuration
-############################################
-
-[[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
-echo "[Info] Generate Installer Configuration '. ${installer_config}'"
+log_debug "Generate Installer Configuration '. ${installer_config}'"
 . "${installer_config}" "${conf_install}"
 exit_on_error "Issue during building '${installer_config}'"
-[[ "${logging_lvl}" =~ (debug) ]] && echo && \
-echo "[Debug] Generated Installer Configuration:" && \
-cat "${conf_install}" && echo
+log_debug "Generated Installer Configuration: `cat ${conf_install}`" && log_debug ""
+validate_json ${conf_install}
 
-echo "Checking for valid JSON document"
-cat ${conf_install} | jq
-exit_on_error "Invalid JSON document: '${conf_install}', aborting"
-
-
-############################################
-# Generate Installer Spec
-############################################
-
-
-[[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
-echo "[Info] Generate Installer Spec '. ${installer_spec} ${kube_install}'"
+log_debug "Generate Installer Spec '. ${installer_spec} ${kube_install}'"
 . "${installer_spec}" "${kube_install}"
 
-
-############################################
-# END
-############################################
+echo "Installer Configurations Generated"

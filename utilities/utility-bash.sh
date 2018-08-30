@@ -56,26 +56,75 @@ exit_on_error() {
   fi
 }
 
+### Logging
+
+log_debug () {
+  [ "${logging_lvl}" == "debug" ] && echo "[Debug] $@"
+}
+
+log_info () {
+  [[ "${logging_lvl}" =~ (debug|info) ]] && echo "[Info] $@"
+}
+
+log_error () {
+  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
+}
+
+log_set_logging_lvl () {
+
+  if [ -z ${logging_lvl} ]; then
+    logging_lvl="error"
+    echo "[Info] Logging level not set, defaulting to 'error'."
+  fi
+
+}
+
+logging_lvl_validate () {
+
+  if [[ "${logging_lvl}" =~ (debug|info|error) ]]; then
+    log_debug " [Validation Passed] logging_lvl = '${logging_lvl}'"
+  else
+    exit_with_error " [Validation Failed] Unsupported logging level '${logging_lvl}'. Supported loggin levels are 'debug|info|error'."
+  fi  
+
+}
+
+# Function wrapper for friendly logging and basic timing
+run() {
+  SECONDS=0
+  echo "[Running '$@']"
+  $@
+  echo "['$@' finished in $SECONDS seconds]"
+  echo ""
+}
+
+
 ### Validations
 
 check_for_required_variables() {
-
   retval=0
 
   for e in $@; do
     if [ -z "${!e}" ]; then
-      log_error "Required variable \"$e\" not defined."
+      echo "Required variable \"$e\" not defined."
       retval=1
     fi
   done
 
   if [ $retval -ne 0 ]; then
-    log_error "One or more required variables not defined, aborting."
+    echo "One or more required variables not defined, aborting."
     exit 1
   else
-    log_debug "All required variables found."
+    echo "All required variables: [$@] found."
   fi
+}
 
+check_for_optional_variables() {
+  for e in $@; do
+    if [ -z "${!e}" ]; then
+      echo "Optional variable \"$e\" not defined."
+    fi
+  done
 }
 
 check_for_required_files() {
@@ -85,13 +134,13 @@ check_for_required_files() {
   for e in $@; do
     log_debug "Looking up file '$e'"
     if [ ! -f "${e}" ]; then
-      log_error "Required file \"$e\" not present."
+      echo "Required file \"$e\" not present."
       retval=1
     fi
   done
 
   if [ $retval -ne 0 ]; then
-    log_error "One or more required files not present, aborting."
+    echo "One or more required files not present, aborting."
     exit 1
   else
     log_debug "All required files found."
@@ -124,7 +173,7 @@ source_all_files () {
     else
       source "${tmp_file}"
       exit_on_error "Unable source required file '${curr_file}', aborting."
-      log_debug "[Debug] Sourced file '${curr_file}'"
+      log_error "[Debug] Sourced file '${curr_file}'"
     fi
   done
 
@@ -164,7 +213,7 @@ convert_json_to_env_variables() {
   log_debug "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
   
-  all_var_array=$(cat $1 | awk -F'"' '{print $2}' | grep -v '^$')
+  all_var_array=$(cat ${json_file_to_process} | awk -F'"' '{print $2}' | grep -v '^$')
   for curr_variable in ${all_var_array[@]}; do
     curr_variable_name=`echo ${curr_variable} | tr '[a-z]' '[A-Z]' | sed 's|-|_|g'` #Make all upper-case and change dashes to underscores
     curr_variable_value=`jq -r '.["'${curr_variable}'"]' ${json_file_to_process}`
@@ -173,39 +222,6 @@ convert_json_to_env_variables() {
   done
 
   log_debug "[${FUNCNAME[0]}][After processing ${json_file_to_process}] All environment variables: [`env | sort`]"
-}
-
-### Logging
-
-log_debug () {
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug] $@"
-}
-
-log_info () {
-  [[ "${logging_lvl}" =~ (debug|info) ]] && echo "[Info] $@"
-}
-
-log_error () {
-  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
-}
-
-log_set_logging_lvl () {
-
-  if [ -z ${logging_lvl} ]; then
-    logging_lvl="error"
-    echo "[Info] Logging level not set, defaulting to 'error'."
-  fi
-
-}
-
-logging_lvl_validate () {
-
-  if [[ "${logging_lvl}" =~ (debug|info|error) ]]; then
-    log_debug " [Validation Passed] logging_lvl = '${logging_lvl}'"
-  else
-    exit_with_error " [Validation Failed] Unsupported logging level '${logging_lvl}'. Supported loggin levels are 'debug|info|error'."
-  fi  
-
 }
 
 print_env_variables () {
