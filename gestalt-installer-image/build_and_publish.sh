@@ -1,79 +1,44 @@
 #!/bin/bash
 
-# Script specific utility functions
-help_build_and_publish () {
-  echo ""
-  echo "Script '$0' was called with $# arguments. At lest one expected."
-  echo ""
-  echo "Usage: "
-  echo "    ./build_and_publish.sh <docker label> [<override binaries>]"
-  echo "          <docker label> - docker label for generated image"
-  echo "          (<override binaries>) - optional flag to override packaged binaries if exists. Supported values: {true, false (default)}"
-  echo ""
+# Source common project configuration and utilities
+utility_file='./utilities/utility-image-initialize.sh'
+if [ -f ${utility_file} ]; then
+  . ${utility_file}
+else
+  echo "[ERROR] Project initialization script '${utility_file}' can not be located, aborting. "
   exit 1
-}
-
-# Global variables
-utility_folder="./utilities"
-utility_bash="${utility_folder}/utility-bash.sh"
-utility_gestalt="${utility_folder}/utility-gestalt.sh"
-
-conf_folder="./conf"
-conf_getsalt="${conf_folder}/gestalt-platform-installer.conf"
-
-binary_folder="/bin"
-
-# ####################################################################
-# START
-# ####################################################################
-
-# kubect="${binaries_folder}/kubecl"
-# helm="${binaries_folder}/helm"
-
-if [ $# -lt 1 ]; then
-  help_build_and_publish
 fi
 
+# TODO: Make as options publish flag and tag(-s)
+publish="true" # true - do docker push, false - don't
 
-# . ./utilities/utility-bash.sh
-# . ./utilities/gestalt.sh
-# . ./conf/gestalt-platform-installer.conf
+# Validate that at least one tag provided
+if [ $# -lt 1 ]; then
+  build_and_publish_help
+fi
 
+# Validate that all dependency binaries are downloaded
+build_and_publish_validate_deps
 
- exit_on_error() {
-  if [ $? -ne 0 ]; then
-    echo $1
-    exit 1
-  fi
-}
+#Create for build tmp copy of utilities to be inside build context
+cp "${utility_bash}" "./scripts/utility-bash.sh"
+exit_on_error "Pulling in shared utilities '${utility-bash}' failed, aborting."
 
-
-
-# Check for dependencies
-[ -f ./deps/kubectl ]
-exit_on_error "./deps/kubectl not found, aborting."
-
-[ -f ./deps/fog ]
-exit_on_error "./deps/fog not found, aborting."
-
+#Build
 echo "Building..."
 docker build -t gestalt-installer . | tee buildoutput
-
 exit_on_error "docker build failed, aborting."
-
 imageid=`tail buildoutput | grep "^Successfully built" | awk '{ print $3 }'`
 
-docker tag $imageid galacticfog/gestalt-installer:$1
-
-exit_on_error "image tag failed, aborting."
-
-docker push galacticfog/gestalt-installer:$1
-
-exit_on_error "docker push failed, aborting."
+#Tag and Push
+for curr_tag in $@; do
+  echo "Tagging ${curr_tag}"
+  docker tag $imageid galacticfog/gestalt-installer:${curr_tag}
+  exit_on_error "image tag '${curr_tag}' failed, aborting."
+  if [ ${publish} == "true" ]; then
+    docker push galacticfog/gestalt-installer:${curr_tag}
+    exit_on_error "docker push failed, aborting."
+  fi
+done
 
 echo "Build and publish successful."
-
-
-# ####################################################################
-# START
-# ####################################################################

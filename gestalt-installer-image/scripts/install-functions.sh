@@ -1,38 +1,65 @@
 #!/bin/bash
 
-exit_on_error() {
-  if [ $? -ne 0 ]; then
-    echo $1
-    exit 1
-  fi
+# Generic functions are in utilities-bash.sh
+
+getsalt_installer_load_configmap() {
+
+  check_for_required_variables gestalt_config
+  validate_json ${gestalt_config}
+  convert_json_to_env_variables ${gestalt_config} #process config map
+  # print_env_variables #will print only if debug
+
 }
 
-exit_with_error() {
-  echo "[Error] $1"
-  exit 1
+getsalt_installer_setcheck_variables() {
+
+  # Acces points - components
+  check_for_required_variables \
+    SECURITY_PROTOCOL \
+    SECURITY_HOSTNAME \
+    SECURITY_PORT \
+    META_PROTOCOL \
+    META_HOSTNAME \
+    META_PORT \
+    UI_PROTOCOL \
+    UI_HOSTNAME \
+    UI_PORT
+
+    export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
+    export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
+    export UI_URL="$UI_PROTOCOL://$UI_HOSTNAME:$UI_PORT"
+
+  # Acces points - uris
+  check_for_required_variables \
+    SECURITY_URL \
+    META_URL \
+    UI_URL
+
+  # 
+  check_for_required_variables \
+    KUBECONFIG_BASE64
+
+  
+  check_for_required_variables \
+    DATABASE_HOSTNAME \
+    DATABASE_USERNAME \
+    DATABASE_PASSWORD \
+    DOTNET_EXECUTOR_IMAGE \
+    JS_EXECUTOR_IMAGE \
+    JVM_EXECUTOR_IMAGE \
+    NODEJS_EXECUTOR_IMAGE \
+    PYTHON_EXECUTOR_IMAGE \
+    RUBY_EXECUTOR_IMAGE \
+    GOLANG_EXECUTOR_IMAGE \
+    GWM_IMAGE \
+    KONG_IMAGE \
+    LOGGING_IMAGE \
+    POLICY_IMAGE \
+    RABBIT_HOST \
+    KONG_VIRTUAL_HOST \
+    ELASTICSEARCH_HOST
+
 }
-
-
-log_debug () {
-  [ "${logging_lvl}" == "debug" ] && echo && echo "[Debug] $@"
-}
-
-log_info () {
-  [[ "${logging_lvl}" =~ (debug|info) ]] && echo && echo "[Info] $@"
-}
-
-log_error () {
-  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
-}
-
-check_for_required_files () {
-echo "aaa"
-}
-
-default_gestalt_variables () {
-  echo "bbb"
-}
-
 
 http_post() {
   # store the whole response with the status as last line
@@ -46,24 +73,6 @@ http_post() {
   HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
   unset HTTP_RESPONSE
-}
-
-check_for_required_variables() {
-  retval=0
-
-  for e in $@; do
-    if [ -z "${!e}" ]; then
-      echo "Required variable \"$e\" not defined."
-      retval=1
-    fi
-  done
-
-  if [ $retval -ne 0 ]; then
-    echo "One or more required variables not defined, aborting."
-    exit 1
-  else
-    echo "All required variables found."
-  fi
 }
 
 check_for_optional_variables() {
@@ -167,18 +176,11 @@ do_invoke_security_init() {
 
 do_get_security_credentials() {
 
-  echo "[LALALAA 3333 AAAA]"
-  #[{"apiKey":"6dd2d579-72d6-45f6-ac2a-a3ed585eefa8","apiSecret":"IEcKank5f7ReWegke2XHxAjuPcnpgW6DXrp0LuKY","accountId":"2a4248ea-01f5-41c6-a613-6ba95d0acdbf","disabled":false}]
-  cat init_payload
-  echo "[LALALAA 3333 BBBbB]"
-  SECURITY_KEY=`cat init_payload | jq '.[] .apiKey' | sed -e 's/^"//' -e 's/"$//'`
+  export SECURITY_KEY=`cat init_payload | jq '.[] .apiKey' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API key (error code $?), aborting."
 
-  SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
+  export SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API secret (error code $?), aborting."
-
-  echo "[SECURITY_KEY=${SECURITY_KEY}]"
-  echo "[SECURITY_SECRET=${SECURITY_SECRET}]"
 
 }
 
@@ -311,38 +313,11 @@ create_providers() {
     debug_flag="--debug"
   fi
 
-
-
-echo "sdsdgdsgsd"
-cat /resource_templates/config.json
-
-echo "jjjjjjjjjj"
-
-env | sort
-
-echo "ssdfsdfsdfs"
-
-export SECURITY_KEY=${SECURITY_KEY}
-  export SECURITY_SECRET=${SECURITY_SECRET}
-
-env | sort
-
-echo "22222222ssdfsdfsdfs"
-
-   echo "[xxxSECURITY_KEY=${SECURITY_KEY}]"
-  echo "[xxxSECURITY_SECRET=${SECURITY_SECRET}]"
-
   # Generate config
   envsubst < /resource_templates/config.json > /resource_templates/config.json.tmp
   mv /resource_templates/config.json.tmp /resource_templates/config.json
 
   cat /resource_templates/config.json
-  
-  echo "222222"
-  
-
-
-
 
   cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
   echo "Running $cmd"

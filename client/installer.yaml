@@ -9,7 +9,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: gestalt-installer
-    image: "galacticfog/gestalt-installer:razzy-20180815-001"
+    image: "galacticfog/gestalt-installer:razzy-test"
     imagePullPolicy: Always
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
@@ -17,7 +17,12 @@ spec:
     volumeMounts:
     - mountPath: /config
       name: config
+    - mountPath: /license
+      name: license
   volumes:
     - name: config
       configMap:
         name: installer-config
+    - name: license
+      configMap:
+        name: gestalt-license

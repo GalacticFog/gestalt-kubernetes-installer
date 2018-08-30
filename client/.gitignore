@@ -1,2 +1,3 @@
 installer.yaml
 install-config.json
+resource_templates/*

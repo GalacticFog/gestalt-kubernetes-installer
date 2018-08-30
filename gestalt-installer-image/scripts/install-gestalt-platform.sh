@@ -158,7 +158,7 @@ fi
 
 META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
 SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
-
+UI_URL="$UI_PROTOCOL://$UI_HOSTNAME:$UI_PORT"
 
 SECURITY_URL='http://gestalt-security.gestalt-system.svc.cluster.local:9455'
 META_URL='http://gestalt-meta.gestalt-system.svc.cluster.local:10131'

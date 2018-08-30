@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+
+
 ############################################
 # General Settings and References
 ############################################
@@ -15,7 +18,11 @@
   script_folder="./scripts"
   script_utility_folder="${script_folder}/utilities"
 
-  utility_bash="${script_utility_folder}/bash-utilities.sh"
+  shared_utility_folder="./../utilities"
+  utility_bash="${shared_utility_folder}/utility-bash.sh"
+  utility_gestalt_install="${script_utility_folder}/utility-gestalt-installer-run.sh"
+  utility_kubectl="${script_utility_folder}/utility-kubectl.sh"
+
   installer_config="${script_folder}/build-config.sh"
   installer_spec="${script_folder}/build-installer-spec.sh"
 
@@ -31,6 +38,9 @@
 ############################################
 # Source Utilities
 ############################################
+
+#   gestalt-license.json
+
 
 
   [ "${logging_lvl}" == "debug" ] && echo "[Debug][START] Your current location [`pwd`]"
@@ -52,7 +62,7 @@
 
   ### Then source any other applicable configuration files
 
-  all_file="${conf_credential} ${conf_gestalt}"
+  all_file="${conf_credential} ${conf_gestalt} ${utility_gestalt_install} ${utility_kubectl}"
   [ "${logging_lvl}" == "debug" ] && echo "[Debug] All files for sourcing: '${all_file[@]}'"
 
   for curr_file in ${all_file[@]}
@@ -83,7 +93,7 @@
   esac
 
   #Check for required tools
-  check_for_required_tools
+ check_for_required_tools_gestalt_installer
 
   ### Check for presence for other script files
 
@@ -108,6 +118,8 @@
 kubectl_context=$($kubectl config current-context)
 exit_on_error "Unable determine current context '${kubectl} config current-context', aborting."
 
+#?target_kube_context
+
 #use process_kubeconfig() { instead
 # [[ "${logging_lvl}" =~ (debug|info) ]] && echo && \
 # echo "[Info] Obtain kubeconfig from current context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
@@ -116,8 +128,10 @@ exit_on_error "Unable determine current context '${kubectl} config current-conte
 # exit_on_error "Unable obtain and encode kubeconfig from context (${kubectl_context}) '$kubectl config view --raw --minify --flatten \
 #  | base64 > ${conf_kube}', aborting."
 
- process_kubeconfig
+kube_process_kubeconfig
  exit_on_error "Failed to process kubeconfig, aborting."
+
+
 
 
 ############################################

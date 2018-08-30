@@ -1,7 +1,8 @@
 FROM nginx:alpine
 
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version="release-2.3.0"
+LABEL com.galacticfog.version="3.0.0" 
+# Make sure to update this version and keep consistent with tag
 
 ENV BUILD_DEPS="gettext"  \
     RUNTIME_DEPS="libintl"
@@ -26,19 +27,13 @@ RUN apk upgrade --no-cache && \
     pip install httpie httpie-unixsocket && \
     rm -rf /var/cache/apk/*
 
-# inject kubectl
+# inject binaries: kubectl, helm an fog
 COPY ./deps/kubectl /usr/local/bin/kubectl
-RUN chmod 755 /usr/local/bin/kubectl
-
-# inject kubectl
+COPY ./deps/helm /usr/local/bin/helm
 COPY ./deps/fog /usr/local/bin/fog
-RUN chmod 755 /usr/local/bin/fog
 
-# Inject gestalt files
+# scripts and utilities
 COPY ./scripts /scripts
-
-# Inject binaries
-COPY ./bin /bin
 
 # Inject 
 COPY ./gestalt /gestalt

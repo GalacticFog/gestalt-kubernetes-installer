@@ -3,3 +3,4 @@
 deps/*
 buildoutput
 helm-config.yaml
+scripts/utility-bash.sh
