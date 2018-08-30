@@ -1,3 +1,13 @@
+#!/bin/bash
+
+exit_on_error() {
+  if [ $? -ne 0 ]; then
+    echo
+    echo "[Error] $@"
+    exit 1
+  fi
+}
+
 
 echo "Create Workspace"
 fog create workspace --name gestalt-system-workspace -d "Gestalt System Workspace" ${GESTALT_FOGCLI_OPTS}
