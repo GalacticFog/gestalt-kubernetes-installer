@@ -1,13 +1,25 @@
+#!/bin/bash
 
-# Check that the generated files exist, otherwise abort (User should have run ./configure.sh first)
+############################################
+# SETUP
+############################################
+
+# Source common project configuration and utilities
+. ./scripts/utilities/utility-project-check.sh
+
+# Validate that all pre-conditions are met
+gestalt_install_validate_preconditions
 
 # Check that the `gestalt-system` namespace exists.  If not, print some commands to create it
+kube_check_for_required_namespace ${kube_namespace}
 
-# Create a configmap with the generated install config
-kubectl create configmap -n gestalt-system installer-config --from-file install-config.json
+# Create (if applicable) 'installer-config', 'gestalt-license' and 'gestalt-resources' configmaps 
+gestalt_install_create_configmaps
 
-# Optionally, create a config map from the sample resource files
-# TODO
+# TODO: Add function that check whether config maps were created and whether has actual content
+# kubectl get configmap -n gestalt-system
 
 # Run the install container with ConfigMaps
-kubectl apply -n gestalt-system -f installer.yaml
+kubectl apply -n ${kube_namespace} -f ${kube_install}
+exit_on_error "Failed install \
+'kubectl apply -n ${kube_namespace} -f ${kube_install}', aborting."

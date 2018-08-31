@@ -9,16 +9,20 @@ spec:
   restartPolicy: Never
   containers:
   - name: gestalt-installer
-    image: "{{ .Values.installer.image }}"
+    image: "galacticfog/gestalt-installer:3"
     imagePullPolicy: Always
-    # imagePullPolicy: {{ .Values.common.imagePullPolicy }}
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
-    args: ["install", "{{ .Values.installer.mode }}"]
+    args: ["install", "debug"]
     volumeMounts:
     - mountPath: /config
       name: config
+    - mountPath: /license
+      name: license
   volumes:
     - name: config
       configMap:
         name: installer-config
+    - name: license
+      configMap:
+        name: gestalt-license

@@ -1,15 +1,107 @@
 #!/bin/bash
 
-exit_on_error() {
-  if [ $? -ne 0 ]; then
-    echo $1
-    exit 1
-  fi
+# Generic functions are in utilities-bash.sh
+
+getsalt_installer_load_configmap() {
+
+  check_for_required_variables gestalt_config
+  validate_json ${gestalt_config}
+  convert_json_to_env_variables ${gestalt_config} #process config map
+  check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
+  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
+  log_set_logging_lvl
+  logging_lvl_validate 
+  # print_env_variables #will print only if debug
+
 }
 
-exit_with_error() {
-  echo "[Error] $1"
-  exit 1
+getsalt_installer_setcheck_variables() {
+
+  export EXTERNAL_GATEWAY_HOST=localhost
+  export EXTERNAL_GATEWAY_PROTOCOL=http
+
+  check_for_optional_variables \
+    META_BOOTSTRAP_PARAMS
+
+  if ! is_dynamic_lb_enabled ; then
+    echo "Dynamic load balancing is not enabled, checking for required variables"
+    check_for_required_variables \
+      EXTERNAL_GATEWAY_HOST \
+      EXTERNAL_GATEWAY_PROTOCOL
+  fi
+
+  # Acces points - components
+  check_for_required_variables \
+    SECURITY_PROTOCOL \
+    SECURITY_HOSTNAME \
+    SECURITY_PORT \
+    META_PROTOCOL \
+    META_HOSTNAME \
+    META_PORT \
+    UI_PROTOCOL \
+    UI_HOSTNAME \
+    UI_PORT
+
+    export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
+    export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
+    export UI_URL="$UI_PROTOCOL://$UI_HOSTNAME:$UI_PORT"
+
+  # Acces points - uris
+  check_for_required_variables \
+    SECURITY_URL \
+    META_URL \
+    UI_URL
+
+  # 
+  check_for_required_variables \
+    KUBECONFIG_BASE64
+
+  
+  check_for_required_variables \
+    DATABASE_HOSTNAME \
+    DATABASE_USERNAME \
+    DATABASE_PASSWORD \
+    DOTNET_EXECUTOR_IMAGE \
+    JS_EXECUTOR_IMAGE \
+    JVM_EXECUTOR_IMAGE \
+    NODEJS_EXECUTOR_IMAGE \
+    PYTHON_EXECUTOR_IMAGE \
+    RUBY_EXECUTOR_IMAGE \
+    GOLANG_EXECUTOR_IMAGE \
+    GWM_EXECUTOR_IMAGE \
+    KONG_IMAGE \
+    LOGGING_IMAGE \
+    POLICY_IMAGE \
+    RABBIT_HOST \
+    KONG_VIRTUAL_HOST \
+    ELASTICSEARCH_HOST
+}
+
+
+gestalt_installer_generate_helm_config() {
+
+  check_for_required_variables \
+    KUBECONFIG_BASE64 \
+    ADMIN_PASSWORD \
+    DATABASE_PASSWORD
+
+#TODO: Move out overrride if needed image and imageTag for postgresql
+  cat > helm-config.yaml <<EOF
+security:
+  adminPassword: "${ADMIN_PASSWORD}"
+
+postgresql:
+  postgresPassword: "${DATABASE_PASSWORD}"
+  image: "postgres"
+  imageTag: "9.6.2"
+
+db:
+  password: "${DATABASE_PASSWORD}"
+
+installer:
+  gestaltCliData: "${KUBECONFIG_BASE64}"
+EOF
+
 }
 
 http_post() {
@@ -24,32 +116,6 @@ http_post() {
   HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
   unset HTTP_RESPONSE
-}
-
-check_for_required_variables() {
-  retval=0
-
-  for e in $@; do
-    if [ -z "${!e}" ]; then
-      echo "Required variable \"$e\" not defined."
-      retval=1
-    fi
-  done
-
-  if [ $retval -ne 0 ]; then
-    echo "One or more required variables not defined, aborting."
-    exit 1
-  else
-    echo "All required variables found."
-  fi
-}
-
-check_for_optional_variables() {
-  for e in $@; do
-    if [ -z "${!e}" ]; then
-      echo "Optional variable \"$e\" not defined."
-    fi
-  done
 }
 
 check_for_existing_services() {
@@ -69,7 +135,7 @@ wait_for_database() {
   secs=30
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
-    ./psql.sh -c '\l'
+    ${script_folder}/psql.sh -c '\l'
     if [ $? -eq 0 ]; then
       echo "Database is available."
       return 0
@@ -96,12 +162,12 @@ init_database() {
   echo "Dropping existing databases..."
 
   for db in gestalt-meta $kongdb $laserdb $gatewaydb $SECURITY_DB_NAME ; do
-    ./drop_database.sh $db --yes
+    ${script_folder}/drop_database.sh $db --yes
     exit_on_error "Failed to initialize database, aborting."
   done
 
   echo "Attempting to initalize database..."
-  ./create_initial_databases.sh
+  ${script_folder}/create_initial_databases.sh
   exit_on_error "Failed to initialize database, aborting."
   echo "Database initialized."
 }
@@ -126,7 +192,7 @@ do_invoke_security_init() {
   echo "Invoking $SECURITY_URL/init..."
 
   # sets HTTP_STATUS and HTTP_BODY
-  http_post $SECURITY_URL/init "{\"username\":\"$SECURITY_ADMIN_USERNAME\",\"password\":\"$SECURITY_ADMIN_PASSWORD\"}"
+  http_post $SECURITY_URL/init "{\"username\":\"$ADMIN_USERNAME\",\"password\":\"$ADMIN_PASSWORD\"}"
 
   if [ ! "$HTTP_STATUS" -eq "200" ]; then
     echo "Error invoking $SECURITY_URL/init ($HTTP_STATUS returned)"
@@ -141,11 +207,13 @@ do_invoke_security_init() {
 }
 
 do_get_security_credentials() {
-  SECURITY_KEY=`cat init_payload | jq '.[] .apiKey' | sed -e 's/^"//' -e 's/"$//'`
+
+  export SECURITY_KEY=`cat init_payload | jq '.[] .apiKey' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API key (error code $?), aborting."
 
-  SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
+  export SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API secret (error code $?), aborting."
+
 }
 
 wait_for_security_init() {
@@ -245,43 +313,6 @@ do_get_loadbalancer_hostname() {
   exit_with_error "Could not get '$service_name' load balancer hostname"
 }
 
-setup_license() {
-  echo "Initilizing Gestalt client..."
-  /gestalt/gestaltctl login --meta $META_URL --security $SECURITY_URL $SECURITY_ADMIN_USERNAME $SECURITY_ADMIN_PASSWORD
-  exit_on_error "Gestalt client login did not succeed (error code $?), aborting."
-
-  echo "Deploying Gestalt license..."
-  /gestalt/gestaltctl setup license
-  exit_on_error "License setup did not succeed (error code $?), aborting."
-  echo "License deployed."
-}
-
-# # This approach doesn't work due to a Kubernetes bug or limitation:
-# # A service cannot point to another service's CLUSTER-IP in another namespace..
-#
-# setup_internal_api_gateway_service() {
-#   echo "Setting up internal API Gateway service..."
-#
-#   kubectl get services --all-namespaces | grep $LAMBDA_PROVIDER_SERVICE_NAME > lambda_service
-#   if [ `cat lambda_service | wc -l` -ne 1 ]; then
-#     exit_with_error "Did not find a unique 'lambda-provider' service"
-#   fi
-#   ip=`cat lambda_service | awk '{print $3}'`
-#   port=`cat lambda_service | awk '{print $5}' | awk -F: '{print $1}'`
-#   #namespace=`cat lambda_service | awk '{print $1}'`
-#
-#   name=$API_GATEWAY_SERVICE_NAME ip=$ip port=$port \
-#   ./build_api_gateway_ep_yaml.sh > ep.yaml
-#   exit_on_error "Failed to generate Endpoint resource definition"
-#
-#   kubectl create -f ep.yaml
-#   exit_on_error "Failed to generate Endpoint resource definition"
-#
-#   kubectl describe services gestalt-api-gateway
-#
-#   echo "Internal API Gateway service set up."
-# }
-
 is_dynamic_lb_enabled() {
   # Check for 'yes' or 'true'
   case $USE_DYNAMIC_LOADBALANCERS in
@@ -292,22 +323,52 @@ is_dynamic_lb_enabled() {
   return 1
 }
 
-# setup_ingress_controller() {
-#
-#   if ! is_dynamic_lb_enabled ; then
-#     echo "Skipping ingress controller setup, Dynamic Load Balancing is not enabled."
-#     return 0
-#   fi
-#
-#   echo "Setting up ingress controller..."
-#
-#   # create ingress controller, default backend, service(ELB)…
-#   kubectl create -f ./aws/ingress_resources.yaml
-#   exit_on_error "Could not create ingress controller resources (kubectl error code $?), aborting."
-#
-#   echo "Ingress controller resources created."
-# }
+gestalt_cli_set_opts() {
 
+  if [ "${GESTALT_FOGCLI_DEBUG}" == "true" ]; then
+    GESTALT_FOGCLI_OPTS=''
+  else
+    GESTALT_FOGCLI_OPTS='--debug'
+  fi
+
+}
+
+gestalt_cli_login() {
+
+  cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
+  echo "Running $cmd"
+  $cmd
+  exit_on_error "Failed to login to Gestalt, aborting."
+
+}
+
+gestalt_cli_license_set() {
+
+  check_for_required_files ${gestalt_license}
+  fog meta POST /root/licenses -f ${gestalt_license} ${GESTALT_FOGCLI_OPTS}
+  exit_on_error "Failed to upload license '${gestalt_license}' (error code $?), aborting."
+
+}
+
+gestalt_cli_context_set() {
+
+  fog context set --path /root ${GESTALT_FOGCLI_OPTS}
+  exit_on_error "Failed to set fog context '/root' (error code $?), aborting."
+
+}
+
+gestalt_cli_create_resources() {
+
+  cd /resource_templates
+  ./create_gestalt_resources.sh
+  exit_on_error "Gestalt resource setup did not succeed (error code $?), aborting."
+  cd -
+  echo "Gestalt resource(-s) created."
+
+}
+
+
+# remove afterwards
 create_providers() {
   echo "Creating default providers..."
 
@@ -326,54 +387,32 @@ create_providers() {
       EXTERNAL_GATEWAY_PROTOCOL
   fi
 
-  # # Build Gestalt config
-  echo "$GESTALT_CLI_DATA" | base64 -d > /gestalt/gestalt.json.tmp
-
-  EXTERNAL_GATEWAY_HOST=$EXTERNAL_GATEWAY_HOST \
-  SECURITY_KEY=$SECURITY_KEY \
-  SECURITY_SECRET=$SECURITY_SECRET \
-  META_URL=$META_URL \
-  envsubst < /gestalt/gestalt.json.tmp | jq . > /gestalt/gestalt.json
-
-  exit_on_error "Could not generate config (error code $?), aborting."
-
   if [ "$DEBUG_OUTPUT" == "1" ]; then
-    debug_flag="-v"
+    debug_flag="--debug"
   fi
 
-  # Invoke the Gestalt CLI
-  /gestalt/gestaltctl $debug_flag setup --secretsFile /gestalt/gestalt.json default kube
+  # Generate config
+  envsubst < /resource_templates/config.json > /resource_templates/config.json.tmp
+  mv /resource_templates/config.json.tmp /resource_templates/config.json
+
+  cat /resource_templates/config.json
+
+  cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
+  echo "Running $cmd"
+  $cmd
+
+  exit_on_error "Failed to login to Gestalt, aborting."
+
+  cd /resource_templates
+
+  ./create_providers.sh
 
   exit_on_error "Provider setup did not succeed (error code $?), aborting."
 
+  cd -
+
   echo "Default providers created."
 }
-
-# create_kong_ingress() {
-#   if ! is_dynamic_lb_enabled ; then
-#     echo "Skipping Kong Ingress setup, Dynamic Load Balancing is not enabled."
-#     return 0
-#   fi
-#
-#   echo "Creating Kubernetes Ingress resource for Kong..."
-#
-#   service_name="default-kong"
-#
-#   kubectl get services --all-namespaces | grep $service_name > kong_service
-#   if [ `cat kong_service | wc -l` -ne 1 ]; then
-#     exit_with_error "Did not find a unique '$service_name' service"
-#   fi
-#   service_namespace=`cat kong_service | awk '{print $1}'`
-#
-#   ingress_name=${service_name}-ingress \
-#   ingress_service_name=$service_name \
-#   ./build_ingress_resource.sh > kong_ingress.yaml
-#
-#   kubectl create -f kong_ingress.yaml --namespace=$service_namespace
-#   exit_on_error "Could not create ingress to $service_namespace/$service_name (kubectl error code $?), aborting."
-#
-#   echo "Kong ingress configured."
-# }
 
 create_kong_ingress_v2() {
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then

@@ -9,8 +9,8 @@
         "private": {
           "RABBIT_EXCHANGE": "policy-exchange",
           "RABBIT_ROUTE": "policy",
-          "LASER_USER": "#{Config meta-username}",
-          "LASER_PASSWORD": "#{Config meta-password}"
+          "LASER_USER": "#{Config meta-api-key}",
+          "LASER_PASSWORD": "#{Config meta-api-secret}"
         }
       }
     },
