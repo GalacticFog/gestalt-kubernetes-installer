@@ -9,7 +9,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: gestalt-installer
-    image: "galacticfog/gestalt-installer:3"
+    image: "galacticfog/gestalt-installer:test"
     imagePullPolicy: Always
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output

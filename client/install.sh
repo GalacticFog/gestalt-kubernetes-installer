@@ -23,3 +23,10 @@ gestalt_install_create_configmaps
 kubectl apply -n ${kube_namespace} -f ${kube_install}
 exit_on_error "Failed install \
 'kubectl apply -n ${kube_namespace} -f ${kube_install}', aborting."
+
+echo
+echo "Gestalt Platform installer deployed to '${kube_namespace}'.  To view the installer logs, run the following:"
+echo
+echo "  kubectl logs -n gestalt-system gestalt-installer --follow"
+echo
+echo "Done."

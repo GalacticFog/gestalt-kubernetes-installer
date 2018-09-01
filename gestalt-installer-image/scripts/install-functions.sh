@@ -20,9 +20,6 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
-  check_for_optional_variables \
-    META_BOOTSTRAP_PARAMS
-
   if ! is_dynamic_lb_enabled ; then
     echo "Dynamic load balancing is not enabled, checking for required variables"
     check_for_required_variables \
@@ -30,21 +27,49 @@ getsalt_installer_setcheck_variables() {
       EXTERNAL_GATEWAY_PROTOCOL
   fi
 
-  # Acces points - components
+  # Check all variables in one call
   check_for_required_variables \
-    SECURITY_PROTOCOL \
-    SECURITY_HOSTNAME \
-    SECURITY_PORT \
-    META_PROTOCOL \
+    ADMIN_PASSWORD \
+    ADMIN_USERNAME \
+    DATABASE_HOSTNAME \
+    DATABASE_PASSWORD \
+    DATABASE_USERNAME \
+    DOTNET_EXECUTOR_IMAGE \
+    ELASTICSEARCH_HOST \
+    ELASTICSEARCH_IMAGE \
+    GOLANG_EXECUTOR_IMAGE \
+    GWM_EXECUTOR_IMAGE \
+    JS_EXECUTOR_IMAGE \
+    JVM_EXECUTOR_IMAGE \
+    KONG_IMAGE \
+    KONG_VIRTUAL_HOST \
+    KUBECONFIG_BASE64 \
+    LOGGING_IMAGE \
     META_HOSTNAME \
+    META_IMAGE \
     META_PORT \
-    UI_PROTOCOL \
+    META_PROTOCOL \
+    NODEJS_EXECUTOR_IMAGE \
+    POLICY_IMAGE \
+    PYTHON_EXECUTOR_IMAGE \
+    RABBIT_HOST \
+    RABBIT_HOSTNAME \
+    RABBIT_HTTP_PORT \
+    RABBIT_IMAGE \
+    RABBIT_PORT \
+    RUBY_EXECUTOR_IMAGE \
+    SECURITY_HOSTNAME \
+    SECURITY_IMAGE \
+    SECURITY_PORT \
+    SECURITY_PROTOCOL \
     UI_HOSTNAME \
-    UI_PORT
+    UI_IMAGE \
+    UI_PORT \
+    UI_PROTOCOL
 
-    export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
-    export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
-    export UI_URL="$UI_PROTOCOL://$UI_HOSTNAME:$UI_PORT"
+  export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
+  export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
+  export UI_URL="$UI_PROTOCOL://$UI_HOSTNAME:$UI_PORT"
 
   # Acces points - uris
   check_for_required_variables \
@@ -52,42 +77,22 @@ getsalt_installer_setcheck_variables() {
     META_URL \
     UI_URL
 
-  # 
-  check_for_required_variables \
-    KUBECONFIG_BASE64
-
-  
-  check_for_required_variables \
-    DATABASE_HOSTNAME \
-    DATABASE_USERNAME \
-    DATABASE_PASSWORD \
-    DOTNET_EXECUTOR_IMAGE \
-    JS_EXECUTOR_IMAGE \
-    JVM_EXECUTOR_IMAGE \
-    NODEJS_EXECUTOR_IMAGE \
-    PYTHON_EXECUTOR_IMAGE \
-    RUBY_EXECUTOR_IMAGE \
-    GOLANG_EXECUTOR_IMAGE \
-    GWM_EXECUTOR_IMAGE \
-    KONG_IMAGE \
-    LOGGING_IMAGE \
-    POLICY_IMAGE \
-    RABBIT_HOST \
-    KONG_VIRTUAL_HOST \
-    ELASTICSEARCH_HOST
+  check_for_optional_variables \
+    META_BOOTSTRAP_PARAMS
 }
-
 
 gestalt_installer_generate_helm_config() {
 
   check_for_required_variables \
-    KUBECONFIG_BASE64 \
-    ADMIN_PASSWORD \
-    DATABASE_PASSWORD
 
 #TODO: Move out overrride if needed image and imageTag for postgresql
   cat > helm-config.yaml <<EOF
 security:
+  image: "${SECURITY_IMAGE}"
+  hostname: "${SECURITY_HOSTNAME}"
+  port: "${SECURITY_PORT}"
+  protocol: "${SECURITY_PROTOCOL}"
+  adminUser: "${ADMIN_USERNAME}"
   adminPassword: "${ADMIN_PASSWORD}"
 
 postgresql:
@@ -96,10 +101,43 @@ postgresql:
   imageTag: "9.6.2"
 
 db:
+  username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
 
 installer:
   gestaltCliData: "${KUBECONFIG_BASE64}"
+
+rabbit:
+  image: "${RABBIT_IMAGE}"
+  hostname: "${RABBIT_HOSTNAME}"
+  port: ${RABBIT_PORT}
+  httpPort: ${RABBIT_HTTP_PORT}
+
+elastic:
+  image: ${ELASTICSEARCH_IMAGE}
+
+meta:
+  image: ${META_IMAGE}
+  exposedServiceType: NodePort
+  hostname: ${META_HOSTNAME}
+  port: ${META_PORT}
+  protocol: ${META_PROTOCOL}
+  databaseName: gestalt-meta
+
+kong:
+  nodePort: 31113
+
+logging:
+  nodePort: 31114
+
+ui:
+  image: ${UI_IMAGE}
+  exposedServiceType: NodePort
+  nodePort: 31112
+  ingress:
+    host: localhost
+
+
 EOF
 
 }
@@ -324,13 +362,9 @@ is_dynamic_lb_enabled() {
 }
 
 gestalt_cli_set_opts() {
-
-  if [ "${GESTALT_FOGCLI_DEBUG}" == "true" ]; then
-    GESTALT_FOGCLI_OPTS=''
-  else
-    GESTALT_FOGCLI_OPTS='--debug'
+  if [ "${FOGCLI_DEBUG}" == "true" ]; then
+    fog config set debug=true
   fi
-
 }
 
 gestalt_cli_login() {
@@ -343,76 +377,33 @@ gestalt_cli_login() {
 }
 
 gestalt_cli_license_set() {
-
   check_for_required_files ${gestalt_license}
-  fog meta POST /root/licenses -f ${gestalt_license} ${GESTALT_FOGCLI_OPTS}
+  fog admin update-license -f ${gestalt_license}
   exit_on_error "Failed to upload license '${gestalt_license}' (error code $?), aborting."
-
 }
 
 gestalt_cli_context_set() {
 
-  fog context set --path /root ${GESTALT_FOGCLI_OPTS}
+  fog context set --path /root
   exit_on_error "Failed to set fog context '/root' (error code $?), aborting."
 
 }
 
 gestalt_cli_create_resources() {
-
   cd /resource_templates
-  ./create_gestalt_resources.sh
-  exit_on_error "Gestalt resource setup did not succeed (error code $?), aborting."
-  cd -
-  echo "Gestalt resource(-s) created."
 
-}
-
-
-# remove afterwards
-create_providers() {
-  echo "Creating default providers..."
-
-  # Getting security keys again, just in case this function is run standalone
-  do_get_security_credentials
-
-  # note the hostname for the ELB (sets LB_HOSTNAME)
-  if is_dynamic_lb_enabled ; then
-    echo "Configuring for dynamic loadbalancing - polling for load balancer hostname"
-    do_get_loadbalancer_hostname
-    [ -z $EXTERNAL_GATEWAY_PROTOCOL ] && EXTERNAL_GATEWAY_PROTOCOL=http  # default if not specified
-    EXTERNAL_GATEWAY_HOST=$LB_HOSTNAME
+  # Always assume there's a script called run.sh
+  if [ -f ./run.sh ]; then 
+    # Source run.sh so that it has access to higher-level functions
+    . run.sh
+    exit_on_error "Gestalt resource setup did not succeed (error code $?), aborting."
   else
-    check_for_required_variables \
-      EXTERNAL_GATEWAY_HOST \
-      EXTERNAL_GATEWAY_PROTOCOL
+    echo "Warning - Not running resource templates script, /resource_templates/run.sh not found"
   fi
-
-  if [ "$DEBUG_OUTPUT" == "1" ]; then
-    debug_flag="--debug"
-  fi
-
-  # Generate config
-  envsubst < /resource_templates/config.json > /resource_templates/config.json.tmp
-  mv /resource_templates/config.json.tmp /resource_templates/config.json
-
-  cat /resource_templates/config.json
-
-  cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
-  echo "Running $cmd"
-  $cmd
-
-  exit_on_error "Failed to login to Gestalt, aborting."
-
-  cd /resource_templates
-
-  ./create_providers.sh
-
-  exit_on_error "Provider setup did not succeed (error code $?), aborting."
-
   cd -
-
-  echo "Default providers created."
+  echo "Gestalt resource(s) created."
 }
+
 
 create_kong_ingress_v2() {
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then

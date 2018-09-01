@@ -58,18 +58,16 @@ exit_on_error() {
 
 ### Logging
 
-log_debug() {
-  if [ "${logging_lvl}" == "debug" ] ; then echo "[Debug] $@"; fi
+log_debug () {
+  if [ "${logging_lvl}" == "debug" ]; then echo "[Debug] $@"; fi
 }
 
 log_info () {
-  [[ "${logging_lvl}" =~ (debug|info) ]] && echo "[Info] $@"
-  return 0
+  if [[ "${logging_lvl}" =~ (debug|info) ]]; then echo "[Info] $@"; fi
 }
 
 log_error () {
-  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
-  return 0
+  if [[ "${logging_lvl}" =~ (debug|info|error) ]]; then echo && echo "[Error] $@"; fi
 }
 
 log_set_logging_lvl () {
@@ -145,7 +143,7 @@ check_for_required_files() {
     echo "One or more required files not present, aborting."
     exit 1
   else
-    log_debug "check_for_required_files: All required files found."
+    log_debug "All required files found."
   fi
 
 }
@@ -168,7 +166,7 @@ source_all_files () {
   check_for_required_files "$@"
 
   for tmp_file in $@; do
-    log_debug "source_all_files: Looking up file '${tmp_file}'"
+    log_debug "Looking up file '${tmp_file}'"
     if [ ! -f "${tmp_file}" ]; then
       log_error "Required file \"${tmp_file}\" not present."
       retval=1
@@ -183,7 +181,7 @@ source_all_files () {
     log_error "One or more required files not present, aborting."
     exit 1
   else
-    log_debug "source_all_files: All required files found."
+    log_debug "All required files found."
   fi
 
 }

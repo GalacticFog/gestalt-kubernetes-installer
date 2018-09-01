@@ -49,8 +49,8 @@ build_and_publish_validate_deps() {
   for curr_binary in ${all_binaries[@]}; do
 
     log_debug "Looking up '${dependencies_folder}/${curr_binary}'"
-    if [ -f ${dependencies_folder}/${curr_binary} ]; then
-      exit_on_error "'${dependencies_folder}/${curr_binary}' not found, aborting."
+    if [ ! -f ${dependencies_folder}/${curr_binary} ]; then
+      exit_with_error "'${dependencies_folder}/${curr_binary}' not found, aborting."
     fi
 
   done
