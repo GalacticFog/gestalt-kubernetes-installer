@@ -160,7 +160,6 @@ ui:
   ingress:
     host: localhost
 
-
 EOF
 
 }
