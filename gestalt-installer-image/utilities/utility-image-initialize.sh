@@ -9,10 +9,10 @@
   conf_gestalt_install="${conf_folder}/gestalt-platform-installer.conf"
 
   # Scripts and Utilities
-  utility_folder_shared="./../utilities"
-  utility_folder_mine="./utilities"
-  utility_bash="${utility_folder_shared}/utility-bash.sh"
-  utility_gestalt="${utility_folder_mine}/utility-gestalt-installer-package.sh"
+  utility_folder="./utilities"
+  script_folder="./scripts"
+  utility_bash="${script_folder}/utility-bash.sh"
+  utility_gestalt="${utility_folder}/utility-gestalt-installer-package.sh"
 
   # Generated files and folders
   dependencies_folder="./deps"
