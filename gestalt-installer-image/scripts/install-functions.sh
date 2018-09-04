@@ -84,6 +84,31 @@ getsalt_installer_setcheck_variables() {
 gestalt_installer_generate_helm_config() {
 
   check_for_required_variables \
+    SECURITY_IMAGE \
+    SECURITY_HOSTNAME \
+    SECURITY_PORT \
+    SECURITY_PROTOCOL \
+    ADMIN_USERNAME \
+    ADMIN_PASSWORD \
+    DATABASE_IMAGE \
+    DATABASE_IMAGE_TAG \
+    DATABASE_PASSWORD \
+    DATABASE_USERNAME \
+    KUBECONFIG_BASE64 \
+    RABBIT_IMAGE \
+    RABBIT_HOSTNAME \
+    RABBIT_PORT \
+    RABBIT_HTTP_PORT \
+    ELASTICSEARCH_IMAGE \
+    META_IMAGE \
+    META_HOSTNAME \
+    META_PORT \
+    META_PROTOCOL \
+    KONG_NODEPORT \
+    LOGGING_NODEPORT \
+    UI_IMAGE \
+    UI_NODEPORT
+
 
 #TODO: Move out overrride if needed image and imageTag for postgresql
   cat > helm-config.yaml <<EOF
@@ -97,8 +122,8 @@ security:
 
 postgresql:
   postgresPassword: "${DATABASE_PASSWORD}"
-  image: "postgres"
-  imageTag: "9.6.2"
+  image: "${DATABASE_IMAGE}"
+  imageTag: "${DATABASE_IMAGE_TAG}"
 
 db:
   username: "${DATABASE_USERNAME}"
@@ -125,15 +150,15 @@ meta:
   databaseName: gestalt-meta
 
 kong:
-  nodePort: 31113
+  nodePort: ${KONG_NODEPORT}
 
 logging:
-  nodePort: 31114
+  nodePort: ${LOGGING_NODEPORT}
 
 ui:
   image: ${UI_IMAGE}
   exposedServiceType: NodePort
-  nodePort: 31112
+  nodePort: ${UI_NODEPORT}
   ingress:
     host: localhost
 

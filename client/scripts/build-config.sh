@@ -10,6 +10,8 @@ check_for_required_variables \
   admin_username \
   admin_password \
   provision_internal_database \
+  database_image \
+  database_image_tag \
   database_username \
   database_password \
   docker_registry \
@@ -17,7 +19,10 @@ check_for_required_variables \
   external_gateway_host \
   gestalt_kong_service_nodeport \
   kubeconfig_data \
-  gestalt_custom_resources
+  gestalt_custom_resources \
+  gestalt_ui_service_nodeport \
+  gestalt_kong_service_nodeport \
+  gestalt_logging_service_nodeport
 
   #FOG DEBUG
 
@@ -35,6 +40,8 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "ADMIN_PASSWORD": "${admin_password}",
     "ADMIN_USERNAME": "${admin_username}",
     "DATABASE_HOSTNAME": "gestalt-postgresql.gestalt-system.svc.cluster.local",
+    "DATABASE_IMAGE": "${database_image}",
+    "DATABASE_IMAGE_TAG": "${database_image_tag}",
     "DATABASE_PASSWORD": "${database_password}",
     "DATABASE_PORT": "5432",
     "DATABASE_USERNAME": "${database_username}",
@@ -49,9 +56,11 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "JS_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-js:${gestalt_docker_release_tag}",
     "JVM_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-jvm:${gestalt_docker_release_tag}",
     "KONG_IMAGE": "${docker_registry}/kong:${gestalt_docker_release_tag}",
+    "KONG_NODEPORT": "${gestalt_kong_service_nodeport}",
     "KONG_VIRTUAL_HOST": "${external_gateway_host}:${gestalt_kong_service_nodeport}",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
     "LOGGING_IMAGE": "${docker_registry}/gestalt-log:${gestalt_docker_release_tag}",
+    "LOGGING_NODEPORT": "${gestalt_logging_service_nodeport}",
     "META_HOSTNAME": "gestalt-meta.gestalt-system.svc.cluster.local",
     "META_IMAGE": "${docker_registry}/gestalt-meta:${gestalt_docker_release_tag}",
     "META_PORT": "10131",
@@ -72,6 +81,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "SECURITY_PROTOCOL": "http",
     "UI_HOSTNAME": "gestalt-ui.gestalt-system.svc.cluster.local",
     "UI_IMAGE": "${docker_registry}/gestalt-ui-react:${gestalt_docker_release_tag}",
+    "UI_NODEPORT": "${gestalt_ui_service_nodeport}",
     "UI_PORT": "80",
     "UI_PROTOCOL": "http"
 }
