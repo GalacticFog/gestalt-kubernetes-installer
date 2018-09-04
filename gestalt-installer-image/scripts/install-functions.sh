@@ -109,8 +109,6 @@ gestalt_installer_generate_helm_config() {
     UI_IMAGE \
     UI_NODEPORT
 
-
-#TODO: Move out overrride if needed image and imageTag for postgresql
   cat > helm-config.yaml <<EOF
 security:
   image: "${SECURITY_IMAGE}"
