@@ -23,6 +23,7 @@ while getopts "hc:l:o" option ; do
   o) os_override="$OPTARG"
   ;;
   h) dependencies_process_help
+     exit 0
   ;;
   *) dependencies_process_help 
      exit_with_error "Invalid option: '$option' '$OPTARG'"
