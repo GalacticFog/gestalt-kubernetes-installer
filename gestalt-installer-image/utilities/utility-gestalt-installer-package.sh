@@ -11,7 +11,6 @@
 ############################################
 
 dependencies_process_help () {
-
   echo ""
   echo "Help: '`basename $0`' Dependency Management Utility to gather or cleanup gestalt platform installation dependency binaries"
   echo ""
@@ -22,8 +21,6 @@ dependencies_process_help () {
   echo "        -c <dependencies_processing_command>' : specify your desired dependencies management command: 'clean|fetch(Default)'"
   echo "        -l <logging_lvl>' : specify your desired logging level: 'debug|info|error(Default)'"
   echo "        -h : print this help"
-
-
 }
 
 build_and_publish_help () {
@@ -38,7 +35,6 @@ build_and_publish_help () {
 }
 
 build_and_publish_validate_deps() {
-
   echo "Validate gestalt installer image dependencies created by './dependnecies-process.sh' are present"
 
   check_for_required_variables \
@@ -49,23 +45,20 @@ build_and_publish_validate_deps() {
   for curr_binary in ${all_binaries[@]}; do
 
     log_debug "Looking up '${dependencies_folder}/${curr_binary}'"
-    if [ -f ${dependencies_folder}/${curr_binary} ]; then
-      exit_on_error "'${dependencies_folder}/${curr_binary}' not found, aborting."
+    if [ ! -f ${dependencies_folder}/${curr_binary} ]; then
+      exit_with_error "'${dependencies_folder}/${curr_binary}' not found, aborting."
     fi
 
   done
 
   echo "OK - All gestalt installer image dependencies are present"
-
 }
 
 dependencies_process_set_command () {
-
   if [ -z ${current_command} ]; then
     current_command="fetch"
     echo "[Info] Current command not set, defaulting to 'fetch'. Supported 'fetch|clean'."
   fi
-
 }
 
 dependencies_process_print_info () {
@@ -87,7 +80,6 @@ build_and_publish_initialize () {
 }
 
 dependencies_process_clean () {
-
   check_for_required_variables dependencies_folder
 
   if [ -d ${dependencies_folder} ]; then
@@ -99,11 +91,9 @@ dependencies_process_clean () {
   else
     log_info "Nothing to do, '${dependencies_folder}' not present."
   fi
-
 }
 
 dependencies_process_fetch () {
-
   check_for_required_variables dependencies_folder
 
   if [ ! -d ${dependencies_folder} ]; then
@@ -114,11 +104,9 @@ dependencies_process_fetch () {
   get_kubectl
   get_helm
   get_fog_cli
-
 }
 
 get_kubectl() {
-
   check_for_required_variables \
     dependencies_folder \
     kubectl_download_url
@@ -133,11 +121,9 @@ get_kubectl() {
   else
     log_info "OK - 'kubectl' already present, skipping"
   fi
-
 }
 
 get_fog_cli() {
-
   check_for_required_variables \
     dependencies_folder \
     fog_download_url
@@ -162,11 +148,9 @@ get_fog_cli() {
   else
     log_info "OK - 'fog' already present, skipping"
   fi
-
 }
 
 get_helm() {
-
   check_for_required_variables \
     dependencies_folder \
     helm_download_url
@@ -187,7 +171,6 @@ get_helm() {
   else
     log_info "OK - 'helm' already present, skipping"
   fi
-
 }
 
 ############################################

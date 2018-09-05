@@ -20,10 +20,6 @@ fi
 # Validate that all dependency binaries are downloaded
 build_and_publish_validate_deps
 
-#Create for build tmp copy of utilities to be inside build context
-cp "${utility_bash}" "./scripts/utility-bash.sh"
-exit_on_error "Pulling in shared utilities '${utility-bash}' failed, aborting."
-
 #Build
 echo "Building..."
 docker build -t gestalt-installer . | tee buildoutput

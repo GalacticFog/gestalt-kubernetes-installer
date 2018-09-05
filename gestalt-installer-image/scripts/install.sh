@@ -3,27 +3,24 @@
 
 # Source common project configuration and utilities
 # TODO: Make work locally not just from built image
-utility_file='/scripts/install-gestalt-platform-initialize.sh'
-if [ -f "${utility_file}" ]; then
-  . ${utility_file}
-else
-  echo "[ERROR] Project initialization script '${utility_file}' can not be located, aborting. "
+. ./scripts/install-gestalt-platform-initialize.sh
+if [ $? -ne 0 ]; then
+  echo "[ERROR] Project initialization script can not be loaded, aborting. "
   exit 1
 fi
 
-echo "Process configmap ..."
-getsalt_installer_load_configmap
-echo "Default and validate environment variables ..."
-getsalt_installer_setcheck_variables
+# Stage 1 - Building configuration
 
-echo "Generate Help config ..."
-gestalt_installer_generate_helm_config
+run getsalt_installer_load_configmap
+run getsalt_installer_setcheck_variables
+run gestalt_installer_generate_helm_config
 
-echo "Generate Help config ..."
+echo "Rendering Helm templates..."
 helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml
 exit_on_error "Failed: helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml"
 
-kubectl apply -n gestalt-system -f gestalt.yaml
+echo "Creating Kubernetes resources..."
+kubectl create -n gestalt-system -f gestalt.yaml
 exit_on_error "Failed kubectl apply -n gestalt-system -f gestalt.yaml, aborting."
 
 # Stage 2 - Orchestrate the Gestalt Platform installation

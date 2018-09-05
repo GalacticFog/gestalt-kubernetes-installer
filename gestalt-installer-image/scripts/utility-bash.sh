@@ -19,22 +19,28 @@
 
 # get_my_os - Set's variable ${os_current} to lowercase uname result
 
-#file_to_generate_from='../gestalt-installer-image/utilities/utility-bash.sh'
-#grep '() {' ${file_to_generate_from} | awk -F '(' '{print $1}'
+# file_to_generate_from='./gestalt-installer-image/scripts/utility-bash.sh'
+# grep '() {' ${file_to_generate_from} | awk -F '(' '{print $1}'
+
 #exit_with_error
 #exit_on_error
-#check_for_required_variables
-#check_for_required_files
-#check_if_installed
-#validate_json 
-#convert_json_to_env_variables
 #log_debug 
 #log_info 
 #log_error 
 #log_set_logging_lvl 
 #logging_lvl_validate 
+#run
+#check_for_required_variables
+#check_for_optional_variables
+#check_for_required_files
+#source_required_files
+#source_all_files 
+#check_if_installed
+#validate_json 
+#convert_json_to_env_variables
 #print_env_variables 
 #get_my_os
+
 
 ############################################
 # Utilities: START
@@ -59,34 +65,30 @@ exit_on_error() {
 ### Logging
 
 log_debug () {
-  [ "${logging_lvl}" == "debug" ] && echo "[Debug] $@"
+  if [ "${logging_lvl}" == "debug" ]; then echo "[Debug] $@"; fi
 }
 
 log_info () {
-  [[ "${logging_lvl}" =~ (debug|info) ]] && echo "[Info] $@"
+  if [[ "${logging_lvl}" =~ (debug|info) ]]; then echo "[Info] $@"; fi
 }
 
 log_error () {
-  [[ "${logging_lvl}" =~ (debug|info|error) ]] && echo && echo "[Error] $@"
+  if [[ "${logging_lvl}" =~ (debug|info|error) ]]; then echo && echo "[Error] $@"; fi
 }
 
 log_set_logging_lvl () {
-
   if [ -z ${logging_lvl} ]; then
     logging_lvl="error"
     echo "[Info] Logging level not set, defaulting to 'error'."
   fi
-
 }
 
 logging_lvl_validate () {
-
   if [[ "${logging_lvl}" =~ (debug|info|error) ]]; then
     log_debug " [Validation Passed] logging_lvl = '${logging_lvl}'"
   else
     exit_with_error " [Validation Failed] Unsupported logging level '${logging_lvl}'. Supported loggin levels are 'debug|info|error'."
   fi  
-
 }
 
 # Function wrapper for friendly logging and basic timing
@@ -128,7 +130,6 @@ check_for_optional_variables() {
 }
 
 check_for_required_files() {
-
   retval=0
 
   for e in $@; do
@@ -145,11 +146,9 @@ check_for_required_files() {
   else
     log_debug "All required files found."
   fi
-
 }
 
 source_required_files() {
-
   check_for_required_files $@
 
   for tmp_file in $@; do
@@ -158,11 +157,9 @@ source_required_files() {
     exit_on_error "Unable source required file: '${tmp_file}', aborting."
     log_debug echo "Sourced file: '${tmp_file}'"
   done
-
 }
 
 source_all_files () {
-
   check_for_required_files "$@"
 
   for tmp_file in $@; do
@@ -183,7 +180,6 @@ source_all_files () {
   else
     log_debug "All required files found."
   fi
-
 }
 
 
@@ -196,19 +192,16 @@ check_if_installed() {
 }
 
 validate_json () {
-
   json_file_to_process=$1
   log_debug "Checking for valid JSON in '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
   log_debug "File Content: `cat ${json_file_to_process}`"
   cat ${json_file_to_process} | jq empty
   exit_on_error "Invalid JSON document: '${json_file_to_process}', aborting"
-
 }
 
 ### Manipulations
 convert_json_to_env_variables() {
-
   json_file_to_process=$1
   log_debug "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
@@ -225,22 +218,18 @@ convert_json_to_env_variables() {
 }
 
 print_env_variables () {
-
   echo "All environment variables:"
   env | sort
   echo ""
-
 }
 
 ### OS
 
 get_my_os () {
-
   cmd="uname | tr '[A-Z]' '[a-z]'"
   os_current=`eval ${cmd}`
   exit_on_error "Unable determine current OS: ${cmd}"
   log_debug " [${FUNCNAME[0]}] os_current = '${os_current}'"
-
 }
 
 ############################################

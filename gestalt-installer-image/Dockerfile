@@ -31,6 +31,7 @@ RUN apk upgrade --no-cache && \
 COPY ./deps/kubectl /usr/local/bin/kubectl
 COPY ./deps/helm /usr/local/bin/helm
 COPY ./deps/fog /usr/local/bin/fog
+RUN chmod 755 /usr/local/bin/*
 
 # scripts and utilities
 COPY ./scripts /scripts
@@ -42,4 +43,4 @@ COPY ./gestalt /gestalt
 COPY ./resource_templates /resource_templates
 
 # define entrypoint
-ENTRYPOINT ["/scripts/install.sh"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]

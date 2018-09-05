@@ -1,31 +1,31 @@
 
+# TODO - Pull out additional configuration options
 common:
   imagePullPolicy: Always
   # imagePullPolicy: IfNotPresent
 
 security:
-  image: galacticfog/gestalt-security:release-2.1.0
+  # image: galacticfog/gestalt-security:release-2.1.0
   exposedServiceType: NodePort
   hostname: gestalt-security.gestalt-system
   port: 9455
   protocol: http
-  adminUser: "gestalt-admin"
   databaseName: gestalt-security
 
 rabbit:
-  image: galacticfog/rabbit:release-2.1.0
+  # image: galacticfog/rabbit:release-2.1.0
   hostname: gestalt-rabbit.gestalt-system
   port: 5672
   httpPort: 15672
 
 elastic:
-  image: galacticfog/elasticsearch-docker:5.3.1
+  # image: galacticfog/elasticsearch-docker:5.3.1
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
 
 meta:
-  image: galacticfog/gestalt-meta:release-2.1.0
+  # image: galacticfog/gestalt-meta:release-2.1.0
   exposedServiceType: NodePort
   hostname: gestalt-meta.gestalt-system
   port: 10131
@@ -39,7 +39,7 @@ logging:
   nodePort: 31114
 
 ui:
-  image: galacticfog/gestalt-ui-react:release-2.1.0
+  # image: galacticfog/gestalt-ui-react:release-2.1.0
   exposedServiceType: NodePort
   nodePort: 31112
   ingress:
@@ -70,11 +70,11 @@ db:
   # Hostname must be fully qualified for Kong service
   hostname: gestalt-postgresql.gestalt-system.svc.cluster.local
   port: 5432
-  username: postgres
+  # username: postgres
   databaseName: postgres
 
 installer:
-  image: galacticfog/gestalt-installer:release-2.1.0
+  # image: galacticfog/gestalt-installer:release-2.1.0
   mode: debug
   useDynamicLoadBalancers: No
   externalGateway:
