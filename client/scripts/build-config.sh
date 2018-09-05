@@ -56,6 +56,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "JS_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-js:${gestalt_docker_release_tag}",
     "JVM_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-jvm:${gestalt_docker_release_tag}",
     "KONG_IMAGE": "${docker_registry}/kong:${gestalt_docker_release_tag}",
+    "KONG_INGRESS_SERVICE_NAME": "kng",
     "KONG_NODEPORT": "${gestalt_kong_service_nodeport}",
     "KONG_VIRTUAL_HOST": "${external_gateway_host}:${gestalt_kong_service_nodeport}",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
