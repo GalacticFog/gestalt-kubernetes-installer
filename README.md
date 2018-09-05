@@ -18,16 +18,16 @@ cd ${REPO_BASE}/gestalt-installer-image
 
 ### Client Side
 
-# Paste your Gestalt License Contents into "gestalt-license.json"
-# Set credentials in "credentials.conf"
-# Set gestalt configuration in "gestalt.conf"
-# If you choose custom resources
+- Paste your Gestalt License Contents into "gestalt-license.json"
+- Set credentials in "credentials.conf"
+- Set gestalt configuration in "gestalt.conf"
+- If you choose custom resources
     - Set gestalt_custom_resources=true in "gestalt.conf"
     - create "resource_templates" folder
     - create all custom resource templates in "resource_templates" folder
     - create appropriate cusom resource promotion script  "create_gestalt_resources.sh" in "resource_templates" folder
 
-# Run configure and install:
+- Run configure and install:
 ```
 # your local code repo base folder
 REPO_BASE="/galactic-fog/src/gitlab/000-active-work/gestalt-platform-installer"
