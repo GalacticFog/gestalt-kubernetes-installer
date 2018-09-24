@@ -202,6 +202,7 @@ validate_json () {
 
 ### Manipulations
 convert_json_to_env_variables() {
+  echo "[${FUNCNAME[0]}][For][$1]"
   json_file_to_process=$1
   log_debug "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
@@ -215,6 +216,15 @@ convert_json_to_env_variables() {
   done
 
   log_debug "[${FUNCNAME[0]}][After processing ${json_file_to_process}] All environment variables: [`env | sort`]"
+}
+
+convert_json_to_env_file() {
+
+  json_file_to_process=$1
+  env_file_to_create=$2
+  log_debug "Will be checking and converting '${json_file_to_process}' to '${env_file_to_create}'"
+  check_for_required_files ${json_file_to_process}
+  cat ${json_file_to_process} | sed 's|": |=|g' | sed 's|^    "|export |g' | sed 's|",$|"|g' | sed 's|{||' | sed '{/d' | sed '}/d' > ${env_file_to_create}
 }
 
 print_env_variables () {
