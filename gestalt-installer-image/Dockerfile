@@ -42,5 +42,7 @@ COPY ./gestalt /gestalt
 # Inject resource templates
 COPY ./resource_templates /resource_templates
 
+COPY entrypoint.sh /entrypoint.sh
+
 # define entrypoint
-ENTRYPOINT ["/scripts/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
