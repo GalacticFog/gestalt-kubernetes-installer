@@ -350,12 +350,11 @@ do_get_loadbalancer_hostname() {
 
   local service_name=$KONG_INGRESS_SERVICE_NAME
 
-  kubectl get services --all-namespaces | grep $service_name > kong_service
-  if [ `cat kong_service | wc -l` -ne 1 ]; then
-    exit_with_error "Did not find a unique '$service_name' service"
-  fi
-  local service_namespace=`cat kong_service | awk '{print $1}'`
+  servicename_is_unique_or_exit $service_name
 
+  local service_namespace=$(get_service_namespace $service_name)
+
+  echo "Namespace for service '$service_name' is '$service_namespace'"
 
   secs=10
   for i in `seq 1 20`; do
@@ -390,12 +389,10 @@ gestalt_cli_set_opts() {
 }
 
 gestalt_cli_login() {
-
   cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
-  echo "Running $cmd"
+  echo "Running 'fog login'..."
   $cmd
   exit_on_error "Failed to login to Gestalt, aborting."
-
 }
 
 gestalt_cli_license_set() {
@@ -427,6 +424,37 @@ gestalt_cli_create_resources() {
 }
 
 
+servicename_is_unique_or_exit() {
+  local service_name=$1
+  # Get a list of all services by name across all namespaces
+  local list=$(kubectl get svc --all-namespaces -ojson | jq -r '.items[].metadata.name')
+  local found="false"
+  for s in $list; do
+    echo "Inspecting service '$s'"
+    # Trying to find a unique service name.  If the service was already found before, it's not a unique name
+    if [ "$found" == "true" ]; then
+      if [ "$s" == "$service_name" ]; then
+        exit_with_error "Found multiple services with name '$service_name', aborting"
+      fi
+    fi
+
+    if [ "$s" == "$service_name" ]; then
+      found="true"
+      echo "Found service with name '$s'"
+    fi
+  done
+
+  if [ "$found" != "true" ]; then 
+    exit_with_error "Did not find a unique '$service_name' service"
+  fi
+
+  echo "Found uniquely named service '$service_name'"
+}
+
+get_service_namespace() {
+  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
+}
+
 create_kong_ingress_v2() {
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
     echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
@@ -439,11 +467,11 @@ create_kong_ingress_v2() {
 
   local service_name=$KONG_INGRESS_SERVICE_NAME
 
-  kubectl get services --all-namespaces | grep $service_name > kong_service
-  if [ `cat kong_service | wc -l` -ne 1 ]; then
-    exit_with_error "Did not find a unique '$service_name' service"
-  fi
-  local service_namespace=`cat kong_service | awk '{print $1}'`
+  servicename_is_unique_or_exit $service_name
+
+  local service_namespace=$(get_service_namespace $service_name)
+
+  echo "Namespace for service '$service_name' is '$service_namespace'"
 
   # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
   # in '*' for the host for the ingress - which means any host would apply

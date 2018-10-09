@@ -66,9 +66,9 @@ gestalt_install_create_configmaps() {
   # Create configmap from './custom_resource_templates' folder contents if want custom
   if [ ${gestalt_custom_resources} == "true" ]; then
 
-    kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./resource_templates/
+    kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/
     exit_on_error "Failed create configmap \
-    'kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./resource_templates/', aborting."
+    'kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/', aborting."
 
   else
 
@@ -76,6 +76,19 @@ gestalt_install_create_configmaps() {
 
   fi
 
+  # Create for scripts
+  echo "Creating configmap for installation scripts to be run by gestalt-installer Pod..."
+  cmd="kubectl create configmap -n ${kube_namespace} installer-scripts --from-file ../gestalt-installer-image/scripts/"
+  echo $cmd
+  $cmd
+  exit_on_error "Command '$cmd' failed, aborting."
+
+  # Create for scripts
+  echo "Creating configmap for Helm templates to be run by gestalt-installer Pod..."
+  cmd="kubectl create configmap -n ${kube_namespace} gestalt-helm-chart --from-file ./configmaps/gestalt/"
+  echo $cmd
+  $cmd
+  exit_on_error "Command '$cmd' failed, aborting."
 }
 
 

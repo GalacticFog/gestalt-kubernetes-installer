@@ -27,12 +27,20 @@ spec:
     imagePullPolicy: Always
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
-    args: ["install", "${gestalt_install_mode}"]
+    command:
+    - bash
+    args: 
+    - -c
+    - rm -rf /gestalt && cp -r /gestalt2 /gestalt && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
     volumeMounts:
     - mountPath: /config
       name: config
     - mountPath: /license
       name: license
+    - mountPath: /scripts2
+      name: scripts
+    - mountPath: /gestalt2
+      name: gestalt
 EOF
 
 if [ ${gestalt_custom_resources} == "true" ]; then
@@ -47,6 +55,12 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     - name: config
       configMap:
         name: installer-config
+    - name: scripts
+      configMap:
+        name: installer-scripts
+    - name: gestalt
+      configMap:
+        name: gestalt-helm-chart
     - name: license
       configMap:
         name: gestalt-license
