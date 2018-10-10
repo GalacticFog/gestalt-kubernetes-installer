@@ -38,9 +38,12 @@ cd ${REPO_BASE}/client
 kubectl delete namespace gestalt-system
 kubectl create namespace gestalt-system
 ./configure.sh
+./stage.sh
 ./install.sh
 sleep 3
-kubectl logs --namespace gestalt-system   gestalt-installer --follow
+INSTALLER_POD=$(kubectl get pods --namespace gestalt-system | grep installer | awk '{print $1}')
+kubectl describe pod ${INSTALLER_POD} --namespace gestalt-system
+kubectl logs --namespace gestalt-system  ${INSTALLER_POD}
 ```
 ```
 # Get on installer in interactove shell 
