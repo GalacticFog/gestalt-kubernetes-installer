@@ -15,6 +15,15 @@ run getsalt_installer_load_configmap
 run getsalt_installer_setcheck_variables
 run gestalt_installer_generate_helm_config
 
+# Database
+case $PROVISION_INTERNAL_DATABASE in
+  [Nn0]*)
+    echo "Not provisioning internal database, deleting postgres chart..."
+    rm -rv /gestalt/charts/postgresql* /gestalt/requirements.*
+    ;;
+esac
+
+
 echo "Rendering Helm templates..."
 helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml
 exit_on_error "Failed: helm template gestalt --name gestalt -f helm-config.yaml > gestalt.yaml"

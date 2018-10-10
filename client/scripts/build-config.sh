@@ -14,6 +14,7 @@ check_for_required_variables \
   database_image_tag \
   database_username \
   database_password \
+  database_hostname \
   docker_registry \
   gestalt_docker_release_tag \
   external_gateway_host \
@@ -39,7 +40,7 @@ fi
 cat >> ${GENERATED_CONF_FILE} << EOF
     "ADMIN_PASSWORD": "${admin_password}",
     "ADMIN_USERNAME": "${admin_username}",
-    "DATABASE_HOSTNAME": "gestalt-postgresql.gestalt-system.svc.cluster.local",
+    "DATABASE_HOSTNAME": "${database_hostname}",
     "DATABASE_IMAGE": "${database_image}",
     "DATABASE_IMAGE_TAG": "${database_image_tag}",
     "DATABASE_PASSWORD": "${database_password}",
