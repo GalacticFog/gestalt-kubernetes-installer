@@ -1,0 +1,41 @@
+{
+    "name": "Ecs-ecs-testcluster",
+    "description": "",
+    "resource_type": "Gestalt::Configuration::Provider::CaaS::ECS",
+    "properties": {
+        "provider_subtype": "EC2",
+        "config": {
+            "cluster": "testecsec2cluster",
+            "region": "us-east-1",
+            "secret_key": "XXXXXXXXXXXXXXXXX",
+            "access_key": "XXXXXXXXXXXXXXXXX",
+            "taskRoleArn": "ecsTaskExecutionRole",
+            "auth": {},
+            "external_protocol": "https",
+            "env": {
+                "public": {},
+                "private": {}
+            },
+            "networks": [
+                "none",
+                "bridge",
+                "host"
+            ],
+            "endpoints": [
+                {
+                    "actions": [
+                        "container.import"
+                    ],
+                    "default": false,
+                    "http": {
+                        "method": "POST",
+                        "url": "https://gtw1.example.com/ecs-container-import/asimport"
+                    }
+                }
+            ]
+        },
+        "services": [],
+        "linked_providers": [],
+        "environment_types": []
+    }
+}

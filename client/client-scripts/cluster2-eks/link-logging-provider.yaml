@@ -1,0 +1,7 @@
+- op: replace
+  path: /properties/linked_providers
+  value:
+  - name: logging
+    id: '#{Provider /root/#{Config basename}-logging id}'
+    typeId: e1782fef-4b7c-4f75-b8b8-6e6e2ecd82b2
+    type: Gestalt::Configuration::Provider::Logging
