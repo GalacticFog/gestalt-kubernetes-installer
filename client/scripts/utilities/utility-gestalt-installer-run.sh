@@ -14,7 +14,7 @@
 check_for_required_tools_gestalt_installer() {
 
   log_debug "Check presence of: base64 tr sed seq sudo true kubectl curl unzip tar"
-  check_if_installed "base64 tr sed seq sudo true kubectl curl unzip tar"
+  check_if_installed base64 tr sed seq sudo true kubectl curl unzip tar
 
 }
 
