@@ -83,12 +83,19 @@ gestalt_install_create_configmaps() {
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
 
-  # Create for scripts
+
+  cd configmaps
+  tar cfzv gestalt.tar.gz gestalt
+  cd -
+
+  # Create for Helm chart - main directory
   echo "Creating configmap for Helm templates to be run by gestalt-installer Pod..."
-  cmd="kubectl create configmap -n ${kube_namespace} gestalt-helm-chart --from-file ./configmaps/gestalt/"
+  cmd="kubectl create configmap -n ${kube_namespace} gestalt-targz --from-file ./configmaps/gestalt.tar.gz"
   echo $cmd
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
+
+  rm configmaps/gestalt.tar.gz
 }
 
 

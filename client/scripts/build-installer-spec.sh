@@ -31,7 +31,7 @@ spec:
     - bash
     args: 
     - -c
-    - rm -rf /gestalt && cp -r /gestalt2 /gestalt && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
+    - rm -rf /gestalt && tar xfz /gestalt2/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
     volumeMounts:
     - mountPath: /config
       name: config
@@ -40,7 +40,7 @@ spec:
     - mountPath: /scripts2
       name: scripts
     - mountPath: /gestalt2
-      name: gestalt
+      name: gestalt-targz
 EOF
 
 if [ ${gestalt_custom_resources} == "true" ]; then
@@ -58,9 +58,9 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     - name: scripts
       configMap:
         name: installer-scripts
-    - name: gestalt
+    - name: gestalt-targz
       configMap:
-        name: gestalt-helm-chart
+        name: gestalt-targz
     - name: license
       configMap:
         name: gestalt-license
