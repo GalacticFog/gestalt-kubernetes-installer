@@ -1,0 +1,14 @@
+name: default-security
+description: The Default Security Provider
+resource_type: Gestalt::Configuration::Provider::Security
+properties:
+  config:
+    env:
+      public:
+        KEY: '#{Config meta-api-key}'
+        SECRET: '#{Config meta-api-secret}'
+        HOSTNAME: gestalt-security.gestalt-system
+        PORT: '9455'
+        PROTOCOL: http
+      private: {}
+  services: []

@@ -1,0 +1,47 @@
+name: default-logging
+description: The default logging provider
+resource_type: Gestalt::Configuration::Provider::Logging
+properties:
+  config:
+    env:
+      public:
+        SERVICE_VHOST_0: localhost:31114
+        SERVICE_VHOST_0_PROTOCOL: http
+      private:
+        ES_CLUSTER_NAME: myesdb
+        DEFAULT_COMPUTE_TYPE: kube
+        ES_COLD_DAYS: '1'
+        ES_HOT_DAYS: '1'
+        ES_SERVICE_HOST: '#{Config elasticsearch-host}'
+        ES_SERVICE_PORT: '9300'
+        ES_SNAPSHOT_REPO: ''
+        SKUBER_CONFIG: '#{Config kubeconfig-base64}'
+  linked_providers: []
+  services:
+  - init:
+      binding: eager
+      singleton: true
+    container_spec:
+      name: log
+      properties:
+        cpus: 0.5
+        memory: 1024
+        env:
+          JAVA_OPTS: -Xmx768m
+        num_instances: 1
+        network: ''
+        container_type: DOCKER
+        image: '#{Config logging-image}'
+        force_pull: true
+        health_checks: []
+        provider:
+          id: '#{Provider /root/default-kubernetes id}'
+        labels: {}
+        port_mappings:
+        - name: service
+          protocol: tcp
+          expose_endpoint: true
+          container_port: 9000
+          lb_port: 9000
+          service_port: 31114
+          virtual_hosts: []
