@@ -210,19 +210,13 @@ wait_for_database() {
 
 init_database() {
 
-  echo "Parsing CLI config for database names..."
-  echo "$GESTALT_CLI_DATA" | base64 -d > /gestalt/gestalt.json.tmp
-  envsubst < /gestalt/gestalt.json.tmp | jq . > /gestalt/gestalt.json.tmp2
-
-
-  local kongdb=$(cat /gestalt/gestalt.json.tmp2 | jq -r '.kong.dbName')
-  local laserdb=$(cat /gestalt/gestalt.json.tmp2 | jq -r '.laser.dbName')
-  local gatewaydb=$(cat /gestalt/gestalt.json.tmp2 | jq -r '.gateway.dbName')
-
   echo "Dropping existing databases..."
 
-  for db in gestalt-meta $kongdb $laserdb $gatewaydb $SECURITY_DB_NAME ; do
-    ${script_folder}/drop_database.sh $db --yes
+  echo "TODO: Unhardcode database names"
+  for db in gestalt-meta gestalt-security kong-db laser-db gateway-db ; do
+    cmd="${script_folder}/drop_database.sh $db --yes"
+    echo $cmd
+    $cmd
     exit_on_error "Failed to initialize database, aborting."
   done
 

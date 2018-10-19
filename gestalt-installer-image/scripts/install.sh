@@ -15,6 +15,10 @@ run getsalt_installer_load_configmap
 run getsalt_installer_setcheck_variables
 run gestalt_installer_generate_helm_config
 
+echo
+env | sort
+echo
+
 # Database
 case $PROVISION_INTERNAL_DATABASE in
   [Nn0]*)
