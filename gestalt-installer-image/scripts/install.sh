@@ -41,6 +41,10 @@ exit_on_error "Failed kubectl apply -n gestalt-system -f gestalt.yaml, aborting.
 run check_for_existing_services
 run wait_for_database
 run init_database
+
+echo "Waiting a bit..."
+sleep 10
+
 run invoke_security_init
 run wait_for_security_init
 run init_meta

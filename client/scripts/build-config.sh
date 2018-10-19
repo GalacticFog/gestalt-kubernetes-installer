@@ -146,16 +146,16 @@ ui:
 #provision-internal-db: true
 
 postgresql:
-  postgresUser: postgres
-  postgresDatabase: postgres
+  postgresUser: ${database_username}
+  postgresDatabase: ${database_name}
   persistence:
-    size: 100Mi
-    storageClass: "hostpath"
-    subPath: ""
+    size: ${internal_database_pv_storage_size}
+    storageClass: "${internal_database_pv_storage_class}"
+    subPath: "${postgres_persistence_subpath}"
   resources:
     requests:
-      memory: 100Mi
-      cpu: 100m
+      memory: ${postgres_memory_request}
+      cpu: ${postgres_cpu_request}
   service:
     port: 5432
     type: ClusterIP

@@ -22,7 +22,7 @@ properties:
       binding: eager
       singleton: true
     container_spec:
-      name: kng
+      name: kng2
       properties:
         cpus: 0.2
         memory: 1024
