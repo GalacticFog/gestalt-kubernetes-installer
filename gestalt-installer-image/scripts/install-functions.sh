@@ -214,9 +214,7 @@ init_database() {
 
   echo "TODO: Unhardcode database names"
   for db in gestalt-meta gestalt-security kong-db laser-db gateway-db ; do
-    cmd="${script_folder}/drop_database.sh $db --yes"
-    echo $cmd
-    $cmd
+    ${script_folder}/drop_database.sh $db --yes
     exit_on_error "Failed to initialize database, aborting."
   done
 
