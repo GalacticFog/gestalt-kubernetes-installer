@@ -5,3 +5,4 @@ buildoutput
 helm-config.yaml
 config/
 license/
+client/gestalt-license.json

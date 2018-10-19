@@ -18,7 +18,7 @@ properties:
         EXECUTOR_HEARTBEAT_MILLIS: '5000'
         EXECUTOR_HEARTBEAT_TIMEOUT: '5000'
         GESTALT_SCHEDULER: 'true'
-        HYPER_EXECUTOR_IMG: galacticfog/gestalt-laser-executor-hyper:release-2.1.0
+        HYPER_EXECUTOR_IMG: galacticfog/gestalt-laser-executor-hyper:release-2.3.2
         LAMBDA_DATABASE_NAME: laser-db
         MANAGEMENT_PROTOCOL: ws
         MAX_COOL_CONNECTION_TIME: '60'
@@ -42,6 +42,7 @@ properties:
         RABBIT_RESPONSE_EXCHANGE: default-laser-exchange
         RABBIT_RESPONSE_TOPIC: default-response-topic
         SCALE_DOWN_TIME_SECONDS: '15'
+        SERVICE_VHOST_0: '#{Config laser-service-vhost}'
   linked_providers:
   - name: LAMBDA_DATABASE
     id: '#{Provider /root/default-postgres id}'
@@ -89,7 +90,7 @@ properties:
         num_instances: 1
         network: BRIDGE
         container_type: DOCKER
-        image: galacticfog/gestalt-laser:release-2.1.0
+        image: '#{Config laser-image}'
         force_pull: true
         health_checks:
         - grace_period_seconds: 300
@@ -110,6 +111,7 @@ properties:
           virtual_hosts: []
           container_port: 9000
           lb_port: 9000
+          service_port: 31118
         - name: executor-bind
           protocol: tcp
           expose_endpoint: true

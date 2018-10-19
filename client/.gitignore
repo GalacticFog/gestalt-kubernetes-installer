@@ -1,2 +1,4 @@
-install-config.json
+install-config*.json
 installer.yaml
+gestalt-license.json
+fog

@@ -80,6 +80,7 @@
                 "container_port": 8001,
                 "lb_port": 8001,
                 "expose_endpoint": true,
+                "service_port": 31115,
                 "virtual_hosts": []
               }
             ]

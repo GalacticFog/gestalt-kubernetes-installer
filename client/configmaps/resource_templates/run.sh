@@ -71,3 +71,6 @@ create laser-provider
 create policy-provider
 create kong-provider
 create gatewaymanager-provider
+
+create kong2-provider
+create kong3-provider
