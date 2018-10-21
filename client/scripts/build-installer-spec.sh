@@ -41,16 +41,8 @@ spec:
       name: scripts
     - mountPath: /gestalt2
       name: gestalt-targz
-EOF
-
-if [ ${gestalt_custom_resources} == "true" ]; then
-cat >> ${GENERATED_CONF_FILE} << EOF
     - mountPath: /resource_templates
       name: resources
-EOF
-fi
-
-cat >> ${GENERATED_CONF_FILE} << EOF
   volumes:
     - name: config
       configMap:
@@ -64,13 +56,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     - name: license
       configMap:
         name: gestalt-license
-EOF
-
-
-if [ ${gestalt_custom_resources} == "true" ]; then
-cat >> ${GENERATED_CONF_FILE} << EOF
     - name: resources
       configMap:
         name: gestalt-resources
 EOF
-fi

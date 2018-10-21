@@ -44,8 +44,7 @@ gestalt_install_validate_preconditions() {
 
     check_for_required_variables \
       kube_namespace conf_install \
-      gestalt_license \
-      gestalt_custom_resources
+      gestalt_license 
 
     echo "Precondition check succeeded"
 
@@ -64,17 +63,9 @@ gestalt_install_create_configmaps() {
   'kubectl create configmap -n ${kube_namespace} gestalt-license --from-file ${gestalt_license}', aborting."
 
   # Create configmap from './custom_resource_templates' folder contents if want custom
-  if [ ${gestalt_custom_resources} == "true" ]; then
-
-    kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/
-    exit_on_error "Failed create configmap \
-    'kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/', aborting."
-
-  else
-
-    echo "No custom resources: skipping 'gestalt-resources' configmap creation"
-
-  fi
+  kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/
+  exit_on_error "Failed create configmap \
+  'kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/', aborting."
 
   # Create for scripts
   echo "Creating configmap for installation scripts to be run by gestalt-installer Pod..."
@@ -82,7 +73,6 @@ gestalt_install_create_configmaps() {
   echo $cmd
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
-
 
   cd configmaps
   tar cfzv gestalt.tar.gz gestalt
@@ -95,6 +85,7 @@ gestalt_install_create_configmaps() {
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
 
+  # Cleanup
   rm configmaps/gestalt.tar.gz
 }
 

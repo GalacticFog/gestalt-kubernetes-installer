@@ -20,7 +20,6 @@ check_for_required_variables \
   external_gateway_host \
   gestalt_kong_service_nodeport \
   kubeconfig_data \
-  gestalt_custom_resources \
   gestalt_ui_service_nodeport \
   gestalt_kong_service_nodeport \
   gestalt_logging_service_nodeport
@@ -49,7 +48,6 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "DOTNET_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-dotnet:${gestalt_docker_release_tag}",
     "ELASTICSEARCH_HOST": "gestalt-elastic.gestalt-system",
     "ELASTICSEARCH_IMAGE": "${docker_registry}/elasticsearch-docker:5.3.1",
-    "GESTALT_CUSTOM_RESOURCES": ${gestalt_custom_resources},
     "GESTALT_INSTALL_LOGGING_LVL": "${gestalt_install_mode}",
     "GOLANG_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-golang:${gestalt_docker_release_tag}",
     "GWM_EXECUTOR_IMAGE": "${docker_registry}/gestalt-api-gateway:${gestalt_docker_release_tag}",
