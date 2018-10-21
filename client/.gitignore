@@ -2,3 +2,4 @@ install-config*.json
 installer.yaml
 gestalt-license.json
 fog
+configmaps/gestalt/values.yaml

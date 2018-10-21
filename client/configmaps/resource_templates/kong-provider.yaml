@@ -8,11 +8,11 @@ properties:
         USERNAME: unused
         PASSWORD: currently
       private:
-        KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
-        KONG_CUSTOM_PLUGINS: gestalt-security-kong
-        POSTGRES_NAME: kong-db
         KONG_CLUSTER_ADVERTISE: $(POD_IP):7946
         KONG_CLUSTER_LISTEN: $(POD_IP):7946
+        KONG_CUSTOM_PLUGINS: gestalt-security-kong
+        KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
+        POSTGRES_NAME: kong-db
     external_protocol: http
   linked_providers:
   - name: POSTGRES

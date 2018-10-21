@@ -68,9 +68,13 @@ create ruby-executor
 
 # Create other providers
 create laser-provider
-create policy-provider
-create kong-provider
-create gatewaymanager-provider
+create policy-provider # Policy depends on Rabbit and Laser
 
-create kong2-provider
-create kong3-provider
+create kong-provider
+
+# Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
+# create kong2-provider
+# create kong3-external-provider
+
+create gatewaymanager-provider  # Create the gateway manager provider after 
+                                # kong providers, as it uses the kong providers as linked providers

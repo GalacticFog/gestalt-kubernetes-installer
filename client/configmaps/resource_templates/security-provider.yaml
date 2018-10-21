@@ -1,3 +1,6 @@
+#
+# Configuration only provider
+#
 name: default-security
 description: The Default Security Provider
 resource_type: Gestalt::Configuration::Provider::Security

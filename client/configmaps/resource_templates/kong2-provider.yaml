@@ -62,7 +62,7 @@ properties:
           service_port: 31123
           
           virtual_hosts:
-          - '#{Config kong-virtual-host}'
+          - '#{Config kong2-virtual-host}'
 
         # Service port used by Gateway manager
         - name: service

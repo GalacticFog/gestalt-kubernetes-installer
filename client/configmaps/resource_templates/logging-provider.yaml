@@ -5,7 +5,7 @@ properties:
   config:
     env:
       public:
-        SERVICE_VHOST_0: localhost:31114
+        SERVICE_VHOST_0: '#{Config logging-vhost}'
         SERVICE_VHOST_0_PROTOCOL: http
       private:
         ES_CLUSTER_NAME: myesdb

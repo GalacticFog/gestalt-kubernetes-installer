@@ -5,23 +5,23 @@ properties:
   config:
     env:
       public:
-        IMAGE: '#{Config jvm-executor-image}'
-        NAME: jvm
         CMD: bin/gestalt-laser-executor-jvm
-        RUNTIME: java;scala
-        SIZES_5_MEM: '1024'
+        IMAGE: '#{Config jvm-executor-image}'
         MIN_COOL: '0'
+        NAME: jvm
+        RUNTIME: java;scala
+        SIZES_0_CPU: '0.1'
+        SIZES_0_MEM: '512'
+        SIZES_0_MIN_COOL: '0'
+        SIZES_1_CPU: '0.2'
+        SIZES_1_MEM: '512'
+        SIZES_2_CPU: '0.4'
         SIZES_2_MEM: '512'
         SIZES_3_CPU: '0.5'
-        SIZES_0_MIN_COOL: '0'
-        SIZES_1_MEM: '512'
         SIZES_3_MEM: '512'
-        SIZES_2_CPU: '0.4'
-        SIZES_4_MEM: '1024'
-        SIZES_0_MEM: '512'
-        SIZES_5_CPU: '1'
-        SIZES_1_CPU: '0.2'
         SIZES_4_CPU: '0.5'
-        SIZES_0_CPU: '0.1'
+        SIZES_4_MEM: '1024'
+        SIZES_5_CPU: '1'
+        SIZES_5_MEM: '1024'
       private: {}
   services: []

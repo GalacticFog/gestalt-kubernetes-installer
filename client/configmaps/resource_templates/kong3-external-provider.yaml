@@ -1,3 +1,6 @@
+#
+# Configuration only Kong provider for an external Kong instance
+#
 name: kong3-external
 description: The default gestalt kong provider (External)
 resource_type: Gestalt::Configuration::Provider::Kong
@@ -7,17 +10,18 @@ properties:
       public:
         USERNAME: unused
         PASSWORD: currently
+        PUBLIC_URL_VHOST_0: '#{Config kong3-vhost}'
       private:
         # KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
         # KONG_CUSTOM_PLUGINS: gestalt-security-kong
-        POSTGRES_NAME: kong3-db
         # KONG_CLUSTER_ADVERTISE: $(POD_IP):7946
         # KONG_CLUSTER_LISTEN: $(POD_IP):7946
-        POSTGRES_USER: '#{Config database-username}'
-        POSTGRES_PASSWORD: '#{Config database-password}'
-        POSTGRES_HOSTNAME: '#{Config database-hostname}'
-        POSTGRES_PORT: '5432'
-        POSTGRES_PROTOCOL: http
+        # POSTGRES_NAME: kong3-db
+        # POSTGRES_USER: '#{Config database-username}'
+        # POSTGRES_PASSWORD: '#{Config database-password}'
+        # POSTGRES_HOSTNAME: '#{Config database-hostname}'
+        # POSTGRES_PORT: '5432'
+        # POSTGRES_PROTOCOL: http
 
     external_protocol: http
   # linked_providers:
