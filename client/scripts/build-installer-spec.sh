@@ -31,7 +31,7 @@ spec:
     - bash
     args: 
     - -c
-    - rm -rf /gestalt && tar xfz /gestalt2/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
+    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
     volumeMounts:
     - mountPath: /config
       name: config
