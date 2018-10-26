@@ -36,6 +36,8 @@ build-tag:
     - ./build_and_publish.sh "commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
   only:
     - tags
+  except:
+    - master
     
 build-image:
   stage: build
