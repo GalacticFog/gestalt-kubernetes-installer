@@ -1,5 +1,19 @@
 #!/bin/bash
 
+exit_on_error() {
+  if [ $? -ne 0 ]; then
+    echo
+    echo "[Error] $@"
+    exit 1
+  fi
+}
+
+exit_with_error() {
+    echo
+    echo "[Error] $@"
+    exit 1
+}
+
 # Source common project configuration and utilities
 utility_file='./utilities/utility-image-initialize.sh'
 if [ -f ${utility_file} ]; then
@@ -25,6 +39,10 @@ echo "Building..."
 docker build -t gestalt-installer . | tee buildoutput
 exit_on_error "docker build failed, aborting."
 imageid=`tail buildoutput | grep "^Successfully built" | awk '{ print $3 }'`
+if [ "${imageid}" == "" ]; then
+  exit_with_error "Failed obtain newly created image id"
+fi
+
 
 #Tag and Push
 for curr_tag in $@; do
