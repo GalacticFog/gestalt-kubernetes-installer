@@ -49,7 +49,7 @@ build-image:
     - echo "Build and push image:"
     - cd gestalt-installer-image
     - ./dependencies-process.sh
-    - ./build_and_publish.sh "commit-${CI_BUILD_REF:0:8}"
+    - docker build -t gestalt-installer . | tee buildoutput
   except:
     - master
     - tags
