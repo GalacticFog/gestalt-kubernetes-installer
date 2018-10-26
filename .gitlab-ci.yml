@@ -6,7 +6,7 @@ services:
 stages:
 - build
 
-build-image:
+build-master:
   stage: build
   script:
     - echo "Install Dependencies:"
@@ -21,7 +21,7 @@ build-image:
   only:
     - master
     
-build-image:
+build-tag:
   stage: build
   script:
     - echo "Install Dependencies:"
