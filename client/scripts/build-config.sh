@@ -58,7 +58,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "KONG_INGRESS_SERVICE_NAME": "kng-ext",
     "KONG_NODEPORT": "${gestalt_kong_service_nodeport}",
     "KONG_MANAGEMENT": "${gestalt_kong_management_nodeport}",
-    "KONG_VIRTUAL_HOST": "${external_gateway_host}:${gestalt_kong_service_nodeport}",
+    "KONG_VIRTUAL_HOST": "${external_gateway_host}",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
     "LASER_IMAGE": "${docker_registry}/gestalt-laser:${gestalt_docker_release_tag}",
     "LASER_SERVICE_VHOST": "${laser_service_vhost}",

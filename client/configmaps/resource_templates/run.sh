@@ -73,8 +73,10 @@ create policy-provider # Policy depends on Rabbit and Laser
 create kong-provider
 
 # Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
-# create kong2-provider
+create kong2-provider
 # create kong3-external-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
+
+fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser'

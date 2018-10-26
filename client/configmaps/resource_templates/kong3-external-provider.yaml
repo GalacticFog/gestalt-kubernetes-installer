@@ -10,7 +10,14 @@ properties:
       public:
         USERNAME: unused
         PASSWORD: currently
-        PUBLIC_URL_VHOST_0: '#{Config kong3-vhost}'
+        PUBLIC_URL_HOST: "#{Config kong3-vhost}"
+        #PUBLIC_URL_PORT: 8000
+        PUBLIC_URL_PROTOCOL: http
+        PUBLIC_URL_VHOST_0: "#{Config kong3-vhost}"
+        SERVICE_HOST: "#{Config kong3-service-host}"
+        # SERVICE_PORT: 8001
+        SERVICE_PROTOCOL: http
+
       private:
         # KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
         # KONG_CUSTOM_PLUGINS: gestalt-security-kong

@@ -41,7 +41,8 @@ properties:
         RABBIT_MONITOR_TOPIC: default-monitor-topic
         RABBIT_RESPONSE_EXCHANGE: default-laser-exchange
         RABBIT_RESPONSE_TOPIC: default-response-topic
-        SCALE_DOWN_TIME_SECONDS: '15'
+        # SCALE_DOWN_TIME_SECONDS: '15'
+        SCALE_DOWN_TIME_SECONDS: '300'
         SERVICE_VHOST_0: '#{Config laser-service-vhost}'
   linked_providers:
   - name: LAMBDA_DATABASE
@@ -81,8 +82,8 @@ properties:
     container_spec:
       name: lsr
       properties:
-        cpus: 0.25
-        memory: 1024
+        cpus: 1.0
+        memory: 2048
         accepted_resource_roles:
         - production
         - '*'
@@ -112,14 +113,18 @@ properties:
           container_port: 9000
           lb_port: 9000
           service_port: 31118
+          type: external
         - name: executor-bind
           protocol: tcp
           expose_endpoint: true
           container_port: 9001
           lb_port: 9001
+          type: internal
         - name: hyper-bind
           protocol: tcp
           expose_endpoint: true
           container_port: 9002
           lb_port: 9002
-        cmd: ./bin/gestalt-laser
+          type: internal
+        # cmd: ./bin/gestalt-laser
+        cmd: ./bin/gestalt-laser -Dhttp.port=9000 -J-Xmx1536m

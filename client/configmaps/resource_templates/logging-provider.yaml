@@ -45,3 +45,4 @@ properties:
           lb_port: 9000
           service_port: 31114
           virtual_hosts: []
+          type: external

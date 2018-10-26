@@ -53,3 +53,5 @@ properties:
           container_port: 9000
           lb_port: 9000
           expose_endpoint: true
+          # Expose externally for debugging
+          type: external

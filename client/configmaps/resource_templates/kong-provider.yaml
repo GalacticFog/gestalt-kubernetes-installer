@@ -7,6 +7,7 @@ properties:
       public:
         USERNAME: unused
         PASSWORD: currently
+        PUBLIC_URL_VHOST_0: '#{Config kong-virtual-host}'
       private:
         KONG_CLUSTER_ADVERTISE: $(POD_IP):7946
         KONG_CLUSTER_LISTEN: $(POD_IP):7946
@@ -54,13 +55,8 @@ properties:
           protocol: tcp
           container_port: 8000
           expose_endpoint: true
-
-          # type should be set to 'external' to be a Kubernetes NodePort
-          type: external 
-          
-          # Set to desired NodePort 
-          service_port: 31113
-          
+          type: external # type should be set to 'external' to be a Kubernetes NodePort
+          service_port: 31113 # Set to desired NodePort           
           virtual_hosts:
           - '#{Config kong-virtual-host}'
 

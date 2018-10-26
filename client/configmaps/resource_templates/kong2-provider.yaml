@@ -7,6 +7,7 @@ properties:
       public:
         USERNAME: unused
         PASSWORD: currently
+        PUBLIC_URL_VHOST_0: '#{Config kong2-virtual-host}'
       private:
         KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
         KONG_CUSTOM_PLUGINS: gestalt-security-kong

@@ -22,6 +22,7 @@
     "kong-virtual-host": "$KONG_VIRTUAL_HOST",
     "kong2-virtual-host": "api2.cluster1.galacticfog.com",
     "kong3-virtual-host": "api3.cluster1.galacticfog.com",
+    "kong3-service-host": "api3-mgmt.cluster1.galacticfog.com",
     "elasticsearch-host": "$ELASTICSEARCH_HOST",
     "kubeconfig-base64": "$KUBECONFIG_BASE64"
 }
