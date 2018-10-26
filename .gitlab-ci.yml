@@ -33,7 +33,7 @@ build-tag:
     - cd gestalt-installer-image
     - ./dependencies-process.sh
     - if [[ ${CI_BUILD_TAG} == *[^0-9.]* ]]; then BASE_VERSION=`echo ${CI_BUILD_TAG} | awk -F'.' '{print $1}'`; fi
-    - ./build_and_publish.sh commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
+    - ./build_and_publish.sh "commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
   only:
     - tags
     
