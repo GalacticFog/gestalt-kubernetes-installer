@@ -20,6 +20,20 @@ build-image:
     - ./build_and_publish.sh "latest" "commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
   only:
     - master
+    
+build-image:
+  stage: build
+  script:
+    - echo "Install Dependencies:"
+    - apk add --update --no-cache bash gawk sed grep curl wget git jq tar
+    - echo "Login Docker Registry:"
+    - echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
+    - echo "Build and push image:"
+    - cd gestalt-installer-image
+    - ./dependencies-process.sh
+    - if [[ ${CI_BUILD_TAG} == *[^0-9.]* ]]; then BASE_VERSION=`echo ${CI_BUILD_TAG} | awk -F'.' '{print $1}'`; fi
+    - ./build_and_publish.sh commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
+  only:
     - tags
     
 build-image:
