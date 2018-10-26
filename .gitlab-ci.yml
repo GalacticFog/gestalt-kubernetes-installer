@@ -28,6 +28,7 @@ build-tag:
     - apk add --update --no-cache bash gawk sed grep curl wget git jq tar
     - echo "Login Docker Registry:"
     - echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
+    - env | sort
     - echo "Build and push image:"
     - cd gestalt-installer-image
     - ./dependencies-process.sh
