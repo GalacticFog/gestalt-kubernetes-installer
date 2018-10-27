@@ -48,8 +48,17 @@ prompt_to_continue(){
   while true; do
       read -p "$* Proceed? [y/n]: " yn
       case $yn in
-          [Yy]*) return 0  ;;
+          [Yy]*) break;;
           [Nn]*) echo "Aborted" ; exit  1 ;;
+      esac
+  done
+
+  echo "Enter the name of the cluster to continue [`kubectl config current-context`]: "
+  while true; do
+      read -p "$* : " value
+      case $value in
+          `kubectl config current-context`) return 0  ;;
+          *) echo "Aborted" ; exit  1 ;;
       esac
   done
 }
