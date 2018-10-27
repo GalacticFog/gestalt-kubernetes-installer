@@ -52,15 +52,13 @@ prompt_to_continue(){
           [Nn]*) echo "Aborted" ; exit  1 ;;
       esac
   done
-
-  echo "Enter the name of the cluster to continue [`kubectl config current-context`]: "
-  while true; do
-      read -p "$* : " value
-      case $value in
-          `kubectl config current-context`) return 0  ;;
-          *) echo "Aborted" ; exit  1 ;;
-      esac
-  done
+  
+  echo
+  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
+  case $value in
+      `kubectl config current-context`) return 0  ;;
+      *) echo "Aborted" ; exit  1 ;;
+  esac
 }
 
 remove_gestalt_platform() {
