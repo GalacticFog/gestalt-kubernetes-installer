@@ -1,4 +1,3 @@
-
 check_for_required_variables \
     SECURITY_KEY \
     SECURITY_SECRET \
@@ -17,22 +16,17 @@ check_for_required_variables \
     KONG_IMAGE \
     LOGGING_IMAGE \
     POLICY_IMAGE \
-    KONG_VIRTUAL_HOST \
+    KONG_0_VIRTUAL_HOST \
     ELASTICSEARCH_HOST \
     KUBECONFIG_BASE64
 
-# Generate config
-config_file="/tmp/config.json"
-envsubst < config.json.template > ${config_file}
-if [ $? -ne 0 ]; then
-  echo "Error: Failed generate config ${config_file} from template 'config.json.template', aborting."
-  exit 1
-fi
-
 create() {
+
+  # `fog` reads configuration from environment variables
+
   local file=$1.yaml
   echo "Creating resource from '$file'..."
-  fog create resource -f $file --config $config_file
+  fog create resource -f $file
   if [ $? -ne 0 ]; then
     echo
     echo "Error: Error processing '$file', aborting."
@@ -41,11 +35,15 @@ create() {
 }
 
 # Set context
-fog context set --path '/root'
+fog context set '/root'
+[ $? -eq 0 ] || (echo "Error setting context, aborting" && exit 1)
 
 # Set up hierarchy
-fog create workspace --name 'gestalt-system-workspace' -d "Gestalt System Workspace"
-fog create environment -w 'gestalt-system-workspace' -n 'gestalt-laser-environment' -d "Gestalt Laser Environment" -t 'production'
+fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-workspace', aborting" && exit 1)
+
+fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
 # Create base providers
 create db-provider
@@ -73,10 +71,13 @@ create policy-provider # Policy depends on Rabbit and Laser
 create kong-provider
 
 # Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
-create kong2-provider
+# create kong2-provider
 # create kong3-external-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
 
-fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser'
+sleep 10  # Provide time for Meta to settle before migrating the schema
+fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
+
+return 0

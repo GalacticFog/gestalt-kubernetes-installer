@@ -182,6 +182,19 @@ source_all_files () {
   fi
 }
 
+check_for_kube() {
+  echo "Checking for Kubernetes..."
+  local kubecontext="`kubectl config current-context`"
+
+  if [ "$kubecontext" != "$target_kube_context" ]; then
+    exit_with_error "Kubernetes context '$kubecontext' doesn't match target kubernetes context '$target_kube_context'"
+  fi
+
+  kube_cluster_info=$(kubectl cluster-info)
+  exit_on_error "Kubernetes cluster not accessible, aborting."
+
+  echo "OK - Kubernetes cluster '$kubecontext' is accessible."
+}
 
 check_if_installed() {
     for curr_tool in "$@"; do

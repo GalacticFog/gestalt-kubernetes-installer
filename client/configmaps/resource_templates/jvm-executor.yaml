@@ -6,7 +6,7 @@ properties:
     env:
       public:
         CMD: bin/gestalt-laser-executor-jvm
-        IMAGE: '#{Config jvm-executor-image}'
+        IMAGE: '#{Config JVM_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
         NAME: jvm
         RUNTIME: java;scala

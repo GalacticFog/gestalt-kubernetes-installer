@@ -22,18 +22,17 @@ properties:
         LAMBDA_DATABASE_NAME: laser-db
         MANAGEMENT_PROTOCOL: ws
         MAX_COOL_CONNECTION_TIME: '60'
-        META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment
-          id}/containers
+        META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/containers
         META_COMPUTE_HOST: http://gestalt-meta.gestalt-system:10131
-        META_COMPUTE_PASSWORD: '#{Config meta-api-secret}'
+        META_COMPUTE_PASSWORD: '#{Config SECURITY_SECRET}'
         META_COMPUTE_PROVIDER_ID: '#{Provider /root/default-kubernetes id}'
-        META_COMPUTE_USERNAME: '#{Config meta-api-key}'
+        META_COMPUTE_USERNAME: '#{Config SECURITY_KEY}'
         META_HOSTNAME: gestalt-meta.gestalt-system
         META_NETWORK_NAME: BRIDGE
-        META_PASSWORD: '#{Config meta-api-key}'
+        META_PASSWORD: '#{Config SECURITY_KEY}'
         META_PORT: '10131'
         META_PROTOCOL: http
-        META_USER: '#{Config meta-api-secret}'
+        META_USER: '#{Config SECURITY_SECRET}'
         MIN_COOL_EXECUTORS: '1'
         RABBIT_EXCHANGE: default-listen-exchange
         RABBIT_LISTEN_ROUTE: default-listen-route
@@ -43,7 +42,7 @@ properties:
         RABBIT_RESPONSE_TOPIC: default-response-topic
         # SCALE_DOWN_TIME_SECONDS: '15'
         SCALE_DOWN_TIME_SECONDS: '300'
-        SERVICE_VHOST_0: '#{Config laser-service-vhost}'
+        SERVICE_VHOST_0: '#{Config LASER_SERVICE_VHOST}'
   linked_providers:
   - name: LAMBDA_DATABASE
     id: '#{Provider /root/default-postgres id}'
@@ -91,7 +90,7 @@ properties:
         num_instances: 1
         network: BRIDGE
         container_type: DOCKER
-        image: '#{Config laser-image}'
+        image: '#{Config LASER_IMAGE}'
         force_pull: true
         health_checks:
         - grace_period_seconds: 300
@@ -112,7 +111,7 @@ properties:
           virtual_hosts: []
           container_port: 9000
           lb_port: 9000
-          service_port: 31118
+          service_port: #{Config LASER_NODEPORT}
           type: external
         - name: executor-bind
           protocol: tcp

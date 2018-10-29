@@ -1,12 +1,11 @@
 FROM nginx:alpine
 
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version="3.0.0" 
+LABEL com.galacticfog.version="4.0.0" 
 # Make sure to update this version and keep consistent with tag
 
 ENV BUILD_DEPS="gettext"  \
     RUNTIME_DEPS="libintl"
-
 
 # Add dependent packages
 RUN apk upgrade --no-cache && \
@@ -38,11 +37,6 @@ COPY ./scripts /scripts
 
 # Inject 
 COPY ./gestalt /gestalt
-
-# Inject resource templates
-COPY ./resource_templates /resource_templates
-
-COPY ./scripts/entrypoint.sh ./scripts/entrypoint.sh
 
 # define entrypoint
 ENTRYPOINT ["./scripts/entrypoint.sh"]

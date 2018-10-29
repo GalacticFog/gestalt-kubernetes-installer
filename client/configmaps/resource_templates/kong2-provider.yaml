@@ -7,7 +7,7 @@ properties:
       public:
         USERNAME: unused
         PASSWORD: currently
-        PUBLIC_URL_VHOST_0: '#{Config kong2-virtual-host}'
+        PUBLIC_URL_VHOST_0: '#{Config KONG_1_VIRTUAL_HOST}'
       private:
         KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
         KONG_CUSTOM_PLUGINS: gestalt-security-kong
@@ -34,7 +34,7 @@ properties:
         num_instances: 1
         network: BRIDGE
         container_type: DOCKER
-        image: '#{Config kong-image}'
+        image: '#{Config KONG_IMAGE}'
         force_pull: true
         health_checks:
         - grace_period_seconds: 300
@@ -63,7 +63,7 @@ properties:
           service_port: 31123
           
           virtual_hosts:
-          - '#{Config kong2-virtual-host}'
+          - '#{Config KONG_1_VIRTUAL_HOST}'
 
         # Service port used by Gateway manager
         - name: service

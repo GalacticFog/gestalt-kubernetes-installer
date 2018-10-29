@@ -5,17 +5,17 @@ properties:
   config:
     env:
       public:
-        SERVICE_VHOST_0: '#{Config logging-vhost}'
+        SERVICE_VHOST_0: '#{Config LOGGING_SERVICE_HOST}'
         SERVICE_VHOST_0_PROTOCOL: http
       private:
         ES_CLUSTER_NAME: myesdb
         DEFAULT_COMPUTE_TYPE: kube
         ES_COLD_DAYS: '1'
         ES_HOT_DAYS: '1'
-        ES_SERVICE_HOST: '#{Config elasticsearch-host}'
+        ES_SERVICE_HOST: '#{Config ELASTICSEARCH_HOST}'
         ES_SERVICE_PORT: '9300'
         ES_SNAPSHOT_REPO: ''
-        SKUBER_CONFIG: '#{Config kubeconfig-base64}'
+        SKUBER_CONFIG: '#{Config KUBECONFIG_BASE64}'
   linked_providers: []
   services:
   - init:
@@ -31,7 +31,7 @@ properties:
         num_instances: 1
         network: ''
         container_type: DOCKER
-        image: '#{Config logging-image}'
+        image: '#{Config LOGGING_IMAGE}'
         force_pull: true
         health_checks: []
         provider:
@@ -43,6 +43,6 @@ properties:
           expose_endpoint: true
           container_port: 9000
           lb_port: 9000
-          service_port: 31114
+          service_port: #{Config LOGGING_NODEPORT}
           virtual_hosts: []
           type: external

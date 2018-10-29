@@ -17,7 +17,7 @@ check_for_required_variables \
   database_hostname \
   docker_registry \
   gestalt_docker_release_tag \
-  external_gateway_host \
+  gestalt_kong_service_host \
   gestalt_kong_service_nodeport \
   kubeconfig_data \
   gestalt_ui_service_nodeport \
@@ -57,11 +57,13 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "KONG_IMAGE": "${docker_registry}/kong:${gestalt_docker_release_tag}",
     "KONG_INGRESS_SERVICE_NAME": "kng-ext",
     "KONG_NODEPORT": "${gestalt_kong_service_nodeport}",
-    "KONG_MANAGEMENT": "${gestalt_kong_management_nodeport}",
-    "KONG_VIRTUAL_HOST": "${external_gateway_host}",
+    "KONG_MANAGEMENT_NODEPORT": "${gestalt_kong_management_nodeport}",
+    "KONG_0_VIRTUAL_HOST": "${gestalt_kong_service_host}",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
     "LASER_IMAGE": "${docker_registry}/gestalt-laser:${gestalt_docker_release_tag}",
     "LASER_SERVICE_VHOST": "${laser_service_vhost}",
+    "LASER_NODEPORT": "${gestalt_laser_service_nodeport}",
+    "LOGGING_SERVICE_HOST": "${logging_service_host}",
     "LOGGING_IMAGE": "${docker_registry}/gestalt-log:${gestalt_docker_release_tag}",
     "LOGGING_NODEPORT": "${gestalt_logging_service_nodeport}",
     "META_HOSTNAME": "gestalt-meta.gestalt-system.svc.cluster.local",
@@ -90,15 +92,14 @@ cat >> ${GENERATED_CONF_FILE} << EOF
 }
 EOF
 
-
-cat > configmaps/gestalt/values.yaml <<EOF
+# TODO: Move this into another location
+cat > ../gestalt-installer-image/gestalt/values.yaml <<EOF
 # TODO - Pull out additional configuration options
 common:
   imagePullPolicy: Always
   # imagePullPolicy: IfNotPresent
 
 security:
-  # image: galacticfog/gestalt-security:release-2.1.0
   exposedServiceType: NodePort
   hostname: gestalt-security.gestalt-system
   port: 9455
@@ -106,19 +107,16 @@ security:
   databaseName: gestalt-security
 
 rabbit:
-  # image: galacticfog/rabbit:release-2.1.0
   hostname: gestalt-rabbit.gestalt-system
   port: 5672
   httpPort: 15672
 
 elastic:
-  # image: galacticfog/elasticsearch-docker:5.3.1
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
 
 meta:
-  # image: galacticfog/gestalt-meta:release-2.1.0
   exposedServiceType: NodePort
   hostname: gestalt-meta.gestalt-system
   port: 10131
@@ -126,23 +124,26 @@ meta:
   databaseName: gestalt-meta
 
 kong:
-  nodePort: 31113
+  nodePort: $KONG_NODEPORT
 
 logging:
-  nodePort: 31114
+  nodePort: $LOGGING_NODEPORT
 
 ui:
-  # image: galacticfog/gestalt-ui-react:release-2.1.0
   exposedServiceType: NodePort
-  nodePort: 31112
+  nodePort: $UI_NODEPORT
   ingress:
     host: localhost
 
-# Database configuration:
-# Provision an internal database
-# TODO - use this to determine whether to provision postgres as container
-#provision-internal-db: true
+# Gestalt DB settings
+db:
+  # Hostname must be fully qualified for Kong service
+  hostname: ${database_hostname}
+  port: 5432
+  # username: postgres
+  databaseName: postgres
 
+# The following only applies if the gestalt-postgresql chart is deployed
 postgresql:
   postgresUser: ${database_username}
   postgresDatabase: ${database_name}
@@ -157,20 +158,4 @@ postgresql:
   service:
     port: 5432
     type: ClusterIP
-
-# Internal DB settings
-db:
-  # Hostname must be fully qualified for Kong service
-  hostname: ${database_hostname}
-  port: 5432
-  # username: postgres
-  databaseName: postgres
-
-installer:
-  mode: debug
-  useDynamicLoadBalancers: No
-  externalGateway:
-    dnsName: localhost
-    protocol: http
-    kongServiceName: kng
 EOF

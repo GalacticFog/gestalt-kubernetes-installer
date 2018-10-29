@@ -6,7 +6,7 @@ properties:
     env:
       public:
         CMD: bin/gestalt-laser-executor-dotnet
-        IMAGE: '#{Config dotnet-executor-image}'
+        IMAGE: '#{Config DOTNET_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
         NAME: dotnet
         RUNTIME: csharp;dotnet

@@ -46,6 +46,8 @@ gestalt_install_validate_preconditions() {
       kube_namespace conf_install \
       gestalt_license 
 
+    check_for_kube
+
     echo "Precondition check succeeded"
 
 }
@@ -74,10 +76,9 @@ gestalt_install_create_configmaps() {
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
 
-  cd configmaps
-  tar cfzv gestalt.tar.gz gestalt
-  cat gestalt.tar.gz | base64 > gestalt.tar.gz.b64
-  cd -
+  tar cfzv ./configmaps/gestalt.tar.gz -C ../gestalt-installer-image gestalt && \
+  cat ./configmaps/gestalt.tar.gz | base64 > ./configmaps/gestalt.tar.gz.b64
+  exit_on_error "Failed to build gestalt configmap data"
 
   # Create for Helm chart - main directory
   echo "Creating configmap for Helm templates to be run by gestalt-installer Pod..."

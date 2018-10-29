@@ -9,5 +9,5 @@ properties:
     networks: null
   services: []
   locations: []
-  data: '#{Config kubeconfig-base64}'
+  data: '#{Config KUBECONFIG_BASE64}'
   linked_providers: []
