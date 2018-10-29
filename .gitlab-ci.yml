@@ -16,7 +16,7 @@ build-image:
     - apk add --update --no-cache bash gawk sed grep curl wget git jq tar
     - echo "Login Docker Registry:"
     - echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
-    - echo "Only build image:"
+    - echo "Build and Publish image:"
     - cd gestalt-installer-image
     - ./dependencies-process.sh "clean"
     - ./dependencies-process.sh "fetch"
