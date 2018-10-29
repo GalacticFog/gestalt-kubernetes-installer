@@ -8,23 +8,6 @@ stages:
 
 variables:
   DOCKER_IMG: "galacticfog/gestalt-installer"
-
-
-build-master:
-  stage: build
-  script:
-    - echo "Install Dependencies:"
-    - apk add --update --no-cache bash gawk sed grep curl wget git jq tar
-    - echo "Login Docker Registry:"
-    - echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
-    - echo "Build and push image:"
-    - cd gestalt-installer-image
-    - ./dependencies-process.sh
-    - if [[ ${CI_BUILD_TAG} == *[^0-9.]* ]]; then echo "Tag does not match version pattern, no base version."; else BASE_VERSION=`echo ${CI_BUILD_TAG} | awk -F'.' '{print $1}'`; fi
-    - echo "commit-${CI_BUILD_REF:0:8} ${CI_BUILD_TAG} ${BASE_VERSION}"
-    - ./build_and_publish.sh "latest" "commit-${CI_BUILD_REF:0:8}" ${CI_BUILD_TAG} ${BASE_VERSION}
-  only:
-    - master
     
 build-image:
   stage: build
@@ -44,10 +27,10 @@ build-image:
     - docker push     $DOCKER_IMG:$DOCKER_TAG
     - |
       if [ ${CI_COMMIT_REF_NAME} == "master" ]; then
-         docker tag $DOCKER_IMG:$DOCKER_TAG $DOCKER_IMG:latest
-         docker push $DOCKER_IMG:latest
-         if [[ ${VERSION} == *[^0-9.]* ]]; then
-           echo "[Warning] Tag does not match version pattern, no base version will be tagged..."
+        docker tag $DOCKER_IMG:$DOCKER_TAG $DOCKER_IMG:latest
+        docker push $DOCKER_IMG:latest
+        if [[ ${VERSION} == *[^0-9.]* ]]; then
+          echo "[Warning] Tag does not match version pattern, no base version will be tagged..."
         else
           BASE_VERSION=`echo ${VERSION} | awk -F'.' '{print $1}'`
           docker build -t $DOCKER_IMG:$DOCKER_TAG .
@@ -55,13 +38,11 @@ build-image:
         fi
         echo "All tag(-s) applied: $DOCKER_TAG ${VERSION} ${BASE_VERSION}"
       else
-        echo "[Not master][${CI_COMMIT_REF_NAME}]"
+        echo "[Not master branch][${CI_COMMIT_REF_NAME}]"
       fi
 
     # - docker rmi      $DOCKER_IMG:$DOCKER_TAG
 
-  except:
-    - master
-    - tags
+
 
 
