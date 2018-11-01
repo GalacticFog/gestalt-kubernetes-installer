@@ -59,8 +59,9 @@ fog config set debug=true
 gestalt_cli_license_set
 gestalt_cli_context_set
 
-run gestalt_cli_create_resources #Default or Custom as per config
+# For now comment out so manually troubleshoot
+#run gestalt_cli_create_resources #Default or Custom as per config
 # run create_kong_ingress #  AWS approach
-run create_kong_ingress_v2 #
+#run create_kong_ingress_v2 #
 
 echo "[Success] Gestalt platform installation completed."
