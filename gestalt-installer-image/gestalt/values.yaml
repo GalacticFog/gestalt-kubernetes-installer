@@ -42,7 +42,7 @@ ui:
 # Gestalt DB settings
 db:
   # Hostname must be fully qualified for Kong service
-  hostname: cluster1.crqimf2biim3.us-east-1.rds.amazonaws.com
+  hostname: gestalt-postgresql.gestalt-system.svc.cluster.local
   port: 5432
   # username: postgres
   databaseName: postgres
@@ -53,7 +53,7 @@ postgresql:
   postgresDatabase: postgres
   persistence:
     size: 100Mi
-    storageClass: "gp2"
+    storageClass: "hostpath"
     subPath: "postgres"
   resources:
     requests:
