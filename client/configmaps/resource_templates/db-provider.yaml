@@ -8,10 +8,11 @@ properties:
   config:
     env:
       public:
-        USER: '#{Config database-username}'
-        PASSWORD: '#{Config database-password}'
-        HOSTNAME: '#{Config database-hostname}'
+        USER: '#{Config DATABASE_USERNAME}'
+        PASSWORD: '#{Config DATABASE_PASSWORD}'
+        HOSTNAME: '#{Config DATABASE_HOSTNAME}'
         PORT: '5432'
-        PROTOCOL: http
+        PROTOCOL: tcp #TODO: Remove if not used
+        # PROTOCOL: http #TODO: Remove if not used
       private: {}
   services: []

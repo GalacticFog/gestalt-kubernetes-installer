@@ -6,7 +6,7 @@ properties:
     env:
       public:
         CMD: bin/gestalt-laser-executor-golang
-        IMAGE: '#{Config golang-executor-image}'
+        IMAGE: '#{Config GOLANG_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
         NAME: golang
         RUNTIME: golang

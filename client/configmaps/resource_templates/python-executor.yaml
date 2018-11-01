@@ -6,7 +6,7 @@ properties:
     env:
       public:
         CMD: bin/gestalt-laser-executor-python
-        IMAGE: '#{Config python-executor-image}'
+        IMAGE: '#{Config PYTHON_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
         NAME: python
         RUNTIME: python

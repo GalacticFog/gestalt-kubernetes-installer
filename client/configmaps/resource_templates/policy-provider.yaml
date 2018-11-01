@@ -8,8 +8,8 @@ properties:
       private:
         RABBIT_EXCHANGE: policy-exchange
         RABBIT_ROUTE: policy
-        LASER_USER: '#{Config meta-api-key}'
-        LASER_PASSWORD: '#{Config meta-api-secret}'
+        LASER_USER: '#{Config SECURITY_KEY}'
+        LASER_PASSWORD: '#{Config SECURITY_SECRET}'
   linked_providers:
   - name: LASER
     id: '#{Provider /root/default-laser id}'
@@ -33,7 +33,7 @@ properties:
         num_instances: 1
         network: BRIDGE
         container_type: DOCKER
-        image: '#{Config policy-image}'
+        image: '#{Config POLICY_IMAGE}'
         force_pull: true
         health_checks:
         - grace_period_seconds: 300

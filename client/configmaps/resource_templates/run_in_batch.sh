@@ -29,6 +29,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+create() {
+  local file=$1.yaml
+  echo "Creating resource from '$file'..."
+  fog create resource -f $file --config $config_file
+  if [ $? -ne 0 ]; then
+    echo
+    echo "Error: Error processing '$file', aborting."
+    exit 1
+  fi
+}
+
 # Set context
 fog context set --path '/root'
 
@@ -37,26 +48,38 @@ fog create workspace --name 'gestalt-system-workspace' -d "Gestalt System Worksp
 fog create environment -w 'gestalt-system-workspace' -n 'gestalt-laser-environment' -d "Gestalt Laser Environment" -t 'production'
 
 # Create base providers
-fog create resource -f db-provider.json --config ${config_file}
-fog create resource -f security-provider.json --config ${config_file}
-fog create resource -f kubernetes-provider.json --config ${config_file}
-fog create resource -f rabbit-provider.json --config ${config_file}
-fog create resource -f logging-provider.json --config ${config_file}
+fog create resources --config $config_file \
+  db-provider.yaml \
+  security-provider.yaml \
+  kubernetes-provider.yaml \
+  rabbit-provider.yaml \
+  logging-provider.yaml
 
 # Link the logging provider to the CaaS provider
 # fog meta patch-provider --provider '/root/default-kubernetes' -f link-logging-provider.json
 
 # Create Executor Providers
-fog create resource -f js-executor.json --config ${config_file}
-fog create resource -f jvm-executor.json --config ${config_file}
-fog create resource -f dotnet-executor.json --config ${config_file}
-fog create resource -f golang-executor.json --config ${config_file}
-fog create resource -f nodejs-executor.json --config ${config_file}
-fog create resource -f python-executor.json --config ${config_file}
-fog create resource -f ruby-executor.json --config ${config_file}
+fog create resources --config $config_file \
+  js-executor.yaml \
+  jvm-executor.yaml \
+  dotnet-executor.yaml \
+  golang-executor.yaml \
+  nodejs-executor.yaml \
+  python-executor.yaml \
+  ruby-executor.yaml
 
 # Create other providers
-fog create resource -f laser-provider.json --config ${config_file}
-fog create resource -f policy-provider.json --config ${config_file}
-fog create resource -f kong-provider.json --config ${config_file}
-fog create resource -f gatewaymanager-provider.json --config ${config_file}
+fog create resources --config $config_file \
+  laser-provider.yaml \
+  policy-provider.yaml # Policy depends on Rabbit and Laser
+
+create kong-provider
+
+# Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
+create kong2-provider
+# create kong3-external-provider
+
+create gatewaymanager-provider  # Create the gateway manager provider after 
+                                # kong providers, as it uses the kong providers as linked providers
+
+fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser'

@@ -16,6 +16,8 @@ log_debug "" && log_debug "[Info] Obtain current context 'kubectl config current
 kubectl_context=$(kubectl config current-context)
 exit_on_error "Unable determine current context '${kubectl} config current-context', aborting."
 
+check_for_kube
+
 kube_process_kubeconfig
 exit_on_error "Failed to process kubeconfig, aborting."
 

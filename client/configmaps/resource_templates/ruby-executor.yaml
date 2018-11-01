@@ -6,7 +6,7 @@ properties:
     env:
       public:
         CMD: bin/gestalt-laser-executor-ruby
-        IMAGE: '#{Config ruby-executor-image}'
+        IMAGE: '#{Config RUBY_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
         NAME: ruby
         RUNTIME: ruby

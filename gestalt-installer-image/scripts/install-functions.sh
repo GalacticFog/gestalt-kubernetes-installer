@@ -42,7 +42,7 @@ getsalt_installer_setcheck_variables() {
     JS_EXECUTOR_IMAGE \
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
-    KONG_VIRTUAL_HOST \
+    KONG_0_VIRTUAL_HOST \
     KUBECONFIG_BASE64 \
     LOGGING_IMAGE \
     META_HOSTNAME \

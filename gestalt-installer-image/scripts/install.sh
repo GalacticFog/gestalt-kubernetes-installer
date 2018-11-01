@@ -52,6 +52,10 @@ run init_meta
 gestalt_cli_set_opts
 do_get_security_credentials
 gestalt_cli_login
+
+# echo "Enable Debug..."
+# fog config set debug=true
+
 gestalt_cli_license_set
 gestalt_cli_context_set
 
