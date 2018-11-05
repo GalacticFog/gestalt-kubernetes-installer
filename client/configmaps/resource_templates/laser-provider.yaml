@@ -42,7 +42,7 @@ properties:
         RABBIT_RESPONSE_TOPIC: default-response-topic
         # SCALE_DOWN_TIME_SECONDS: '15'
         SCALE_DOWN_TIME_SECONDS: '300'
-        SERVICE_VHOST_0: '#{Config LASER_SERVICE_VHOST}'
+        # SERVICE_VHOST_0: '#{Config LASER_SERVICE_VHOST}'
   linked_providers:
   - name: LAMBDA_DATABASE
     id: '#{Provider /root/default-postgres id}'
