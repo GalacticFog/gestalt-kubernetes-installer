@@ -42,6 +42,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "DATABASE_HOSTNAME": "${database_hostname}",
     "DATABASE_IMAGE": "${database_image}",
     "DATABASE_IMAGE_TAG": "${database_image_tag}",
+    "DATABASE_NAME": "${database_name}",
     "DATABASE_PASSWORD": "${database_password}",
     "DATABASE_PORT": "5432",
     "DATABASE_USERNAME": "${database_username}",
