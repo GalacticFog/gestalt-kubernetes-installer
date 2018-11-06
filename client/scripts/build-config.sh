@@ -64,7 +64,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "LASER_SERVICE_VHOST": "${laser_service_vhost}",
     "LASER_NODEPORT": "${gestalt_laser_service_nodeport}",
     "LOGGING_SERVICE_HOST": "${logging_service_host}",
-    "LOGGING_SERVICE_PROTOCOL", "${logging_service_protocol}",
+    "LOGGING_SERVICE_PROTOCOL": "${logging_service_protocol}",
     "LOGGING_IMAGE": "${docker_registry}/gestalt-log:${gestalt_docker_release_tag}",
     "LOGGING_NODEPORT": "${gestalt_logging_service_nodeport}",
     "META_HOSTNAME": "gestalt-meta.gestalt-system.svc.cluster.local",
