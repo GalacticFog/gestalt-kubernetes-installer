@@ -23,8 +23,7 @@ getsalt_installer_setcheck_variables() {
   if ! is_dynamic_lb_enabled ; then
     echo "Dynamic load balancing is not enabled, checking for required variables"
     check_for_required_variables \
-      EXTERNAL_GATEWAY_HOST \
-      EXTERNAL_GATEWAY_PROTOCOL
+      KONG_INGRESS_HOSTNAME
   fi
 
   # Check all variables in one call
@@ -100,6 +99,7 @@ gestalt_installer_generate_helm_config() {
     RABBIT_PORT \
     RABBIT_HTTP_PORT \
     ELASTICSEARCH_IMAGE \
+    ELASTICSEARCH_INIT_IMAGE \
     META_IMAGE \
     META_HOSTNAME \
     META_PORT \
@@ -107,6 +107,7 @@ gestalt_installer_generate_helm_config() {
     KONG_NODEPORT \
     LOGGING_NODEPORT \
     UI_IMAGE \
+    UI_INGRESS_HOSTNAME \
     UI_NODEPORT
 
   cat > helm-config.yaml <<EOF
@@ -138,6 +139,8 @@ rabbit:
 
 elastic:
   image: ${ELASTICSEARCH_IMAGE}
+  initController:
+    image: ${ELASTICSEARCH_INIT_IMAGE}
 
 meta:
   image: ${META_IMAGE}
@@ -158,7 +161,7 @@ ui:
   exposedServiceType: NodePort
   nodePort: ${UI_NODEPORT}
   ingress:
-    host: localhost
+    host: ${UI_INGRESS_HOSTNAME}
 
 EOF
 
@@ -469,19 +472,22 @@ create_kong_ingress_v2() {
     # echo "KONG_INGRESS_SERVICE_NAME not defined, defaulting to $KONG_INGRESS_SERVICE_NAME"
   fi
 
-  echo "Creating Kubernetes Ingress resource for $KONG_INGRESS_SERVICE_NAME..."
+  if [ -z $KONG_INGRESS_HOSTNAME ]; then
+    # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
+    # in '*' for the host for the ingress - which means any host would apply
+    export KONG_INGRESS_HOSTNAME=localhost
+  fi
+
+  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
 
   local service_name=$KONG_INGRESS_SERVICE_NAME
+  local hostname=$KONG_INGRESS_HOSTNAME
 
   servicename_is_unique_or_exit $service_name
 
   local service_namespace=$(get_service_namespace $service_name)
 
   echo "Namespace for service '$service_name' is '$service_namespace'"
-
-  # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
-  # in '*' for the host for the ingress - which means any host would apply
-  local host=$EXTERNAL_GATEWAY_HOST
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
@@ -490,16 +496,19 @@ metadata:
   name: $service_name
   namespace: $service_namespace
 spec:
+  backend:
+    serviceName: $service-name
+    servicePort: 8000
   rules:
-  - host: $host
+  - host: $hostname
     http:
       paths:
-      - path: /
-        backend:
-          serviceName: $service_name
-          servicePort: 8000
+      - backend:
+        serviceName: kng-ext
+        servicePort: 8001
 EOF
+
   exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."
 
-  echo "Kong ingress to '$service_namespace/$service_name' configured for '$host'."
+  echo "Kong ingress to '$service_namespace/$service_name' configured for '$hostname'."
 }

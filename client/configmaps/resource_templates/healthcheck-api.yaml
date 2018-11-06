@@ -1,0 +1,15 @@
+name: health-api
+description: A simple healthcheck API endpoint
+respurce_type:
+properties:
+  resource: "/health"
+  methods: ["GET","PUT","POST","DELETE"]
+  synchronous: true 
+  plugins:
+    rateLimit:
+      enabled: false
+      perMinute: 60
+    gestaltSecurity:
+      enabled: false
+      users: []
+      groups: []

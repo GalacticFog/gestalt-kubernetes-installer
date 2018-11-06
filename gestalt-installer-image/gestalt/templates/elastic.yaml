@@ -12,6 +12,15 @@ spec:
       labels:
         gestalt-app: elastic
     spec:
+      initContainers:
+      - name: init-sysctl
+        image: {{ .Values.elastic.initContainer.image }}
+        command:
+        - sh
+        - -c
+        - sysctl -w vm.max_map_count=262166
+        securityContext:
+          privileged: true
       containers:
       - name: gestalt-elastic
         image: "{{ .Values.elastic.image }}"

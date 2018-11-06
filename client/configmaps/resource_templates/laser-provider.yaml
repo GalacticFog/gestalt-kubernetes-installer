@@ -72,7 +72,7 @@ properties:
       name: lsr
       properties:
         cpus: 1.0
-        memory: 2048
+        memory: 4076
         accepted_resource_roles:
         - production
         - '*'

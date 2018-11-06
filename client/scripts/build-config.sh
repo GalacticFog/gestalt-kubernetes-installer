@@ -17,7 +17,7 @@ check_for_required_variables \
   docker_registry \
   gestalt_docker_release_tag \
   gestalt_kong_service_host \
-  gestalt_kong_service_nodeport \
+  gestalt_ui_ingress_host \
   kubeconfig_data \
   gestalt_ui_service_nodeport \
   gestalt_kong_service_nodeport \
@@ -47,6 +47,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "DOTNET_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-dotnet:${gestalt_docker_release_tag}",
     "ELASTICSEARCH_HOST": "gestalt-elastic.gestalt-system",
     "ELASTICSEARCH_IMAGE": "${docker_registry}/elasticsearch-docker:5.3.1",
+    "ELASTICSEARCH_INIT_IMAGE": "busybox:1.27.2",
     "GESTALT_INSTALL_LOGGING_LVL": "${gestalt_install_mode}",
     "GOLANG_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-golang:${gestalt_docker_release_tag}",
     "GWM_EXECUTOR_IMAGE": "${docker_registry}/gestalt-api-gateway:${gestalt_docker_release_tag}",
@@ -55,6 +56,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "JVM_EXECUTOR_IMAGE": "${docker_registry}/gestalt-laser-executor-jvm:${gestalt_docker_release_tag}",
     "KONG_IMAGE": "${docker_registry}/kong:${gestalt_docker_release_tag}",
     "KONG_INGRESS_SERVICE_NAME": "kng-ext",
+    "KONG_INGRESS_HOSTNAME": "${gestalt_kong_ingress_host}",
     "KONG_NODEPORT": "${gestalt_kong_service_nodeport}",
     "KONG_MANAGEMENT_NODEPORT": "${gestalt_kong_management_nodeport}",
     "KONG_0_VIRTUAL_HOST": "${gestalt_kong_service_host}",
@@ -85,6 +87,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "SECURITY_PORT": "9455",
     "SECURITY_PROTOCOL": "http",
     "UI_HOSTNAME": "gestalt-ui.gestalt-system.svc.cluster.local",
+    "UI_INGRESS_HOSTNAME": "${gestalt_ui_ingress_host}",
     "UI_IMAGE": "${docker_registry}/gestalt-ui-react:${gestalt_docker_release_tag}",
     "UI_NODEPORT": "${gestalt_ui_service_nodeport}",
     "UI_PORT": "80",
@@ -115,6 +118,8 @@ elastic:
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
+  initContainer:
+    image: busybox:1.27.2
 
 meta:
   exposedServiceType: NodePort
@@ -125,16 +130,16 @@ meta:
   nodePort: ${gestalt_meta_service_nodeport}
 
 kong:
-  nodePort: $KONG_NODEPORT
+  nodePort: ${gestalt_kong_service_nodeport}
 
 logging:
-  nodePort: $LOGGING_NODEPORT
+  nodePort: ${gestalt_logging_service_nodeport}
 
 ui:
   exposedServiceType: NodePort
-  nodePort: $UI_NODEPORT
+  nodePort: ${gestalt_ui_service_nodeport}
   ingress:
-    host: localhost
+    host: ${gestalt_ui_ingress_host}
 
 # Gestalt DB settings
 db:

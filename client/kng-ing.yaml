@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kng-ext
+  namespace: bc4bebb8-1cf9-4534-a6e4-17e5d79ea119
+spec:
+  backend:
+    serviceName: kng-ext
+    servicePort: 8000
+  rules:
+    - host: api-admin.zwobu.com
+      http:
+        paths:
+        - backend:
+            serviceName: kng-ext
+            servicePort: 8001

@@ -1,0 +1,23 @@
+{
+    "name": "health",
+    "description": "An API endpoint to return a 200 response for the Kong API healthcheck",
+    "properties": {
+        "resource": "/",
+        "methods": [
+            "GET",
+            "POST"
+        ],
+        "plugins": {
+            "rateLimit": {
+                "enabled": false,
+                "perMinute": 60
+            },
+            "gestaltSecurity": {
+                "enabled": false,
+                "users": [],
+                "groups": []
+            }
+        },
+        "synchronous": true
+    }
+}

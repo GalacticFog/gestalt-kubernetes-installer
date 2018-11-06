@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"creationTimestamp":"2018-11-02T14:26:29Z","labels":{"meta/container":"29ce2708-3d2a-4ebe-a9d1-2a3628198476","meta/environment":"008c68d1-8116-4ef4-b177-7fd80df7e855","meta/fqon":"root","meta/provider":"a8398d75-b858-41f3-9d98-5f5e49a665fa","meta/workspace":"5e83e5db-5695-4f57-811f-0cac58e57608"},"name":"kng","namespace":"008c68d1-8116-4ef4-b177-7fd80df7e855","resourceVersion":"12294","selfLink":"/api/v1/namespaces/008c68d1-8116-4ef4-b177-7fd80df7e855/services/kng","uid":"49abb670-deab-11e8-aeb4-42010a960028"},"spec":{"clusterIP":"10.27.255.97","ports":[{"name":"service","port":8001,"protocol":"TCP","targetPort":8001},{"name":"public-url","port":8000,"protocol":"TCP","targetPort":8000}],"selector":{"meta/container":"29ce2708-3d2a-4ebe-a9d1-2a3628198476"},"sessionAffinity":"None","type":"LoadBalancer"},"status":{"loadBalancer":{}}}
+  creationTimestamp: 2018-11-02T14:26:29Z
+  labels:
+    meta/container: 29ce2708-3d2a-4ebe-a9d1-2a3628198476
+    meta/environment: 008c68d1-8116-4ef4-b177-7fd80df7e855
+    meta/fqon: root
+    meta/provider: a8398d75-b858-41f3-9d98-5f5e49a665fa
+    meta/workspace: 5e83e5db-5695-4f57-811f-0cac58e57608
+  name: kng
+  namespace: 008c68d1-8116-4ef4-b177-7fd80df7e855
+  resourceVersion: "50595"
+  selfLink: /api/v1/namespaces/008c68d1-8116-4ef4-b177-7fd80df7e855/services/kng
+  uid: 49abb670-deab-11e8-aeb4-42010a960028
+spec:
+  clusterIP: 10.27.255.97
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: service
+    port: 8001
+    protocol: TCP
+    targetPort: 8001
+  - name: public-url
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    meta/container: 29ce2708-3d2a-4ebe-a9d1-2a3628198476
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer:
+    ingress:
+    - ip: 35.194.82.55

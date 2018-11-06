@@ -1,0 +1,20 @@
+{
+  "name": "health",
+  "description": "A lambda to satisfy GCP healthcheck requirements",
+  "provider": "default-laser",
+  "properties": {
+    "public": true,
+    "code": "ZnVuY3Rpb24gaGVhbHRoY2hlY2soKSB7IHJldHVybiAiSGVhbHRoeSI7IH0K",
+    "cpus": 0.1,
+    "code_type": "code",
+    "headers": {
+      "Accept": "text/plain"
+    },
+    "periodic_info": {},
+    "timeout": 30,
+    "handler": "healthcheck",
+    "runtime": "nashorn",
+    "env": {},
+    "memory": 256
+  }
+}

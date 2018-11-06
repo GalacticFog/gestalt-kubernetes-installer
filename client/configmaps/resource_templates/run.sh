@@ -68,6 +68,7 @@ create ruby-executor
 create laser-provider
 create policy-provider # Policy depends on Rabbit and Laser
 
+# Create Kong API Provider
 create kong-provider
 
 # Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
@@ -76,6 +77,13 @@ create kong-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
+
+# Pause to give Kong a chance to come up and then create the healthcheck API endpoint and lambda
+# echo "----- Creating the Kong healthcheck lambda -----"
+# create healthcheck-lambda
+# echo "----- Creating the Kong healthcheck API endpoint -----"
+# create healthcheck-api
+# echo "----- Done creating healthchecks -----"
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
