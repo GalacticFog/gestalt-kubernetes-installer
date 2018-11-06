@@ -122,6 +122,7 @@ meta:
   port: 10131
   protocol: http
   databaseName: gestalt-meta
+  nodePort: ${gestalt_meta_service_nodeport}
 
 kong:
   nodePort: $KONG_NODEPORT

@@ -77,7 +77,7 @@ create kong-provider
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
 
-sleep 10  # Provide time for Meta to settle before migrating the schema
+sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
 
 return 0
