@@ -46,34 +46,24 @@ properties:
   linked_providers:
   - name: LAMBDA_DATABASE
     id: '#{Provider /root/default-postgres id}'
-    location: dcos
   - name: GESTALT_SECURITY
     id: '#{Provider /root/default-security id}'
-    location: dcos
   - name: RABBIT
     id: '#{Provider /root/default-rabbit id}'
-    location: dcos
   - name: EXECUTOR_0
     id: '#{Provider /root/js-executor id}'
-    location: dcos
   - name: EXECUTOR_1
     id: '#{Provider /root/jvm-executor id}'
-    location: dcos
   - name: EXECUTOR_2
     id: '#{Provider /root/nodejs-executor id}'
-    location: dcos
   - name: EXECUTOR_3
     id: '#{Provider /root/dotnet-executor id}'
-    location: dcos
   - name: EXECUTOR_4
     id: '#{Provider /root/golang-executor id}'
-    location: dcos
   - name: EXECUTOR_5
     id: '#{Provider /root/python-executor id}'
-    location: dcos
   - name: EXECUTOR_6
     id: '#{Provider /root/ruby-executor id}'
-    location: dcos
   services:
   - init:
       binding: eager

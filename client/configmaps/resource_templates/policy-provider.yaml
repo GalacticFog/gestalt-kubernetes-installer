@@ -13,10 +13,8 @@ properties:
   linked_providers:
   - name: LASER
     id: '#{Provider /root/default-laser id}'
-    location: dcos
   - name: RABBIT
     id: '#{Provider /root/default-rabbit id}'
-    location: dcos
   services:
   - init:
       binding: eager

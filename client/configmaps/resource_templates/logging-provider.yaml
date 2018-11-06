@@ -14,7 +14,7 @@ properties:
         ES_HOT_DAYS: '1'
         ES_SERVICE_HOST: '#{Config ELASTICSEARCH_HOST}'
         ES_SERVICE_PORT: '9300'
-        ES_SNAPSHOT_REPO: ''
+        ES_SNAPSHOT_REPO: 's3_repository'
         SKUBER_CONFIG: '#{Config KUBECONFIG_BASE64}'
   linked_providers: []
   services:

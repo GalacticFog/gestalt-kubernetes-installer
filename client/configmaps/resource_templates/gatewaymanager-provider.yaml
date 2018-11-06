@@ -10,22 +10,17 @@ properties:
   linked_providers:
   - name: KONG_0
     id: '#{Provider /root/default-kong id}'
-    location: dcos
 
   # Uncomment to link the Kong provider
   # - name: KONG_1
   #   id: '# --break up so parser won't interepret--{Provider /root/kong2-in-cluster id}'
-  #   location: dcos
   # - name: KONG_2
   #   id: '# --break up so parser won't interepret--{Provider /root/kong3-external id}'
-  #   location: dcos
 
   - name: GATEWAY_DATABASE
     id: '#{Provider /root/default-postgres id}'
-    location: dcos
   - name: GESTALT_SECURITY
     id: '#{Provider /root/default-security id}'
-    location: dcos
   services:
   - init:
       binding: eager
