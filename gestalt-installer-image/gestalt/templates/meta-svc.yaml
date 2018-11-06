@@ -13,3 +13,4 @@ spec:
     - name: http-api
       port: {{ .Values.meta.port }}
       targetPort: service-api
+      nodePort: {{ .Values.meta.nodePort }}
