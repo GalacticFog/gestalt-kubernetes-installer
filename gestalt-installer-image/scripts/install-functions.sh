@@ -464,6 +464,42 @@ get_service_namespace() {
   kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
 }
 
+get_service_deployment_name() {
+  $service_name = $1;
+  $service_namespace = $2;
+
+  # Pick kong deployment name out of json output
+}
+
+create_kong_readinessProbe() {
+  local kong_namespace = $1;
+  local kong_deploy_name = $2;
+  
+  echo "Creating readinessProbe for Kong deployment '$kong_deploy_name' in '$kong_namespace'"
+
+  kubectl apply -f -- <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: $kong_deploy_name
+  namespace: $kong_namespace
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: kng
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+EOF  
+  exit_on_error "Could not create Kong readinessProbe"
+  
+  echo "Kong readiness probe created!"
+}
+
 create_kong_ingress_v2() {
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
     echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
@@ -478,8 +514,6 @@ create_kong_ingress_v2() {
     export KONG_INGRESS_HOSTNAME=localhost
   fi
 
-  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
-
   local service_name=$KONG_INGRESS_SERVICE_NAME
   local hostname=$KONG_INGRESS_HOSTNAME
 
@@ -487,7 +521,9 @@ create_kong_ingress_v2() {
 
   local service_namespace=$(get_service_namespace $service_name)
 
-  echo "Namespace for service '$service_name' is '$service_namespace'"
+  echo "Namespace for Kong service '$service_name' is '$service_namespace'"
+
+  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
