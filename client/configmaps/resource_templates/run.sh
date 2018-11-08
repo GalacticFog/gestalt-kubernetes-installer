@@ -82,7 +82,6 @@ create gatewaymanager-provider  # Create the gateway manager provider after
 healthcheck_environment=gestalt-health-environment
 fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt HealthCheck Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating '$healthcheck_environment, aborting" && exit 1)
-sleep 30
 gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
 fog context set $gestalt_healthcheck_context
 if [ $? -eq 0 ]; then
