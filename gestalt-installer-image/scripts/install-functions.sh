@@ -432,7 +432,6 @@ gestalt_cli_create_resources() {
   echo "Gestalt resource(s) created."
 }
 
-
 servicename_is_unique_or_exit() {
   local service_name=$1
   # Get a list of all services by name across all namespaces
@@ -464,25 +463,18 @@ get_service_namespace() {
   kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
 }
 
-get_service_deployment_name() {
-  $service_name = $1;
-  $service_namespace = $2;
+create_kong_readiness_probe() {
+  local deploy_name=$1
+  local namespace=$2
 
-  # Pick kong deployment name out of json output
-}
+  echo "Creating readinessProbe for deployment '${namespace}/${deploy_name}'"
 
-create_kong_readinessProbe() {
-  local kong_namespace = $1;
-  local kong_deploy_name = $2;
-  
-  echo "Creating readinessProbe for Kong deployment '$kong_deploy_name' in '$kong_namespace'"
-
-  kubectl apply -f -- <<EOF
+  kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: $kong_deploy_name
-  namespace: $kong_namespace
+  name: $deploy_name
+  namespace: $namespace
 spec:
   replicas: 1
   template:
@@ -494,7 +486,8 @@ spec:
             path: /health
             port: 8000
             scheme: HTTP
-EOF  
+EOF
+
   exit_on_error "Could not create Kong readinessProbe"
   
   echo "Kong readiness probe created!"
@@ -523,6 +516,8 @@ create_kong_ingress_v2() {
 
   echo "Namespace for Kong service '$service_name' is '$service_namespace'"
 
+  create_kong_readiness_probe kng $service_namespace
+
   echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
 
   kubectl apply -f - <<EOF
@@ -533,15 +528,15 @@ metadata:
   namespace: $service_namespace
 spec:
   backend:
-    serviceName: $service-name
+    serviceName: $service_name
     servicePort: 8000
   rules:
   - host: $hostname
     http:
       paths:
       - backend:
-        serviceName: kng-ext
-        servicePort: 8001
+          serviceName: $service_name
+          servicePort: 8001
 EOF
 
   exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."

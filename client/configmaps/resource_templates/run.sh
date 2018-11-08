@@ -79,11 +79,22 @@ create gatewaymanager-provider  # Create the gateway manager provider after
                                 # kong providers, as it uses the kong providers as linked providers
 
 # Pause to give Kong a chance to come up and then create the healthcheck API endpoint and lambda
-# echo "----- Creating the Kong healthcheck lambda -----"
-# create healthcheck-lambda
-# echo "----- Creating the Kong healthcheck API endpoint -----"
-# create healthcheck-api
-# echo "----- Done creating healthchecks -----"
+healthcheck_environment=gestalt-health-environment
+fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt HealthCheck Environment" --type 'production'
+[ $? -eq 0 ] || (echo "Error creating '$healthcheck_environment, aborting" && exit 1)
+sleep 30
+gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
+fog context set $gestalt_healthcheck_context
+if [ $? -eq 0 ]; then
+  echo "----- Creating the Kong healthcheck lambda -----"
+  fog create resource -f healthcheck-lambda.json
+  echo "----- Creating the Kong healthcheck API endpoint -----"
+  fog create api --name health-api --description 'A simple healthcheck API' --provider default-kong
+  fog create api-endpoint -f healthcheck-apiendpoint.json --api health-api --lambda health-lambda
+  echo "----- Done creating healthchecks -----"
+else
+  echo "Unable to set context to $gestalt_healthcheck_context - no healthcheck API!"
+fi
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .

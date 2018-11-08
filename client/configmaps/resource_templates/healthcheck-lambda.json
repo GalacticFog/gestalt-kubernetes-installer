@@ -1,0 +1,25 @@
+{
+  "resource_type": "Gestalt::Resource::Node::Lambda",
+  "name": "health-lambda",
+  "description": "A simple healthcheck Lambda",
+  "properties": {
+    "public": true,
+    "code": "ZnVuY3Rpb24gaGVhbHRoY2hlY2soKSB7IHJldHVybiAiSGVhbHRoeSI7IH0K",
+    "cpus": 0.1,
+    "code_type": "code",
+    "headers": {
+      "Accept": "text/plain",
+      "Content-Type": "text/plain"
+    },
+    "periodic_info": {},
+    "timeout": 30,
+    "handler": "healthcheck",
+    "runtime": "nashorn",
+    "env": {},
+    "provider": {
+      "id": "#{Provider /root/default-laser id}",
+      "locations": []
+    },
+    "memory": 256
+  }
+}
