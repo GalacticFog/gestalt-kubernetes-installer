@@ -51,6 +51,7 @@ run init_meta
 
 gestalt_cli_set_opts
 do_get_security_credentials
+create_gestalt_security_creds_secret
 gestalt_cli_login
 
 # echo "Enable Debug..."

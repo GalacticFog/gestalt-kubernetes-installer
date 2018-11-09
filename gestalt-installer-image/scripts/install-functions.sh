@@ -268,6 +268,20 @@ do_get_security_credentials() {
 
 }
 
+create_gestalt_security_creds_secret() {
+  kubectl create -f - <<EOF
+apiVersion: v1
+data:
+  API_KEY: `echo $SECURITY_KEY | base64`
+  API_SECRET: `echo $SECURITY_SECRET | base64`
+kind: Secret
+metadata:
+  name: gestalt-security-creds
+  namespace: gestalt-system
+type: Opaque
+EOF
+}
+
 wait_for_security_init() {
   echo "Waiting for Security to initialize..."
   secs=20
