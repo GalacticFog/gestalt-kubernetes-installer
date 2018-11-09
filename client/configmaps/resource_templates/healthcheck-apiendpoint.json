@@ -1,5 +1,5 @@
 {
-  "name": "/health",
+  "name": "health",
   "resource_type": "Gestalt::Resource::ApiEndpoint",
   "description": "A simple healthcheck API Endpoint",
   "properties": {

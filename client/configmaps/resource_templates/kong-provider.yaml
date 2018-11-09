@@ -64,7 +64,7 @@ properties:
         - name: service
           protocol: tcp
           container_port: 8001
-          # service_port: # {Config KONG_MANAGEMENT_NODEPORT}
+          service_port: #{Config KONG_MANAGEMENT_NODEPORT}
           expose_endpoint: true
           type: external
           virtual_hosts: []

@@ -87,9 +87,12 @@ fog context set $gestalt_healthcheck_context
 if [ $? -eq 0 ]; then
   echo "----- Creating the Kong healthcheck lambda -----"
   fog create resource -f healthcheck-lambda.json
+  sleep 15
+  echo "----- Creating the Kong healthcheck API -----"
+  fog create api --name health --description 'A simple healthcheck API' --provider default-kong
+  sleep 15
   echo "----- Creating the Kong healthcheck API endpoint -----"
-  fog create api --name health-api --description 'A simple healthcheck API' --provider default-kong
-  fog create api-endpoint -f healthcheck-apiendpoint.json --api health-api --lambda health-lambda
+  fog create api-endpoint -f healthcheck-apiendpoint.json --api health --lambda health-lambda
   echo "----- Done creating healthchecks -----"
 else
   echo "Unable to set context to $gestalt_healthcheck_context - no healthcheck API!"
