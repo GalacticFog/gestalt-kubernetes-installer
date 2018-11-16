@@ -5,7 +5,6 @@
 [[ $# -ne 1 ]] && echo && exit_with_error "File '$0' expects 1 parameter ($# provided) [$@], aborting."
 GENERATED_CONF_FILE=$1
 
-
 check_for_required_variables \
   admin_username \
   admin_password \
@@ -161,3 +160,23 @@ postgresql:
     port: 5432
     type: ClusterIP
 EOF
+
+## LDAP Config
+
+# First remove the existing file so it won't get staged
+[ -f ./configmaps/resource_templates/ldap/ldap-config.yaml ] && \
+  rm ./configmaps/resource_templates/ldap/ldap-config.yaml
+
+if [ "$configure_ldap" == "Yes" ]; then
+  echo "Will configure LDAP, copying LDAP config from ldap-config.yaml"
+  cp ldap-config.yaml ./configmaps/resource_templates/ldap/ldap-config.yaml
+  exit_on_error "Failed to copy ldap-config.yaml"
+fi
+
+[ -f ./configmaps/cacerts ] && \
+  rm ./configmaps/cacerts
+
+if [ ! -z "$gestalt_security_cacerts_file" ]; then
+  cp $gestalt_security_cacerts_file ./configmap/cacerts
+  exit_on_error "Failed to copy $gestalt_security_cacerts_file"
+fi

@@ -1,0 +1,19 @@
+name: root-ldap-directory
+directoryType: LDAP
+config:
+  activeDirectory: false
+  systemUsername: 'cn=ExampleSA,ou=Service Accounts,ou=org,dc=example,dc=com'
+  systemPassword: 'password'
+  userObjectClass: user
+  primaryField: sAMAccountName
+  emailField: mail
+  descriptionField: description
+  lastNameField: sn
+  firstNameField: givenName
+  groupObjectClass: group
+  groupField: name
+  groupDescriptionField: description
+  memberField: member
+  groupSearchBase: 'dc=example,dc=com'
+  accountSearchBase: 'dc=example,dc=com'
+  url: 'ldaps://ldap.example.com:636'

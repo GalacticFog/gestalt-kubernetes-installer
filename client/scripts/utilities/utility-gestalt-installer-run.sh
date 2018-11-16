@@ -87,6 +87,12 @@ gestalt_install_create_configmaps() {
   $cmd
   exit_on_error "Command '$cmd' failed, aborting."
 
+  if [ -f configmaps/cacerts ]; then
+    echo "Creating 'gestalt-security-cacerts' configmap from $gestalt_security_cacerts_file..."
+    kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=configmaps/cacerts
+    exit_on_error "Failed to build gestalt configmap data"
+  fi
+
   # Cleanup
   rm configmaps/gestalt.tar.gz
   rm configmaps/gestalt.tar.gz.b64
