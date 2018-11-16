@@ -34,6 +34,11 @@ create() {
   fi
 }
 
+# echo "Enable Debug for CLI..."
+if [ "${FOG_CLI_DEBUG}" == "true" ]; then
+  fog config set debug=true
+fi
+
 # Set context
 fog context set '/root'
 [ $? -eq 0 ] || (echo "Error setting context, aborting" && exit 1)

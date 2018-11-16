@@ -16,6 +16,11 @@ kube_check_for_required_namespace ${kube_namespace}
 # TODO: Add function that check whether config maps were created and whether has actual content
 # kubectl get configmap -n gestalt-system
 
+if [ "${custom_image_pull_secret}" == "1" ]; then
+  check_for_required_variables custom_image_pull_secret_namespace custom_image_pull_secret_name kube_namespace
+  kube_copy_secret ${custom_image_pull_secret_namespace} ${custom_image_pull_secret_name} ${kube_namespace} "imagepullsecret-1"
+fi
+
 # Run the install container with ConfigMaps
 cmd="kubectl apply -n ${kube_namespace} -f ${kube_install}"
 $cmd

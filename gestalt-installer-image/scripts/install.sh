@@ -54,9 +54,6 @@ do_get_security_credentials
 create_gestalt_security_creds_secret
 gestalt_cli_login
 
-echo "Enable Debug on Image..."
-fog config set debug=true
-
 gestalt_cli_license_set
 gestalt_cli_context_set
 

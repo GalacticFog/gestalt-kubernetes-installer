@@ -21,6 +21,12 @@ metadata:
     gestalt-app: installer
 spec:
   restartPolicy: Never
+  imagePullSecrets:
+  - name: imagepullsecret-1
+  - name: imagepullsecret-2
+  - name: imagepullsecret-3
+  - name: imagepullsecret-4
+  - name: imagepullsecret-5
   containers:
   - name: gestalt-installer
     image: "${docker_registry}/gestalt-installer:${gestalt_installer_docker_release_tag}"
