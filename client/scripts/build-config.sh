@@ -169,12 +169,12 @@ EOF
 ## LDAP Config
 
 # First remove the existing file so it won't get staged
-[ -f ./configmaps/resource_templates/ldap/ldap-config.yaml ] && \
-  rm ./configmaps/resource_templates/ldap/ldap-config.yaml
+[ -f ./configmaps/resource_templates/ldap-config.yaml ] && \
+  rm ./configmaps/resource_templates/ldap-config.yaml
 
 if [ "$configure_ldap" == "Yes" ]; then
   echo "Will configure LDAP, copying LDAP config from ldap-config.yaml"
-  cp ldap-config.yaml ./configmaps/resource_templates/ldap/ldap-config.yaml
+  cp ldap-config.yaml ./configmaps/resource_templates/ldap-config.yaml
   exit_on_error "Failed to copy ldap-config.yaml"
 fi
 

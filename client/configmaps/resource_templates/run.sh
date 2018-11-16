@@ -86,10 +86,10 @@ sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
 
 ## LDAP setup
-if [ -f ldap/ldap-config.yaml ]; then
+if [ -f ldap-config.yaml ]; then
   echo "Configuring LDAP authentication in gestalt-security..."
-  fog admin create-directory -f ldap/ldap-config.yaml --org root
-  fog admin create-account-store -f ldap/root-directory-account-store.yaml --directory root-ldap-directory --org root
+  fog admin create-directory -f ldap-config.yaml --org root
+  fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
 fi
 
 return 0
