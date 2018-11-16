@@ -22,7 +22,7 @@ if [ "${custom_image_pull_secret}" == "1" ]; then
 fi
 
 # Run the install container with ConfigMaps
-cmd="kubectl apply -n ${kube_namespace} -f ${kube_install}"
+cmd="kubectl create -n ${kube_namespace} -f ${kube_install}"
 $cmd
 exit_on_error "Failed install: '$cmd', aborting."
 
