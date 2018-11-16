@@ -18,6 +18,15 @@ spec:
       - name: imagepullsecret-3
       - name: imagepullsecret-4
       - name: imagepullsecret-5
+      initContainers:
+      - name: init-sysctl
+        image: {{ .Values.elastic.initContainer.image }}
+        command:
+        - sh
+        - -c
+        - sysctl -w vm.max_map_count=262166
+        securityContext:
+          privileged: true
       containers:
       - name: gestalt-elastic
         image: "{{ .Values.elastic.image }}"

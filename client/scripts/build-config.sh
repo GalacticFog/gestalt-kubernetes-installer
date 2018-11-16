@@ -120,6 +120,8 @@ elastic:
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
+  initContainer:
+    image: busybox:1.27.2
 
 meta:
   exposedServiceType: NodePort

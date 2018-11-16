@@ -138,6 +138,8 @@ rabbit:
 
 elastic:
   image: ${ELASTICSEARCH_IMAGE}
+#  initController:
+#    image: ${ELASTICSEARCH_INIT_IMAGE}
 
 meta:
   image: ${META_IMAGE}
