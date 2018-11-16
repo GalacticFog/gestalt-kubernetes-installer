@@ -46,3 +46,13 @@ spec:
           value: "100"
         - name: OAUTH_RATE_LIMITING_PERIOD
           value: "1"
+      #   # Mount custom CA-Certs
+      #   volumeMounts:
+      #   - name: cacerts
+      #     mountPath: /etc/ssl/certs/java/cacerts
+      #     subPath: cacerts
+      # volumes:
+      #   - name: cacerts
+      #     configMap:
+      #       name: gestalt-security-cacerts
+      #       optional: true

@@ -9,4 +9,4 @@ drop extension if exists "uuid-ossp";
 -- drop database if exists "gestalt-meta";
 create database "gestalt-meta";
 \c "gestalt-meta";
-drop schema public cascade;
+-- drop schema public cascade;
