@@ -34,6 +34,36 @@ create() {
   fi
 }
 
+retry_fails() {
+  local tries=5
+  local retry_delay=20
+  local cmd=$*
+  local try=0
+  local cmd_output
+  local exit_code
+  echo "Attempting $tries tries of command '$cmd'"
+  for try in `seq $tries`; do
+    echo "attempt $try of '$cmd'"
+    cmd_output=$($cmd)
+    exit_code=$?
+    echo $cmd_output
+    if [ $exit_code -eq 0 ]; then
+      echo "SUCCESS attempt $try of '$cmd'"
+      return $exit_code
+    fi
+    echo "FAIL attempt $try of '$cmd' exit code $exit_code"
+    echo "retrying in $retry_delay seconds"
+    sleep $retry_delay
+  done
+  echo "FAILED!!! $tries attempts of command '$cmd'"
+  return $exit_code
+}
+
+exit_if_fail() {
+  $*
+  [ $? -eq 0 ] || (echo "FATAL ERROR - exiting" && exit 1)
+}
+
 # Set context
 fog context set '/root'
 [ $? -eq 0 ] || (echo "Error setting context, aborting" && exit 1)
@@ -78,25 +108,27 @@ create kong-provider
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
 
-# Pause to give Kong a chance to come up and then create the healthcheck API endpoint and lambda
-healthcheck_environment=gestalt-health-environment
-fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt HealthCheck Environment" --type 'production'
-[ $? -eq 0 ] || (echo "Error creating '$healthcheck_environment, aborting" && exit 1)
-gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
-fog context set $gestalt_healthcheck_context
-if [ $? -eq 0 ]; then
+create_healthchecks() {
+  local healthcheck_environment=gestalt-health-environment
+  exit_if_fail retry_fails fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --type 'production' --description '"Gestalt HealthCheck Environment"'
+  sleep 15
+  gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
+  exit_if_fail retry_fails fog context set $gestalt_healthcheck_context
   echo "----- Creating the Kong healthcheck lambda -----"
-  fog create resource -f healthcheck-lambda.json
+  exit_if_fail retry_fails fog create resource -f healthcheck-lambda.json
   sleep 15
   echo "----- Creating the Kong healthcheck API -----"
-  fog create api --name health --description 'A simple healthcheck API' --provider default-kong
+  exit_if_fail retry_fails fog create api --name health --description healthcheck-api --provider default-kong
   sleep 15
   echo "----- Creating the Kong healthcheck API endpoint -----"
-  fog create api-endpoint -f healthcheck-apiendpoint.json --api health --lambda health-lambda
+  exit_if_fail retry_fails fog create api-endpoint -f healthcheck-apiendpoint.json --api health --lambda health-lambda
   echo "----- Done creating healthchecks -----"
-else
-  echo "Unable to set context to $gestalt_healthcheck_context - no healthcheck API!"
-fi
+}
+
+# Pause to give Kong a chance to come up and then create the healthcheck API endpoint and lambda
+sleep 20
+create_healthchecks
+
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
