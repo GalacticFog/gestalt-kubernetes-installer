@@ -20,15 +20,17 @@ kube_process_kubeconfig() {
 
     log_debug "[${FUNCNAME[0]}] Obtaining kubeconfig from kubectl context '`kubectl config current-context`'"
     data=$(kubectl config view --raw --flatten=true --minify=true)
-    kubeurl='https://kubernetes.default.svc'
-    log_debug "[${FUNCNAME[0]}] Converting server URL to '${kubeurl}'"
-    # for 'http'
-    data=$(echo "${data}" | sed "s;server: http://.*;server: ${kubeurl};g")
-    # for 'https'
-    data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
-
     exit_on_error "[${FUNCNAME[0]}] Could not process kube config, aborting."
 
+    if [ ${kubeurl_replace} == "1" ]; then
+      kubeurl='https://kubernetes.default.svc'
+      log_debug "[${FUNCNAME[0]}] Converting server URL to '${kubeurl}'"
+      # for 'http'
+      data=$(echo "${data}" | sed "s;server: http://.*;server: ${kubeurl};g")
+      # for 'https'
+      data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
+    fi
+    
     if [ "${os}" == "Darwin" ]; then
       kubeconfig_data=`echo "${data}" | base64`
     elif [ "${os}" == "Linux" ]; then
@@ -64,6 +66,29 @@ kube_check_for_required_namespace() {
     exit_with_error "Kubernetes namespace '${f_namespace_name}' doesn't exist, aborting."
   fi
   echo "OK - Kubernetes namespace '${f_namespace_name}' is present."
+}
+
+
+kube_copy_secret () {
+
+  [[ $# -ne 4 ]] && echo && exit_with_error "[${FUNCNAME[0]}] Function expects 4 parameter(-s) ($# provided) [$@], aborting."
+  f_source_namespace_name=$1 
+  f_source_secret_name=$2
+  f_target_namespace_name=$3 
+  f_target_secret_name=$4
+
+  kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml > secret-${f_source_secret_name}.yaml
+  exit_on_error "Unable obtain secret 'kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml' , aborting."
+
+  # Strip out and rename
+  cat secret-${f_source_secret_name}.yaml | sed "s/name: ${f_source_secret_name}/name: ${f_target_secret_name}/" | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > secret-${f_target_secret_name}.yaml
+  exit_on_error "Unable manipulate source secret '${f_source_namespace_name}:${f_source_secret_name}' , aborting."
+
+  kubectl apply -f secret-${f_target_secret_name}.yaml -n ${f_target_namespace_name}
+  exit_on_error "Unable create target secret '${f_target_namespace_name}:${f_target_secret_name}' , aborting."
+
+  echo "OK - Secret Copied to '${f_target_namespace_name}:${f_target_secret_name}'"
+
 }
 
 ############################################

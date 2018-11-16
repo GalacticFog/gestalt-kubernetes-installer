@@ -12,6 +12,12 @@ spec:
       labels:
         gestalt-app: elastic
     spec:
+      imagePullSecrets:
+      - name: imagepullsecret-1
+      - name: imagepullsecret-2
+      - name: imagepullsecret-3
+      - name: imagepullsecret-4
+      - name: imagepullsecret-5
       containers:
       - name: gestalt-elastic
         image: "{{ .Values.elastic.image }}"

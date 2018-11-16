@@ -14,7 +14,7 @@ properties:
         KONG_CUSTOM_PLUGINS: gestalt-security-kong
         KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
         POSTGRES_NAME: kong-db
-    external_protocol: http
+    external_protocol: '#{Config KONG_0_EXTERNAL_PROTOCOL}'
   linked_providers:
   - name: POSTGRES
     id: '#{Provider /root/default-postgres id}'
