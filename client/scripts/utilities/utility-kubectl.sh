@@ -22,7 +22,7 @@ kube_process_kubeconfig() {
     data=$(kubectl config view --raw --flatten=true --minify=true)
     exit_on_error "[${FUNCNAME[0]}] Could not process kube config, aborting."
 
-    if [ ${kubeurl_replace} == "1" ]; then
+    if [ "${kubeurl_replace}" == "1" ]; then
       kubeurl='https://kubernetes.default.svc'
       log_debug "[${FUNCNAME[0]}] Converting server URL to '${kubeurl}'"
       # for 'http'
