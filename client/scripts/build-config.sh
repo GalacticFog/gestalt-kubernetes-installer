@@ -182,6 +182,6 @@ fi
   rm ./configmaps/cacerts
 
 if [ ! -z "$gestalt_security_cacerts_file" ]; then
-  cp $gestalt_security_cacerts_file ./configmap/cacerts
+  cp $gestalt_security_cacerts_file ./configmaps/cacerts
   exit_on_error "Failed to copy $gestalt_security_cacerts_file"
 fi
