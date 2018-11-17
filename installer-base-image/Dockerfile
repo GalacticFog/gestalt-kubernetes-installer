@@ -29,6 +29,10 @@ ENV BUILD_DEPS="gettext"  \
     helm_version=${helm_version:-latest} \
     kubectl_version=${kubectl_version:-latest}
 
+# TODO: the builder container probably doesn't need all these packages, but
+#       when I tried to use process-of-elimination to reduce them, things 
+#       broke and I ran out of time.  Circle back and reduce when you have time.
+#
 # Add dependent packages
 RUN apk upgrade --no-cache && \
     apk add --update $RUNTIME_DEPS && \

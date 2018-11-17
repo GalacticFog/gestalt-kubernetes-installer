@@ -1,13 +1,14 @@
 #!/bin/bash
 
 PUBLISH=0
-DEFAULT_TAG="latest"
-LABEL="gestalt-installer-base"
 REGISTRY="galacticfog"
+LABEL="gestalt-installer-base"
+DEFAULT_TAG="testing"
 
 usage() {
   local CMD=`basename $0`
   echo "\
+
 $CMD USAGE:
     $CMD [-p] [-r REGISTRY] [-t TAG] [-l LABEL]
     
@@ -15,11 +16,11 @@ $CMD USAGE:
     -p
       Push the built image to the container image registry (default false)
     -r REGISTRY
-      Push the built image to this registry (default DockerHub 'galacticfog' registry)
+      Push the built image to this registry (default DockerHub '${REGISTRY}' registry)
     -l LABEL
-      Use this image label value (default 'gestalt-installer-base')
+      Use this image label value (default '${LABEL}')
     -t TAG
-      Publish the image with this tag value. Can be used multiple times. (default 'latest')
+      Publish the image with this tag value. Can be used multiple times. (default '${DEFAULT_TAG}')
 "
 }
 
@@ -86,7 +87,7 @@ exit_with_error() {
 
 #Build the image
 echo "Building..."
-BUILD_OUTPUT=$( docker build -t "${REGISTRY}/${LABEL}:build" . 2>&1 )
+BUILD_OUTPUT=$( docker build -t "${REGISTRY}/${LABEL}:${DEFAULT_TAG" . 2>&1 )
 if [ $? -ne 0 ]; then
   echo $BUILD_OUTPUT
   exit_with_error "docker build failed for '$LABEL', aborting!"

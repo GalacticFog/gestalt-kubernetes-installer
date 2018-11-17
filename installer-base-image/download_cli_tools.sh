@@ -115,7 +115,7 @@ download_fog() {
   local FOG_PKG=$2 
   local DOWNLOAD_URL="${FOG_DOWNLOAD_HOME}/${VERSION}/gestalt-fog-cli-${DISTRO}-${VERSION}.zip"
   echo "Downloading fog CLI version $VERSION from '$DOWNLOAD_URL' to '$FOG_PKG'"
-  curl -L ${DOWNLOAD_URL} -o ${FOG_PKG}
+  curl -SsL ${DOWNLOAD_URL} -o ${FOG_PKG}
   exit_on_error "FAILED to download fog CLI from '${DOWNLOAD_URL}'!  Exiting..."
 }
 
@@ -155,7 +155,7 @@ download_kubectl() {
   local VERSION="$1"
   local DOWNLOAD_URL="${KUBECTL_DOWNLOAD_HOME}/${VERSION}/${KUBECTL_DOWNLOAD_PATH}"
   echo "Downloading kubectl version $VERSION from '$DOWNLOAD_URL'"
-  curl -LO $DOWNLOAD_URL
+  curl -SsLO $DOWNLOAD_URL
   exit_on_error "FAILED to download kubectl version ${VERSION} from '${DOWNLOAD_URL}'!  Exiting..."
 }
 
@@ -229,7 +229,7 @@ extract_helm() {
 
 get_helm() {
   local VERSION=$1
-  if [ z $VERSION ]; then
+  if [ z "$VERSION" ]; then
     echo "No helm version defined!  Looking up default version..."
     VERSION=${DEFAULT_HELM_VERSION}
   fi
