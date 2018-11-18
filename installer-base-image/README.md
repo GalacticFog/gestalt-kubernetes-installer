@@ -42,14 +42,34 @@ build.sh USAGE:
     build.sh [-p] [-r REGISTRY] [-t TAG] [-l LABEL]
     
     OPTIONS:
+    -h
+      Print this help info to STDOUT.
     -p
-      Push the built image to the container image registry (default false)
+      Push the built image to the container image registry.  If this flag is NOT set, the
+      script will build the image, but will not push it to a remote registry.
+      NOTE: This option has no effect if no tags are defined with the -t option.
+    -s
+      Run silent.  Do not print output to STDOUT, but print errors to STDERR.
+    -a BUILD_ARG_NAME=BUILD_ARG_VALUE
+      Adds a build-arg to the docker build command.  Can be used multiple times.
+    -i
+      Print the built image ID to STDOUT even if the -s flag is set.  If both -s and -i
+      flags are set, the image ID will be the only output from the build script.
+    -v
+      Run verbose - print additional diagnostic output to STDOUT.  NOTE: -s overrides -v
     -r REGISTRY
-      Push the built image to this registry (default DockerHub 'galacticfog' registry)
+      Push the built image to this registry. (default DockerHub 'galacticfog' registry)
     -l LABEL
-      Use this image label value (default 'gestalt-installer-base')
+      Use this image label value. (default 'gestalt-installer-base')
+    -d DEFAULT_TAG
+      Tag the image with this value when building. (default 'build')
+      The default tag will always be applied to the built image, but this tag will NOT be 
+      pushed to the registry unless it is also passed in with the -t option
     -t TAG
-      Publish the image with this tag value. Can be used multiple times. (default 'testing')
+      Tag the image with this value. Can be used multiple times. (no default value)
+      If no tags are defined, the -p option is ignored.  Only tags defined with this option
+      will be pushed to the registry.
+
 ```
 
 *Note:* _You can view the usage guide anytime by invoking the script with the `-h` flag._
@@ -57,17 +77,15 @@ build.sh USAGE:
 The `-p` option is false by default to prevent accidental release of an image during testing or development.
 You *must* set this flag if you want to push the container image to the registry after building.
 
-By default, the build script tags the built image with the default values described above.  It sets only
-one tag tag on the built image, and the default tag above is always applied to the image during the build,
-even if you also set other tags.  However, if you specify any tags using the `-t` option, the script will 
-push only the specified tags to the registry, and will not push the default tag (unless the default tag is
-also set explicitly using the `-t` option.
+By default, the build script builds the installer base image with only the default tag described above.  It 
+sets only one tag on the image during the build, and the default tag above is always applied to the image 
+during the build, even if you also set other tags.  However, if you specify any tags using the `-t` option, 
+the script will push only the specified tags to the registry, and will not push the default tag unless it
+is also set explicitly using the `-t` option.
 
 You can set the `-t` option multiple times to tag the built image with multiple tags.  
 
 ```
-# EXAMPLES
-
 # Tag BUT DO NOT PUSH the image as "some.other.registry.io/galacticfog/different-image-name:alternate-tag"
 > ./build.sh -r "some.other.registry.io/galacticfog" -l "different-image-name" -t "alternate-tag"
 
@@ -81,6 +99,28 @@ You can set the `-t` option multiple times to tag the built image with multiple 
 > ./build.sh -p -t testing -t latest -t v1
 
 ```
+
+You can also change the downloaded version for the command-line utilities, the container image from 
+which this image is built, or any other ARG variable defined in the `Dockerfile` by setting the `-a` 
+option.  You can use the `-a` option multiple times to pass more than one build argument to the
+build command.
+
+```
+# Build the installer base image from nginx:stable-alpine instead of the default nginx:alpine
+> ./build.sh -a base_tag=stable-alpine
+
+# Build the installer base image from debian:experimental and download the fog CLI version 0.9.0
+> ./build.sh -a base_image=debian:experimental -a fog_version=0.9.0
+
+# Build the installer with verbose output and download specific CLI versions
+> ./build.sh -v -a fog_version=0.9.0 -a helm_version=v2.10.0 -a kubectl_version 1.10.0
+```
+
+If you need to run the build script within another script and want to suppress all the normal output,
+use the `-s` option.  The script will still print any errors to STDERR.  If you want to suppress all
+normal output, but you want the script to print the built image's SHA hash ID to STDOUT so the 
+enclosing script can capture and use it, use the `-i` option with the `-s` option.  When both `-s`
+and `-i` flags are set, ONLY the image ID will be printed to STDOUT.
 
 ### 2. Using `download_cli_tools.sh`
 
@@ -209,15 +249,25 @@ The default values for tagging and pushing the image are defined at the top of `
 
 ### 4. Changing CLI tool versions
 
+The `build.sh` script supports an `-a` option which will pass along its values to the `docker build` command as
+`--build-arg` parameters.  This option allows you to change the CLI tool versions the builder stage will pass along
+to the `download_cli_tools.sh` script as described below.  Use of the `-a` option is covered in the build script
+useage section above, but here's a quick example as a reminder.
+
+```
+# Build the installer with verbose output and download specific CLI versions
+> ./build.sh -v -a fog_version=0.9.0 -a helm_version=v2.10.0 -a kubectl_version 1.10.0
+```
+
 _*Keep in mind*_ that the default `kubectl` and `helm` versions are both set to `latest`.  The download script will
 therefore download the newest versions of those CLI tools for each new base installer container image build, unless
 you specify another version.  _We don't currently have a means to get the latest build version number for the `fog`
 CLI tool._
 
-You can change the CLI tool versions the builder downloads by altering the default ENV variable values
-at the top of the `Dockerfile`.  If you are updating to a newer version and plan to use it
-going forward, changing the default values will ensure that future base installer container
-image builds won't use an older version.
+You can permanently change the CLI tool versions the builder downloads by altering the default ENV variable values
+at the top of the `Dockerfile`.  If you are updating to a newer version and plan to use it going forward, changing 
+the default values will ensure that future base installer container image builds won't use an older version, unless
+the version is specifically overridden when the build is invoked.
 
 ```
 # The builder stage ARG and ENV rules look like this in the Dockerfile.
@@ -242,8 +292,6 @@ ENV ENV_VAR_NAME=${ARG_VAR_NAME:-default_value} \
     kubectl_version=${kubectl_version:-CHANGE_DEFAULT_VALUE_HERE}
 ```
 
-### *TODO* _add an option in the `build.sh` script to set docker `--build-arg` values and/or override these defaults._
-
 You can also override the default CLI tool versions when building with the `docker build` command directly by setting 
 `--build-arg` parameters to match the `ARG` rules defined in the `Dockerfile`.
 
@@ -255,19 +303,19 @@ You can also override the default CLI tool versions when building with the `dock
 
 ## Tagging the installer base image
 
-If you're only using the installer image on your local system, you can apply whatever tags that suit your
+If you're only using the installer image on your local system, you can apply whatever tags you like.
 purposes.  However, if you're planning to share the new base image with others, please follow these 
 guidelines.
 
 ### *TODO* _write some guidelines_
-We could automate a versioning scheme using a file to store the most recent version and automatically iterate
-the last-significant digit in `build.sh` before adding it to the TAGS list.
+
+### *TODO* _We could automate a versioning scheme using a file to store the most recent version and automatically iterate
+the last-significant digit in `build.sh` before adding it to the TAGS list._
 
 ## Pushing the base installer image to a registry
 
 Set the `-p` flag when calling the `build.sh` script to tell it to upload the built base installer container
 image to the configured container registry.  It will automatically push the image for each tag defined with the
-`-t` option on the command-line, or the default tag only if no other tag has been set.
-
-### *TODO* _maybe it should refuse to push the tagged image unless the user sets a tag explicitly?_
+`-t` option on the command-line.  It will not automatically push the default tag to the registry unless that
+tag is also set explicitly with the `-t` option.
 

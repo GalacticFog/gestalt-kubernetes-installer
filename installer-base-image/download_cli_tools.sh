@@ -229,7 +229,7 @@ extract_helm() {
 
 get_helm() {
   local VERSION=$1
-  if [ z "$VERSION" ]; then
+  if [ -z "$VERSION" ]; then
     echo "No helm version defined!  Looking up default version..."
     VERSION=${DEFAULT_HELM_VERSION}
   fi

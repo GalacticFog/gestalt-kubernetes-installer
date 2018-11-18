@@ -15,7 +15,13 @@
 #
 #     docker build --target builder
 #
-FROM nginx:alpine as builder
+ARG base_tag=alpine
+ARG base_image=nginx:${base_tag}
+FROM ${base_image} as builder
+
+LABEL vendor="Galactic Fog IP, Inc."
+LABEL com.galacticfog.version="1.0-SNAPSHOT" 
+LABEL installer_base_build_stage="builder" 
 
 WORKDIR /app
 COPY . /app
@@ -59,7 +65,11 @@ RUN apk upgrade --no-cache && \
 # This second section is the target container image that gets a copy of the
 # kubectl, helm and fog CLI tools from the builder container, but doesn't
 # need the rest of their distro packages.
-FROM nginx:alpine
+FROM ${base_image}
+
+LABEL vendor="Galactic Fog IP, Inc."
+LABEL com.galacticfog.version="1.0-SNAPSHOT" 
+LABEL installer_base_build_stage="target" 
 
 ENV BUILD_DEPS="gettext"  \
     RUNTIME_DEPS="libintl"
