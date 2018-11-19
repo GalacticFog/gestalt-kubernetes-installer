@@ -20,7 +20,8 @@ build-image:
     - cd gestalt-installer-image
     - ./dependencies-process.sh "clean"
     - ./dependencies-process.sh "fetch"
-    - VERSION=$(grep 'LABEL com.galacticfog.version=' Dockerfile | awk -F '"' '{print $2}')
+    - VERSION=$(grep 'ARG version_label=' Dockerfile | awk -F '=' '{print $2}')
+    - [ -z "${VERSION}" ] && VERSION="SNAPSHOT"
     - DOCKER_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}} 
     - echo building $DOCKER_IMG:$DOCKER_TAG
     - docker build -t $DOCKER_IMG:$DOCKER_TAG .
