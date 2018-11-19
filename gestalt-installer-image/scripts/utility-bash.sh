@@ -182,6 +182,19 @@ source_all_files () {
   fi
 }
 
+check_for_kube() {
+  echo "Checking for Kubernetes..."
+  local kubecontext="`kubectl config current-context`"
+
+  if [ "$kubecontext" != "$target_kube_context" ]; then
+    exit_with_error "Kubernetes context '$kubecontext' doesn't match target kubernetes context '$target_kube_context'"
+  fi
+
+  kube_cluster_info=$(kubectl cluster-info)
+  exit_on_error "Kubernetes cluster not accessible, aborting."
+
+  echo "OK - Kubernetes cluster '$kubecontext' is accessible."
+}
 
 check_if_installed() {
     for curr_tool in "$@"; do
@@ -202,7 +215,6 @@ validate_json () {
 
 ### Manipulations
 convert_json_to_env_variables() {
-  echo "[${FUNCNAME[0]}][For][$1]"
   json_file_to_process=$1
   log_debug "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}

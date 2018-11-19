@@ -3,7 +3,7 @@
 #
 # You can specify exact versions of the kubectl, helm and fog CLI tools
 # to include in the base gestalt-installer image you're building via the 
-# "kubectl_version", "heml_version" and "fog_version"build arguments 
+# "kubectl_version", "helm_version" and "fog_version" build arguments 
 # like this:
 #
 #     docker build --build-arg fog_version="0.9.2" \
@@ -19,9 +19,12 @@ ARG base_tag=alpine
 ARG base_image=nginx:${base_tag}
 FROM ${base_image} as builder
 
+ARG component_label=gestalt-installer-base
+LABEL application=gestalt
+LABEL component=${component_label}
+LABEL build.phase=builder
 LABEL vendor="Galactic Fog IP, Inc."
 LABEL com.galacticfog.version="1.0-SNAPSHOT" 
-LABEL installer_base_build_stage="builder" 
 
 WORKDIR /app
 COPY . /app
@@ -67,9 +70,12 @@ RUN apk upgrade --no-cache && \
 # need the rest of their distro packages.
 FROM ${base_image}
 
+ARG component_label=gestalt-installer-base
+LABEL application=gestalt
+LABEL component=${component_label}
+LABEL build.phase=target
 LABEL vendor="Galactic Fog IP, Inc."
 LABEL com.galacticfog.version="1.0-SNAPSHOT" 
-LABEL installer_base_build_stage="target" 
 
 ENV BUILD_DEPS="gettext"  \
     RUNTIME_DEPS="libintl"

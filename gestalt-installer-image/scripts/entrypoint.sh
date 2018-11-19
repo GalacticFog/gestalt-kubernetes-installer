@@ -7,7 +7,12 @@ function sleep_forever() {
     done
 }
 
-if [ "$1" == 'install' ]; then
+CMD=${1:-install}
+
+pwd
+find . -type f
+
+if [ "$CMD" == 'install' ]; then
     echo "Installing Gestalt platform... ('install' container argument specified)"
 
     SECONDS=0

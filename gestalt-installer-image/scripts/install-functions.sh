@@ -8,7 +8,7 @@ getsalt_installer_load_configmap() {
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config} #process config map
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
-  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
+  logging_lvl=debug # ${GESTALT_INSTALL_LOGGING_LVL}
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug

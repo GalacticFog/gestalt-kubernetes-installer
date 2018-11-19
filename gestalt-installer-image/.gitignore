@@ -7,3 +7,6 @@ config/
 license/
 client/gestalt-license.json
 gestalt-installer-image/gestalt/values.yaml
+install-config*.json
+installer.yaml
+gestalt-license.json
