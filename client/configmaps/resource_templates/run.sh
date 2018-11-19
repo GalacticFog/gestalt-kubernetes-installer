@@ -104,6 +104,22 @@ create kong-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
+sleep 20
+## Copy in secrets to all Gestalt Managed Namespaces
+if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
+  kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
+  exit_on_error "Unable obtain secret 'kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml' , aborting."
+  # Strip out and rename
+  cat /tmp/secret-imagepullsecret-1.yaml | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > /tmp/secret-clean-imagepullsecret-1.yaml
+  exit_on_error "Unable manipulate source secret 'gestalt-system:imagepullsecret-1' , aborting."
+  all_namespaces=$(kubectl get namespace -l "meta/fqon" --no-headers | awk '{print $1}')
+  echo "Namespaces to process: ${all_namespaces[@]}"
+  for curr_namespace in ${all_namespaces[@]}; do
+    kubectl apply -f /tmp/secret-clean-imagepullsecret-1.yaml -n ${curr_namespace}
+    exit_on_error "Unable create target secret '${curr_namespace}:imagepullsecret-1' , aborting."
+    echo "OK - Secret Copied to '${curr_namespace}:imagepullsecret-1'"
+  done
+fi
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
@@ -113,27 +129,6 @@ if [ -f ldap-config.yaml ]; then
   echo "Configuring LDAP authentication in gestalt-security..."
   fog admin create-directory -f ldap-config.yaml --org root
   fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
-fi
-
-## Copy in secrets to all Gestalt Managed Namespaces
-if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
-
-kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
-exit_on_error "Unable obtain secret 'kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml' , aborting."
-
-# Strip out and rename
-cat /tmp/secret-imagepullsecret-1.yaml | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > /tmp/secret-clean-imagepullsecret-1.yaml
-exit_on_error "Unable manipulate source secret 'gestalt-system:imagepullsecret-1' , aborting."
-
-
-all_namespaces=$(kubectl get namespace -l "meta/fqon" --no-headers)
-for curr_namespace in ${all_namespaces[@]}; do
-  kube_copy_secret "gestalt-system" "imagepullsecret-1" "${curr_namespace}" "imagepullsecret-1"
-  kubectl apply -f /tmp/secret-clean-imagepullsecret-1.yaml -n ${curr_namespace}
-  exit_on_error "Unable create target secret '${curr_namespace}:imagepullsecret-1' , aborting."
-  echo "OK - Secret Copied to '${curr_namespace}:imagepullsecret-1'"
-done
-
 fi
 
 return 0
