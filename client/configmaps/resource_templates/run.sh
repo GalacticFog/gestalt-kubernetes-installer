@@ -41,15 +41,16 @@ kube_copy_secret () {
   f_source_secret_name=$2
   f_target_namespace_name=$3 
   f_target_secret_name=$4
+  f_base_folder="/tmp"
 
-  kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml > secret-${f_source_secret_name}.yaml
+  kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml > ${f_base_folder}/secret-${f_source_secret_name}.yaml
   exit_on_error "Unable obtain secret 'kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml' , aborting."
 
   # Strip out and rename
-  cat secret-${f_source_secret_name}.yaml | sed "s/name: ${f_source_secret_name}/name: ${f_target_secret_name}/" | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > secret-${f_target_secret_name}.yaml
+  cat ${f_base_folder}/secret-${f_source_secret_name}.yaml | sed "s/name: ${f_source_secret_name}/name: ${f_target_secret_name}/" | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > ${f_base_folder}/secret-${f_target_secret_name}.yaml
   exit_on_error "Unable manipulate source secret '${f_source_namespace_name}:${f_source_secret_name}' , aborting."
 
-  kubectl apply -f secret-${f_target_secret_name}.yaml -n ${f_target_namespace_name}
+  kubectl apply -f ${f_base_folder}/secret-${f_target_secret_name}.yaml -n ${f_target_namespace_name}
   exit_on_error "Unable create target secret '${f_target_namespace_name}:${f_target_secret_name}' , aborting."
 
   echo "OK - Secret Copied to '${f_target_namespace_name}:${f_target_secret_name}'"
@@ -116,10 +117,23 @@ fi
 
 ## Copy in secrets to all Gestalt Managed Namespaces
 if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
+
+kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
+exit_on_error "Unable obtain secret 'kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml' , aborting."
+
+# Strip out and rename
+cat /tmp/secret-imagepullsecret-1.yaml | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > /tmp/secret-clean-imagepullsecret-1.yaml
+exit_on_error "Unable manipulate source secret 'gestalt-system:imagepullsecret-1' , aborting."
+
+
 all_namespaces=$(kubectl get namespace -l "meta/fqon" --no-headers)
 for curr_namespace in ${all_namespaces[@]}; do
   kube_copy_secret "gestalt-system" "imagepullsecret-1" "${curr_namespace}" "imagepullsecret-1"
+  kubectl apply -f /tmp/secret-clean-imagepullsecret-1.yaml -n ${curr_namespace}
+  exit_on_error "Unable create target secret '${curr_namespace}:imagepullsecret-1' , aborting."
+  echo "OK - Secret Copied to '${curr_namespace}:imagepullsecret-1'"
 done
+
 fi
 
 return 0
