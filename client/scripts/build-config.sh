@@ -38,6 +38,7 @@ fi
 cat >> ${GENERATED_CONF_FILE} << EOF
     "ADMIN_PASSWORD": "${admin_password}",
     "ADMIN_USERNAME": "${admin_username}",
+    "CUSTOM_IMAGE_PULL_SECRET": "${custom_image_pull_secret}",
     "DATABASE_HOSTNAME": "${database_hostname}",
     "DATABASE_IMAGE": "${database_image}",
     "DATABASE_IMAGE_TAG": "${database_image_tag}",

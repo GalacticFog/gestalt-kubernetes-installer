@@ -34,6 +34,28 @@ create() {
   fi
 }
 
+kube_copy_secret () {
+
+  [[ $# -ne 4 ]] && echo && exit_with_error "[${FUNCNAME[0]}] Function expects 4 parameter(-s) ($# provided) [$@], aborting."
+  f_source_namespace_name=$1 
+  f_source_secret_name=$2
+  f_target_namespace_name=$3 
+  f_target_secret_name=$4
+
+  kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml > secret-${f_source_secret_name}.yaml
+  exit_on_error "Unable obtain secret 'kubectl get secret -n ${f_source_namespace_name} ${f_source_secret_name} -oyaml' , aborting."
+
+  # Strip out and rename
+  cat secret-${f_source_secret_name}.yaml | sed "s/name: ${f_source_secret_name}/name: ${f_target_secret_name}/" | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > secret-${f_target_secret_name}.yaml
+  exit_on_error "Unable manipulate source secret '${f_source_namespace_name}:${f_source_secret_name}' , aborting."
+
+  kubectl apply -f secret-${f_target_secret_name}.yaml -n ${f_target_namespace_name}
+  exit_on_error "Unable create target secret '${f_target_namespace_name}:${f_target_secret_name}' , aborting."
+
+  echo "OK - Secret Copied to '${f_target_namespace_name}:${f_target_secret_name}'"
+
+}
+
 # echo "Enable Debug for CLI..."
 if [ "${FOG_CLI_DEBUG}" == "true" ]; then
   fog config set debug=true
@@ -90,6 +112,14 @@ if [ -f ldap-config.yaml ]; then
   echo "Configuring LDAP authentication in gestalt-security..."
   fog admin create-directory -f ldap-config.yaml --org root
   fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
+fi
+
+## Copy in secrets to all Gestalt Managed Namespaces
+if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
+all_namespaces=$(kubectl get namespace -l "meta/fqon" --no-headers)
+for curr_namespace in ${all_namespaces[@]}; do
+  kube_copy_secret "gestalt-system" "imagepullsecret-1" "${curr_namespace}" "imagepullsecret-1"
+done
 fi
 
 return 0
