@@ -19,12 +19,15 @@ ARG base_tag=alpine
 ARG base_image=nginx:${base_tag}
 FROM ${base_image} as builder
 
+ARG version_label=SNAPSHOT
+ENV version_label=${version_label}
+
 ARG component_label=gestalt-installer-base
 LABEL application=gestalt
 LABEL component=${component_label}
 LABEL build.phase=builder
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version="1.0-SNAPSHOT" 
+LABEL com.galacticfog.version=${version_label}
 
 WORKDIR /app
 COPY . /app
