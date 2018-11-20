@@ -21,7 +21,7 @@ build-image:
     - VERSION=$(grep 'ARG version_label=' Dockerfile | awk -F '=' '{print $2}')
     - BASE_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}} 
     - ./build.sh -r galacticfog -v -p -t ${BASE_TAG}
-    - cd gestalt-installer-image
+    - cd ../gestalt-installer-image
     - VERSION=$(grep 'ARG version_label=' Dockerfile | awk -F '=' '{print $2}')
     - DOCKER_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}} 
     - ./build.sh -r galacticfog -v -p -t ${DOCKER_TAG} -a base_image=galacticfog/gestalt-installer-base:${BASE_TAG}
