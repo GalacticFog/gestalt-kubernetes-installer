@@ -19,7 +19,7 @@ ARG base_tag=alpine
 ARG base_image=nginx:${base_tag}
 FROM ${base_image} as builder
 
-ARG version_label=SNAPSHOT
+ARG version_label=4.1.0-gcp.1
 ENV version_label=${version_label}
 
 ARG component_label=gestalt-installer-base

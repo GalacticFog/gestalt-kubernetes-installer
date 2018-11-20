@@ -17,7 +17,7 @@ ARG base_image=gcr.io/galacticfog-public/gestalt-installer-base:${base_tag}
 FROM ${base_image} as builder
 
 # Make sure to update this version_lavel and keep consistent with the version tag
-ARG version_label=gcp-marketplace
+ARG version_label=4.1.0-gcp.1
 ENV version_label=${version_label}
 ENV KUBECONFIG=/app/configure/.kubeconfig
 
