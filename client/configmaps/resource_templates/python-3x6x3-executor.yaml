@@ -8,8 +8,8 @@ properties:
         CMD: bin/gestalt-laser-executor-python
         IMAGE: '#{Config PYTHON_3_6_3_EXECUTOR_IMAGE}'
         MIN_COOL: '0'
-        NAME: python
-        RUNTIME: python
+        NAME: python363
+        RUNTIME: python363
         SIZES_0_CPU: '0.1'
         SIZES_0_MEM: '512'
         SIZES_0_MIN_COOL: '#{Config PYTHON_3_6_3_EXECUTOR_MIN_COOL}'
