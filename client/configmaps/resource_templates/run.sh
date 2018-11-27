@@ -92,8 +92,17 @@ create nodejs-executor
 create python-executor
 create ruby-executor
 
+# Laser
+if [ "${LASER_PROVIDER_CUSTOMIZE}" == "1" ]; then
+  for CURR_EXECUTOR in $(echo ${LASER_PROVIDER_CUSTOM_EXECUTORS[@]} | sed "s/:/ /g"); do
+    create ${CURR_EXECUTOR}
+  done
+  create ${LASER_PROVIDER_DEFINITION}
+else
+  create laser-provider
+fi
+
 # Create other providers
-create laser-provider
 create policy-provider # Policy depends on Rabbit and Laser
 
 create kong-provider

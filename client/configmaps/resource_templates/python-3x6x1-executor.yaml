@@ -1,0 +1,27 @@
+name: python-executor-3-6-1
+description: The python runtime executor
+resource_type: Gestalt::Configuration::Provider::Lambda::Executor::Python
+properties:
+  config:
+    env:
+      public:
+        CMD: bin/gestalt-laser-executor-python
+        IMAGE: '#{Config PYTHON_3_6_1_EXECUTOR_IMAGE}'
+        MIN_COOL: '0'
+        NAME: python361
+        RUNTIME: python361
+        SIZES_0_CPU: '0.1'
+        SIZES_0_MEM: '512'
+        SIZES_0_MIN_COOL: '#{Config PYTHON_3_6_1_EXECUTOR_MIN_COOL}'
+        SIZES_1_CPU: '0.2'
+        SIZES_1_MEM: '512'
+        SIZES_2_CPU: '0.4'
+        SIZES_2_MEM: '512'
+        SIZES_3_CPU: '0.5'
+        SIZES_3_MEM: '512'
+        SIZES_4_CPU: '0.5'
+        SIZES_4_MEM: '1024'
+        SIZES_5_CPU: '1'
+        SIZES_5_MEM: '1024'
+      private: {}
+  services: []
