@@ -64,7 +64,7 @@ cat >> ${GENERATED_CONF_FILE} << EOF
     "KONG_0_VIRTUAL_HOST": "${gestalt_kong_service_host}",
     "KONG_0_EXTERNAL_PROTOCOL" :"${gestalt_kong_service_protocol:-http}",
     "KUBECONFIG_BASE64": "${kubeconfig_data}",
-    "LASER_IMAGE": "${docker_registry}/gestalt-laser:${gestalt_docker_release_tag}",
+    "LASER_IMAGE": "${docker_registry}/gestalt-laser:${gestalt_laser_release_tag:-gestalt_docker_release_tag}",
     "LASER_SERVICE_VHOST": "${laser_service_vhost}",
     "LASER_NODEPORT": "${gestalt_laser_service_nodeport}",
     "LASER_PROVIDER_CUSTOMIZE": "${gestalt_laser_customize:-0}",
