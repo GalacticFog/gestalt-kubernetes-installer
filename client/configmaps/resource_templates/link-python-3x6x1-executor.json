@@ -1,0 +1,12 @@
+[
+    {
+        "op": "add",
+        "path": "/properties/linked_providers",
+        "value": [
+            {
+                "name": "EXECUTOR_9",
+                "id": "#{Provider /root/python-executor-3-6-1 id}"
+            }
+        ]
+    }
+]
