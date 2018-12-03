@@ -1,6 +1,7 @@
 #!/bin/bash
 
-gestalt_cli_version=0.10.2
+gestalt_cli_version=0.10.5
+
 
 
 exit_with_error() {
