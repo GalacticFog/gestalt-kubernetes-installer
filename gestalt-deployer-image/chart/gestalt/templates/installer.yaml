@@ -12,7 +12,7 @@ spec:
   containers:
   - name: gestalt-installer
     image: "{{ .Values.installer.image }}"
-    imagePullPolicy: Always
+    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
     command:

@@ -1,9 +1,12 @@
+name: gestalt
+namespace: gestalt-system
+
 common:
   imagePullPolicy: Always
   releaseVersion: release-2.3.8
 
 installer:
-  stuff: # TODO
+  image: gcr.io/galacticfog-public/gestalt-installer:latest
 
 security:
   image: gcr.io/galacticfog-public/gestalt-security:release-2.3.8

@@ -9,7 +9,12 @@
 # WARNING! I have not tested this - just pulled from the docs page above and keeping it here for future reference
 #
 export REGISTRY=gcr.io/$(gcloud config get-value project | tr ':' '/')
+echo "REGISTRY: ${REGISTRY}"
 export APP_NAME=gestalt
+echo "APP_NAME: ${APP_NAME}"
 
-docker build --tag $REGISTRY/$APP_NAME/deployer .
-docker push $REGISTRY/$APP_NAME/deployer
+export DEPLOYER_TAG="$REGISTRY/${APP_NAME}-deployer:testing"
+echo "DEPLOYER_TAG: ${DEPLOYER_TAG}"
+
+docker build --tag $DEPLOYER_TAG .
+docker push $DEPLOYER_TAG

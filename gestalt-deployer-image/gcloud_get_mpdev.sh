@@ -7,7 +7,7 @@
 #
 docker pull gcr.io/cloud-marketplace-tools/k8s/dev
 
-BIN_FILE="$HOME/bin/mpdev"
+BIN_FILE="/usr/local/bin/mpdev"
 docker run gcr.io/cloud-marketplace-tools/k8s/dev cat /scripts/dev > "$BIN_FILE"
 chmod +x "$BIN_FILE"
 

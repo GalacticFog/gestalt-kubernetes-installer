@@ -10,7 +10,7 @@ metadata:
 spec:
   descriptor:
     type: gestalt
-    versions: "{{ releaseVersion }}"
+    versions: "{{ .Values.common.releaseVersion }}"
   # TODO - seems like a good idea to add an info item with a link to the main Gestalt UI
   info:
   - name: Gestalt UI URL
@@ -18,7 +18,7 @@ spec:
     valueFrom:
       type: ServiceRef
       serviceRef:
-        name: {{ .Values.ui.ingress.host }}
+        name: "{{ .Values.ui.ingress.host }}"
         port: 80
         path: /
   selector:
