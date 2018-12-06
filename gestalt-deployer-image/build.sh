@@ -5,7 +5,7 @@ SILENT=0
 VERBOSE=0
 PRINT_IMAGE_ID=0
 REGISTRY="gcr.io/galacticfog-public"
-LABEL="gestalt-installer"
+LABEL="gestalt-deployer"
 DEFAULT_TAG="build"
 declare -a TAGS
 declare -a BUILD_ARGS

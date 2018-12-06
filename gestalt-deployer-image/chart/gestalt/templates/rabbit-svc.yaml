@@ -4,6 +4,8 @@ metadata:
   name: gestalt-rabbit
   labels:
     gestalt-app: rabbit
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-rabbit
 spec:
   selector:
     gestalt-app: rabbit

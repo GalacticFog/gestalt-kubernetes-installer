@@ -150,9 +150,6 @@ meta:
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
 
-# kong:
-#   nodePort: ${KONG_NODEPORT}
-
 logging:
   nodePort: ${LOGGING_NODEPORT}
 

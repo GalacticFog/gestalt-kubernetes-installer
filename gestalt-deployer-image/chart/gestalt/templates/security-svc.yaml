@@ -4,6 +4,8 @@ metadata:
   name: gestalt-security
   labels:
     gestalt-app: security
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-security
 spec:
   # type: {{ .Values.security.exposedServiceType }}
   selector:

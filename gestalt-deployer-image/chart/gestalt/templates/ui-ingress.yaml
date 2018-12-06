@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   labels:
     gestalt-app: ui
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ui
   name: gestalt-ui
 spec:
   backend:

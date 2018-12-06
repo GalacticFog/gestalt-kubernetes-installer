@@ -4,6 +4,8 @@ metadata:
   name: gestalt-ui
   labels:
     gestalt-app: ui
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ui
 spec:
   type: {{ .Values.ui.exposedServiceType }}
   selector:

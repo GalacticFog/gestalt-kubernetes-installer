@@ -4,6 +4,8 @@ metadata:
   name: gestalt-meta
   labels:
     gestalt-app: meta
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-meta
 spec:
   type: {{ .Values.meta.exposedServiceType }}
   # type: NodePort
