@@ -61,7 +61,6 @@ db:
   password: override_this_in_another_values_file_or_cli_param
   databaseName: postgres
 
-# The following only applies if the gestalt-postgresql chart is deployed
 postgresql:
   image: postgres
   imageTag: 9.6.2
