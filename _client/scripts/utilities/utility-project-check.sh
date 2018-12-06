@@ -16,8 +16,7 @@
   utility_folder="./scripts/utilities"
   utility_bash="${utility_folder}/utility-bash.sh"
   utility_gestalt_install="${utility_folder}/utility-gestalt-installer-run.sh"
-  utility_kubectl="${utility_folder}/utility-kubectl.sh"
-
+  
   #Generated Files
   conf_install="./install-config.json"
   kube_install="./installer.yaml"
