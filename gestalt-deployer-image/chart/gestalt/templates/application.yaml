@@ -12,15 +12,15 @@ spec:
     type: gestalt
     versions: "{{ .Values.common.releaseVersion }}"
   # TODO - seems like a good idea to add an info item with a link to the main Gestalt UI
-  info:
-  - name: Gestalt UI URL
-    type: Reference
-    valueFrom:
-      type: ServiceRef
-      serviceRef:
-        name: "{{ .Values.ui.ingress.host }}"
-        port: 80
-        path: /
+  # info:
+  # - name: Gestalt UI URL
+  #   type: Reference
+  #   valueFrom:
+  #     type: ServiceRef
+  #     serviceRef:
+  #       name: "{{ .Values.ui.ingress.host }}"
+  #       port: 80
+  #       path: /
   selector:
     matchLabels:
       app.kubernetes.io/name: "{{ .Release.Name }}"

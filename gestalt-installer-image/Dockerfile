@@ -21,7 +21,7 @@ ARG version_label=4.1.0-gcp.1
 ENV version_label=${version_label}
 ENV KUBECONFIG=/app/configure/.kubeconfig
 
-ARG component_label=gestalt-deployer
+ARG component_label=gestalt-installer
 LABEL application=gestalt
 LABEL component=${component_label}
 LABEL build.phase=builder
@@ -30,7 +30,6 @@ LABEL com.galacticfog.version=${version_label}
 
 WORKDIR /app/configure
 
-COPY ./gestalt /gestalt
 COPY . .
 
 # Invoke the scripts to build configs and installer script files here.
@@ -52,28 +51,32 @@ RUN pwd && ./configure.sh && \
 # The target container performs the actual work of installing Gestalt on
 FROM ${base_image}
 
-ENV KUBECONFIG=/app/deploy/.kubeconfig
+ENV KUBECONFIG=/app/install/.kubeconfig
 
-ARG component_label=gestalt-deployer
+ARG component_label=gestalt-installer
 LABEL application=gestalt
 LABEL component=${component_label}
 LABEL build.phase=target
 LABEL vendor="Galactic Fog IP, Inc."
 LABEL com.galacticfog.version=${version_label}
 
-WORKDIR /app/deploy
+WORKDIR /app/install
 
 # Copy in Kubernetes and Gestalt resource definition files from the builder stage
 # COPY --from=builder ./gestalt /gestalt
 # Copy in scripts and utilities in from the builder stage
-COPY --from=builder /app/configure /app/deploy
+COPY --from=builder /app/configure /app/install
 
 RUN pwd && \
     echo "--------------------------------------------------" && \
     find /app -type f && \
+    mkdir -p license && \
+    mv gestalt-license.json license/ && \
+    mkdir -p config && \
+    mv install-config.json config/ && \
     echo "--------------------------------------------------" && \
     echo "DEPLOYER BUILD DONE." && \
     echo "--------------------------------------------------"
 
 # The entrypoint script should launch the installer scripts.
-ENTRYPOINT ["/app/deploy/scripts/entrypoint.sh"]
+ENTRYPOINT ["/app/install/scripts/entrypoint.sh"]

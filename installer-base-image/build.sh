@@ -59,7 +59,7 @@ $CMD USAGE:
     -v
       Run verbose - print additional diagnostic output to STDOUT.  NOTE: -s overrides -v
     -r REGISTRY
-      Push the built image to this registry. (default DockerHub '${REGISTRY}' registry)
+      Push the built image to this registry. (default '${REGISTRY}' registry)
     -l LABEL
       Use this image label value. (default '${LABEL}')
     -d DEFAULT_TAG

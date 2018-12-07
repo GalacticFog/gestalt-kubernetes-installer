@@ -5,7 +5,7 @@
 ############################################
 
   # Credentials and Configs
-  conf_gestalt_conf="./gestalt.conf"
+  conf_gestalt_conf="./_gestalt.conf"
   conf_gestalt_creds="./credentials.conf"
 
   # Scripts and Utilities

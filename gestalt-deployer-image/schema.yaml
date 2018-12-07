@@ -43,7 +43,7 @@ properties:
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   gestalt.installer.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-installer:latest
+    default: gcr.io/galacticfog-public/gestalt-installer:4
     x-google-marketplace:
       type: IMAGE
   gestalt.security.image:
@@ -63,7 +63,7 @@ properties:
       type: IMAGE
   gestalt.elastic.initContainer.image:
     type: string
-    default: gcr.io/galacticfog-public/busybox:1.27.2
+    default: gcr.io/galacticfog-public/busybox:1.29.3
     x-google-marketplace:
       type: IMAGE
   gestalt.meta.image:

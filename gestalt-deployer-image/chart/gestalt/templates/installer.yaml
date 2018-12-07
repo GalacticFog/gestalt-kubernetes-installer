@@ -19,31 +19,32 @@ spec:
     - bash
     args: 
     - -c
-    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install debug
-    volumeMounts:
-    - mountPath: /config
-      name: config
-    - mountPath: /license
-      name: license
-    - mountPath: /scripts2
-      name: scripts
-    - mountPath: /gestalt2
-      name: gestalt-targz
-    - mountPath: /resource_templates
-      name: resources
-  volumes:
-    - name: config
-      configMap:
-        name: installer-config
-    - name: scripts
-      configMap:
-        name: installer-scripts
-    - name: gestalt-targz
-      configMap:
-        name: gestalt-targz
-    - name: license
-      configMap:
-        name: gestalt-license
-    - name: resources
-      configMap:
-        name: gestalt-resources
+    - /scripts/entrypoint.sh install debug
+#    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install debug
+#    volumeMounts:
+#    - mountPath: /config
+#      name: config
+#    - mountPath: /license
+#      name: license
+#    - mountPath: /scripts2
+#      name: scripts
+#    - mountPath: /gestalt2
+#      name: gestalt-targz
+#    - mountPath: /resource_templates
+#      name: resources
+#  volumes:
+#    - name: config
+#      configMap:
+#        name: installer-config
+#    - name: scripts
+#      configMap:
+#        name: installer-scripts
+#    - name: gestalt-targz
+#      configMap:
+#        name: gestalt-targz
+#    - name: license
+#      configMap:
+#        name: gestalt-license
+#    - name: resources
+#      configMap:
+#        name: gestalt-resources
