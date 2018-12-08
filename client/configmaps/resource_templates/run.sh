@@ -73,6 +73,9 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
+
 # Create base providers
 create db-provider
 create security-provider
@@ -104,7 +107,6 @@ fi
 
 # Create other providers
 create policy-provider # Policy depends on Rabbit and Laser
-
 create kong-provider
 
 # Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
@@ -113,7 +115,7 @@ create kong-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
-sleep 20
+
 ## Copy in secrets to all Gestalt Managed Namespaces
 if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
   kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
@@ -130,8 +132,9 @@ if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
   done
 fi
 
-sleep 20  # Provide time for Meta to settle before migrating the schema
-fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
+echo "Next: run meta migrations: [fog meta POST /migrate --file meta-migrate.json]"
+#fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
+fog meta POST /migrate --file meta-migrate.json | jq 
 
 ## LDAP setup
 if [ -f ldap-config.yaml ]; then
