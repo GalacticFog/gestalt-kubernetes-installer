@@ -95,89 +95,21 @@ cat >> ${GENERATED_CONF_FILE} << EOF
 }
 EOF
 
-# TODO: Move this into another location
-cat > ./gestalt/values.yaml <<EOF
-# TODO - Pull out additional configuration options
-common:
-  imagePullPolicy: Always
-  # imagePullPolicy: IfNotPresent
-
-security:
-  exposedServiceType: NodePort
-  hostname: gestalt-security.gestalt-system
-  port: 9455
-  protocol: http
-  databaseName: gestalt-security
-
-rabbit:
-  hostname: gestalt-rabbit.gestalt-system
-  port: 5672
-  httpPort: 15672
-
-elastic:
-  hostname: gestalt-elastic.gestalt-system
-  restPort: 9200
-  transportPort: 9300
-  initContainer:
-    image: busybox:1.27.2
-
-meta:
-  exposedServiceType: NodePort
-  hostname: gestalt-meta.gestalt-system
-  port: 10131
-  protocol: http
-  databaseName: gestalt-meta
-  nodePort: ${gestalt_meta_service_nodeport}
-
-kong:
-  nodePort: ${gestalt_kong_service_nodeport}
-
-logging:
-  nodePort: ${gestalt_logging_service_nodeport}
-
-ui:
-  exposedServiceType: NodePort
-  nodePort: ${gestalt_ui_service_nodeport}
-  ingress:
-    host: ${gestalt_ui_ingress_host}
-
-# Gestalt DB settings
-db:
-  # Hostname must be fully qualified for Kong service
-  hostname: ${database_hostname}
-  port: 5432
-  # username: postgres
-  databaseName: postgres
-
-# The following only applies if the gestalt-postgresql chart is deployed
-postgresql:
-  postgresUser: ${database_username}
-  postgresDatabase: ${database_name}
-  persistence:
-    size: ${internal_database_pv_storage_size}
-    storageClass: "${internal_database_pv_storage_class}"
-    subPath: "${postgres_persistence_subpath}"
-  resources:
-    requests:
-      memory: ${postgres_memory_request}
-      cpu: ${postgres_cpu_request}
-  service:
-    port: 5432
-    type: ClusterIP
-EOF
-
 ## LDAP Config
 
+# TODO - get LDAP configs from the GCP Marketplace ConfigMap or some other source?
 # First remove the existing file so it won't get staged
 [ -f ./configmaps/resource_templates/ldap/ldap-config.yaml ] && \
   rm ./configmaps/resource_templates/ldap/ldap-config.yaml
 
+# TODO - let's just keep $configure_ldap == 'No' for now and figure out if we need to support LDAP integration later on
 if [ "$configure_ldap" == "Yes" ]; then
   echo "Will configure LDAP, copying LDAP config from ldap-config.yaml"
   cp ldap-config.yaml ./configmaps/resource_templates/ldap/ldap-config.yaml
   exit_on_error "Failed to copy ldap-config.yaml"
 fi
 
+# TODO - keep cacerts in the installer image or obtain them from another source?  Is this something we can make GCPM supply us?
 [ -f ./configmaps/cacerts ] && \
   rm ./configmaps/cacerts
 

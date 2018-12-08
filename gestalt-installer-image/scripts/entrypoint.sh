@@ -20,7 +20,7 @@ if [ "$CMD" == 'install' ]; then
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 
-    /scripts/install.sh $2 2>&1 | tee -a $log
+    scripts/install.sh $2 2>&1 | tee -a $log
 
     echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 

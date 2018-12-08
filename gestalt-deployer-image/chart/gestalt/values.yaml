@@ -16,7 +16,7 @@ security:
   protocol: http
   databaseName: gestalt-security
   adminUser: admin
-  adminPassword: override_this_in_another_values_file_or_cli_param
+  adminPassword: gestaltpoc!
 
 rabbit:
   image: gcr.io/galacticfog-public/rabbit:release-2.3.8
@@ -61,14 +61,14 @@ db:
   hostname: gestalt-postgresql.gestalt-system.svc.cluster.local
   port: 5432
   username: postgres
-  password: override_this_in_another_values_file_or_cli_param
+  password: abcd1234!
   databaseName: postgres
 
 postgresql:
   image: postgres
   imageTag: 9.6.2
   postgresUser: postgres
-  postgresPassword: override_this_in_another_values_file_or_cli_param
+  postgresPassword: abcd1234!
   postgresDatabase: postgres
   persistence:
     size: 100Mi

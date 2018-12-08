@@ -331,7 +331,7 @@ gestalt_cli_context_set() {
 }
 
 gestalt_cli_create_resources() {
-  cd /resource_templates
+  cd resource_templates
 
   # Always assume there's a script called run.sh
   if [ -f ./run.sh ]; then 

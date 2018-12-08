@@ -38,8 +38,20 @@ properties:
     description: The name of the database in which Gestalt Security service stores its data
   gestalt.ui.ingress.host:
     type: string
-    # defautlt: no default value
+    # default: no default value
     description: Enter the DNS name for the Gestalt UI service
+  gestalt.postgresql.postgresDatabase:
+    type: string
+    default: postgres
+    description: The Postgres instance's default database name
+    gestalt.postgresql.postgresUser:
+    type: string
+    default: postgres
+    description: The Postgres instance admin user's username
+  gestalt.postgresql.postgresPassword:
+    type: string
+    default: abcd1234!
+    description: The Postgres instance admin user's password
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   gestalt.installer.image:
     type: string

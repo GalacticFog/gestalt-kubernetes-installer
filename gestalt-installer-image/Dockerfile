@@ -70,10 +70,6 @@ COPY --from=builder /app/configure /app/install
 RUN pwd && \
     echo "--------------------------------------------------" && \
     find /app -type f && \
-    mkdir -p license && \
-    mv gestalt-license.json license/ && \
-    mkdir -p config && \
-    mv install-config.json config/ && \
     echo "--------------------------------------------------" && \
     echo "DEPLOYER BUILD DONE." && \
     echo "--------------------------------------------------"
