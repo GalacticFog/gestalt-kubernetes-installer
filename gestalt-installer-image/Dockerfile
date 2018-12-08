@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version="4.0.5" 
+LABEL com.galacticfog.version="4.0.6" 
 # Make sure to update this version and keep consistent with tag
 
 ENV BUILD_DEPS="gettext"  \
