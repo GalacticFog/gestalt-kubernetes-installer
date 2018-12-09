@@ -22,12 +22,10 @@ kube_process_kubeconfig
 exit_on_error "Failed to process kubeconfig, aborting."
 
 log_debug "Generate Installer Configuration '. ${installer_config}'"
-. "${installer_config}" "${conf_install}"
+. "${installer_config}"
 exit_on_error "Issue during building '${installer_config}'"
-log_debug "Generated Installer Configuration: `cat ${conf_install}`" && log_debug ""
-validate_json ${conf_install}
 
-log_debug "Generate Installer Spec '. ${installer_spec} ${kube_install}'"
-. "${installer_spec}" "${kube_install}"
+log_debug "Generate Installer Spec '. ${installer_spec}'"
+. "${installer_spec}"
 
 echo "Installer Configurations Generated"

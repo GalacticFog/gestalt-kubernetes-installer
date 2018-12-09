@@ -2,16 +2,11 @@
 
 # Needs ./utilities/bash-utilities.sh
 
-[[ $# -ne 1 ]] && echo && exit_with_error "File '$0' expects 1 parameter ($# provided) [$@], aborting."
-GENERATED_CONF_FILE=$1
-
-
 check_for_required_variables \
-  docker_registry \
-  gestalt_installer_docker_release_tag \
+  gestalt_installer_image \
   gestalt_install_mode
 
-cat > ${GENERATED_CONF_FILE} << EOF
+cat > ${kube_install} << EOF
 # This is a pod w/ restartPolicy=Never so that the installer only runs once.
 apiVersion: v1
 kind: Pod
@@ -29,7 +24,7 @@ spec:
   - name: imagepullsecret-5
   containers:
   - name: gestalt-installer
-    image: "${docker_registry}/gestalt-installer:${gestalt_installer_docker_release_tag}"
+    image: "${gestalt_installer_image}"
     imagePullPolicy: Always
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
@@ -41,8 +36,6 @@ spec:
     volumeMounts:
     - mountPath: /config
       name: config
-    - mountPath: /license
-      name: license
     - mountPath: /scripts2
       name: scripts
     - mountPath: /gestalt2
@@ -59,9 +52,6 @@ spec:
     - name: gestalt-targz
       configMap:
         name: gestalt-targz
-    - name: license
-      configMap:
-        name: gestalt-license
     - name: resources
       configMap:
         name: gestalt-resources

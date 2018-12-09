@@ -92,6 +92,7 @@ gestalt_installer_generate_helm_config() {
     ADMIN_PASSWORD \
     DATABASE_IMAGE \
     DATABASE_IMAGE_TAG \
+    DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
     KUBECONFIG_BASE64 \
@@ -104,31 +105,37 @@ gestalt_installer_generate_helm_config() {
     META_HOSTNAME \
     META_PORT \
     META_PROTOCOL \
+    META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
     UI_IMAGE \
-    UI_NODEPORT
+    UI_NODEPORT \
+    internal_database_pv_storage_size \
+    internal_database_pv_storage_class \
+    postgres_persistence_subpath \
+    postgres_memory_request \
+    postgres_cpu_request
 
   cat > helm-config.yaml <<EOF
+common:
+  imagePullPolicy: Always
+
 security:
+  exposedServiceType: NodePort
   image: "${SECURITY_IMAGE}"
   hostname: "${SECURITY_HOSTNAME}"
   port: "${SECURITY_PORT}"
   protocol: "${SECURITY_PROTOCOL}"
   adminUser: "${ADMIN_USERNAME}"
   adminPassword: "${ADMIN_PASSWORD}"
-
-postgresql:
-  postgresPassword: "${DATABASE_PASSWORD}"
-  image: "${DATABASE_IMAGE}"
-  imageTag: "${DATABASE_IMAGE_TAG}"
+  databaseName: gestalt-security
 
 db:
   username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
-
-installer:
-  gestaltCliData: "${KUBECONFIG_BASE64}"
+  hostname: ${database_hostname}
+  port: 5432
+  databaseName: postgres
 
 rabbit:
   image: "${RABBIT_IMAGE}"
@@ -140,6 +147,10 @@ elastic:
   image: ${ELASTICSEARCH_IMAGE}
 #  initController:
 #    image: ${ELASTICSEARCH_INIT_IMAGE}
+  restPort: 9200
+  transportPort: 9300
+  initContainer:
+    image: busybox:1.27.2
 
 meta:
   image: ${META_IMAGE}
@@ -148,6 +159,7 @@ meta:
   port: ${META_PORT}
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
+  nodePort: ${META_NODEPORT}
 
 # kong:
 #   nodePort: ${KONG_NODEPORT}
@@ -161,7 +173,28 @@ ui:
   nodePort: ${UI_NODEPORT}
   ingress:
     host: localhost
+EOF
 
+
+cat >> helm-config.yaml <<EOF
+
+postgresql:
+  image: "${DATABASE_IMAGE}"
+  imageTag: "${DATABASE_IMAGE_TAG}"
+  postgresUser: ${DATABASE_USERNAME}
+  postgresPassword: "${DATABASE_PASSWORD}"
+  postgresDatabase: ${DATABASE_NAME}
+  persistence:
+    size: ${internal_database_pv_storage_size}
+    storageClass: "${internal_database_pv_storage_class}"
+    subPath: "${postgres_persistence_subpath}"
+  resources:
+    requests:
+      memory: ${postgres_memory_request}
+      cpu: ${postgres_cpu_request}
+  service:
+    port: 5432
+    type: ClusterIP
 EOF
 
 }

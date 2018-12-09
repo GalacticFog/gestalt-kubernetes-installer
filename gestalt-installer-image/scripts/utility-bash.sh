@@ -209,7 +209,8 @@ convert_json_to_env_variables() {
   
   all_var_array=$(cat ${json_file_to_process} | awk -F'"' '{print $2}' | grep -v '^$')
   for curr_variable in ${all_var_array[@]}; do
-    curr_variable_name=`echo ${curr_variable} | tr '[a-z]' '[A-Z]' | sed 's|-|_|g'` #Make all upper-case and change dashes to underscores
+    # curr_variable_name=`echo ${curr_variable} | tr '[a-z]' '[A-Z]' | sed 's|-|_|g'` #Make all upper-case and change dashes to underscores
+    curr_variable_name=${curr_variable}
     curr_variable_value=`jq -r '.["'${curr_variable}'"]' ${json_file_to_process}`
     log_debug "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
     export eval ${curr_variable_name}=${curr_variable_value}

@@ -78,10 +78,10 @@ create db-provider
 create security-provider
 create kubernetes-provider
 create rabbit-provider
-create logging-provider
+# create logging-provider
 
 # Link the logging provider to the CaaS provider
-fog meta patch-provider --provider '/root/default-kubernetes' -f link-logging-provider.yaml
+# fog meta patch-provider --provider '/root/default-kubernetes' -f link-logging-provider.yaml
 
 # Create Executor Providers
 create js-executor

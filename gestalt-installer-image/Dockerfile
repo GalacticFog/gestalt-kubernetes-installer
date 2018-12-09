@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version="4.0.4" 
+LABEL com.galacticfog.version="4.0.5" 
 # Make sure to update this version and keep consistent with tag
 
 ENV BUILD_DEPS="gettext"  \
@@ -27,6 +27,7 @@ RUN apk upgrade --no-cache && \
     rm -rf /var/cache/apk/*
 
 # inject binaries: kubectl, helm an fog
+COPY ./bin/yaml2json /usr/local/bin/yaml2json
 COPY ./deps/kubectl /usr/local/bin/kubectl
 COPY ./deps/helm /usr/local/bin/helm
 COPY ./deps/fog /usr/local/bin/fog

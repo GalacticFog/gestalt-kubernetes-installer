@@ -19,7 +19,7 @@
   utility_kubectl="${utility_folder}/utility-kubectl.sh"
 
   #Generated Files
-  conf_install="./install-config.json"
+  conf_install="./configmaps/config/install-config.json"
   kube_install="./installer.yaml"
 
 ############################################

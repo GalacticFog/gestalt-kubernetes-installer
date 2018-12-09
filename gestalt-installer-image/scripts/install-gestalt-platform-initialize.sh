@@ -14,7 +14,7 @@
   scipt_install_helper="${script_folder}/install-functions.sh"
 
   gestalt_config="./config/install-config.json"
-  gestalt_license="./license/gestalt-license.json"
+  gestalt_license="./config/gestalt-license.json"
 
   all_source_me="${utility_bash} ${scipt_install_helper}"
 

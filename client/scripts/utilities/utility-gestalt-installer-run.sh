@@ -34,17 +34,11 @@ gestalt_install_validate_preconditions() {
     log_debug "[${FUNCNAME[0]}] Check for required files: '${file_array[@]}'"
     check_for_required_files "${file_array[@]}"
 
-    log_debug "[${FUNCNAME[0]}] Validate that expected json files are in json format: '${conf_install}'"
-    validate_json ${conf_install}
-
-    log_debug "[${FUNCNAME[0]}] Validate that expected json files are in json format: '${conf_install}'"
-    validate_json ${gestalt_license}
-
     log_debug "[${FUNCNAME[0]}] Validate that expected environment variables are set ..."
 
     check_for_required_variables \
-      kube_namespace conf_install \
-      gestalt_license 
+      kube_namespace \
+      conf_install
 
     check_for_kube
 
@@ -54,20 +48,13 @@ gestalt_install_validate_preconditions() {
 
 gestalt_install_create_configmaps() {
 
-  # Create a configmap with the generated install config
-  kubectl create configmap -n ${kube_namespace} installer-config --from-file ${conf_install}
-  exit_on_error "Failed create configmap \
-  'kubectl create configmap -n ${kube_namespace} installer-config --from-file ${conf_install}', aborting."
-
-  # Create a configmap with gestal license
-  kubectl create configmap -n ${kube_namespace} gestalt-license --from-file ${gestalt_license}
-  exit_on_error "Failed create configmap \
-  'kubectl create configmap -n ${kube_namespace} gestalt-license --from-file ${gestalt_license}', aborting."
+  # Create a configmap for the config directory
+  kubectl create configmap -n ${kube_namespace} installer-config --from-file ./configmaps/config/
+  exit_on_error "Failed create configmap from config directory, aborting."
 
   # Create configmap from './custom_resource_templates' folder contents if want custom
   kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/
-  exit_on_error "Failed create configmap \
-  'kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/', aborting."
+  exit_on_error "Failed create configmap from resource_templates directory, aborting."
 
   # Create for scripts
   echo "Creating configmap for installation scripts to be run by gestalt-installer Pod..."
