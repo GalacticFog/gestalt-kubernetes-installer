@@ -131,13 +131,16 @@ if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
 fi
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
-fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
+fog meta POST /migrate -f meta-migrate.json | jq .
 
-## LDAP setup
-if [ -f ldap-config.yaml ]; then
-  echo "Configuring LDAP authentication in gestalt-security..."
-  fog admin create-directory -f ldap-config.yaml --org root
-  fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
+echo "TODO: ensure there's a configure_ldap variable here"
+if [ "$configure_ldap" == "Yes" ]; then
+  ## LDAP setup
+  if [ -f ldap-config.yaml ]; then
+    echo "Configuring LDAP authentication in gestalt-security..."
+    fog admin create-directory -f ldap-config.yaml --org root
+    fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
+  fi
 fi
 
 return 0
