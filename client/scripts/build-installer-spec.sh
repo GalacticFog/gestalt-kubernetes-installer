@@ -32,27 +32,12 @@ spec:
     - bash
     args: 
     - -c
-    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
+    - rm -rf /gestalt /scripts /resource_templates && cat /install-data/install-data.tar.gz.b64 | base64 -d > /tmp/install-data.tar.gz && tar xfz /tmp/install-data.tar.gz -C / && chmod +x /scripts/*.sh /resource_templates/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
     volumeMounts:
-    - mountPath: /config
-      name: config
-    - mountPath: /scripts2
-      name: scripts
-    - mountPath: /gestalt2
-      name: gestalt-targz
-    - mountPath: /resource_templates
-      name: resources
+    - mountPath: /install-data
+      name: install-data
   volumes:
-    - name: config
+    - name: install-data
       configMap:
-        name: installer-config
-    - name: scripts
-      configMap:
-        name: installer-scripts
-    - name: gestalt-targz
-      configMap:
-        name: gestalt-targz
-    - name: resources
-      configMap:
-        name: gestalt-resources
+        name: install-data
 EOF

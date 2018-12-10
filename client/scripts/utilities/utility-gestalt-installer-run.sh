@@ -48,32 +48,19 @@ gestalt_install_validate_preconditions() {
 
 gestalt_install_create_configmaps() {
 
-  # Create a configmap for the config directory
-  kubectl create configmap -n ${kube_namespace} installer-config --from-file ./configmaps/config/
-  exit_on_error "Failed create configmap from config directory, aborting."
-
-  # Create configmap from './custom_resource_templates' folder contents if want custom
-  kubectl create configmap -n ${kube_namespace} gestalt-resources --from-file ./configmaps/resource_templates/
+  # Create configmap for install data
+  tar cfzv ./configmaps/install-data.tar.gz -C .. \
+    gestalt \
+    resource_templates \
+    scripts \
+    config \
+    && cat ./configmaps/install-data.tar.gz | base64 > ./configmaps/install-data.tar.gz.b64
+  cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./configmaps/install-data.tar.gz.b64"
+  echo $cmd
+  $cmd
   exit_on_error "Failed create configmap from resource_templates directory, aborting."
 
-  # Create for scripts
-  echo "Creating configmap for installation scripts to be run by gestalt-installer Pod..."
-  cmd="kubectl create configmap -n ${kube_namespace} installer-scripts --from-file ../gestalt-installer-image/scripts/"
-  echo $cmd
-  $cmd
-  exit_on_error "Command '$cmd' failed, aborting."
-
-  tar cfzv ./configmaps/gestalt.tar.gz -C ../gestalt-installer-image gestalt && \
-  cat ./configmaps/gestalt.tar.gz | base64 > ./configmaps/gestalt.tar.gz.b64
-  exit_on_error "Failed to build gestalt configmap data"
-
-  # Create for Helm chart - main directory
-  echo "Creating configmap for Helm templates to be run by gestalt-installer Pod..."
-  cmd="kubectl create configmap -n ${kube_namespace} gestalt-targz --from-file ./configmaps/gestalt.tar.gz.b64"
-  echo $cmd
-  $cmd
-  exit_on_error "Command '$cmd' failed, aborting."
-
+  # for CACERTS file
   if [ -f configmaps/cacerts ]; then
     echo "Creating 'gestalt-security-cacerts' configmap from $gestalt_security_cacerts_file..."
     kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=configmaps/cacerts
@@ -81,10 +68,9 @@ gestalt_install_create_configmaps() {
   fi
 
   # Cleanup
-  rm configmaps/gestalt.tar.gz
-  rm configmaps/gestalt.tar.gz.b64
+  rm configmaps/*.tar.gz
+  rm configmaps/*.tar.gz.b64
 }
-
 
 # Run the install container with ConfigMaps
 

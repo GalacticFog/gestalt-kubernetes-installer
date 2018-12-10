@@ -1,5 +1,0 @@
-name: 'root-directory-account-store'
-description: 'root directory account store'
-storeType: DIRECTORY
-isDefaultAccountStore: false
-isDefaultGroupStore: false
