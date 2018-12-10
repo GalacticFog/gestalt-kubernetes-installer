@@ -28,4 +28,9 @@ exit_on_error "Issue during building '${installer_config}'"
 log_debug "Generate Installer Spec '. ${installer_spec}'"
 . "${installer_spec}"
 
-echo "Installer Configurations Generated"
+# TODO: Move this into the installer image
+cat install-config.yaml | ../gestalt-installer-image/bin/yaml2json > configmaps/config/install-config.json
+exit_on_error "Failed to generate install-config.json"
+
+echo
+echo "Installer Configurations Generated at './configmaps/config/install-config.json'"
