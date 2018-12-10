@@ -7,7 +7,12 @@ function sleep_forever() {
     done
 }
 
-if [ "$1" == 'install' ]; then
+CMD=${1:-install}
+
+pwd
+find . -type f
+
+if [ "$CMD" == 'install' ]; then
     echo "Installing Gestalt platform... ('install' container argument specified)"
 
     SECONDS=0
@@ -15,7 +20,7 @@ if [ "$1" == 'install' ]; then
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 
-    /scripts/install.sh $2 2>&1 | tee -a $log
+    scripts/install.sh $2 2>&1 | tee -a $log
 
     echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 

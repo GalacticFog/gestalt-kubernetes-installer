@@ -1,0 +1,15 @@
+#
+# Configuration only Rabbit provider
+#
+name: default-rabbit
+description: The data only rabbit provider
+resource_type: Gestalt::Configuration::Provider::Messaging::RabbitMQ
+properties:
+  config:
+    env:
+      public:
+        SERVICE_HOST: '#{Config RABBIT_HOST}'
+        SERVICE_PORT: '5672'
+      private: {}
+  linked_providers: []
+  services: []

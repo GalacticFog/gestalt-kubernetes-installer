@@ -1,0 +1,36 @@
+#
+# Configuration only Kong provider for an external Kong instance
+#
+name: kong3-external
+description: The default gestalt kong provider (External)
+resource_type: Gestalt::Configuration::Provider::Kong
+properties:
+  config:
+    env:
+      public:
+        USERNAME: unused
+        PASSWORD: currently
+        PUBLIC_URL_HOST: "#{Config KONG_2_VIRTUAL_HOST}"
+        #PUBLIC_URL_PORT: 8000
+        PUBLIC_URL_PROTOCOL: http
+        PUBLIC_URL_VHOST_0: "#{Config KONG_2_VIRTUAL_HOST}"
+        SERVICE_HOST: "#{Config KONG_2_SERVICE_HOST}"
+        # SERVICE_PORT: 8001
+        SERVICE_PROTOCOL: http
+
+      private:
+        # KONG_LUA_PACKAGE_PATH: /usr/local/custom/?.lua;;
+        # KONG_CUSTOM_PLUGINS: gestalt-security-kong
+        # KONG_CLUSTER_ADVERTISE: $(POD_IP):7946
+        # KONG_CLUSTER_LISTEN: $(POD_IP):7946
+        # POSTGRES_NAME: kong3-db
+        # POSTGRES_USER: '#{Config database-username}'
+        # POSTGRES_PASSWORD: '#{Config database-password}'
+        # POSTGRES_HOSTNAME: '#{Config database-hostname}'
+        # POSTGRES_PORT: '5432'
+        # POSTGRES_PROTOCOL: http
+
+    external_protocol: http
+  # linked_providers:
+  # - name: POSTGRES
+  #   id: '#{Provider /root/default-postgres id}'

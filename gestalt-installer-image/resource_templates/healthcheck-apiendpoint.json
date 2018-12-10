@@ -1,0 +1,24 @@
+{
+  "name": "health",
+  "resource_type": "Gestalt::Resource::ApiEndpoint",
+  "description": "A simple healthcheck API Endpoint",
+  "properties": {
+    "resource": "/",
+    "methods": [
+      "GET",
+      "POST"
+    ],
+    "plugins": {
+      "rateLimit": {
+        "enabled": false,
+        "perMinute": 60
+      },
+      "gestaltSecurity": {
+        "enabled": false,
+        "users": [],
+        "groups": []
+      }
+    },
+    "synchronous": true
+  }
+}

@@ -496,27 +496,117 @@ get_service_namespace() {
   kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
 }
 
-create_kong_ingress_v2() {
+
+set_kong_service_namespace() {
+  export KONG_SERVICE_NAMESPACE=$(get_service_namespace kng-ext)
+  echo "KONG_SERVICE_NAMESPACE == ${KONG_SERVICE_NAMESPACE}"
+}
+
+if_kong_ingress_service_name_is_set() {
+  local run_command=$*
+  echo "---------- Checking KONG_INGRESS_SERVICE_NAME for '$run_command' ----------"
+
   if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
-    echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
-    return 0
-    # KONG_INGRESS_SERVICE_NAME=kng
-    # echo "KONG_INGRESS_SERVICE_NAME not defined, defaulting to $KONG_INGRESS_SERVICE_NAME"
+    echo "KONG_INGRESS_SERVICE_NAME not provided!  Skipping '$run_command'"
+    return 99
+  else
+    set_kong_service_namespace
+    echo "KONG_INGRESS_SERVICE_NAME was '${KONG_SERVICE_NAMESPACE}/${KONG_INGRESS_SERVICE_NAME}'"
+    echo "Running '$run_command'"
+    $run_command
+  fi
+}
+
+get_kong_service_port() {
+  kubectl -n $KONG_SERVICE_NAMESPACE get svc $KONG_INGRESS_SERVICE_NAME -o json | jq -r ".spec.ports[] | select(.name==\"public-url\") | .port"
+}
+
+and_health_api_is_working() {
+  local run_cmd=$*
+  echo "---------- Checking health API for '$run_cmd' ----------"
+  local kong_service_port=$(get_kong_service_port)
+  local health_url="http://${KONG_INGRESS_SERVICE_NAME}.${KONG_SERVICE_NAMESPACE}:${kong_service_port}/health"
+
+  local try_limit=5
+  local exit_code=1
+  local tries=0
+
+  echo "Attempting to hit URL $health_url"
+  curl_cmd="curl -i -s -S --connect-timeout 5 --stderr - $health_url"
+  while [ $exit_code -ne 0 -a $tries -lt $try_limit ]; do
+    echo "Running '$curl_cmd'"
+    response="$($curl_cmd)"
+    exit_code=$?
+    echo "${response}"
+    echo "exit code was $exit_code"
+    if [ $exit_code -eq 0 ]; then
+      echo "---------- Health API success at ${health_url} ---------"
+      $run_cmd
+      return $?
+    else
+      echo "---------- Health API FAILED at ${health_url} ----------"
+    fi
+    echo "Retrying in 10 seconds..."
+    sleep 10
+    tries=`expr $tries + 1`
+  done
+  echo "Healthcheck FAILED at API endpoint ${health_url} ----------"
+  return $exit_code
+}
+
+create_kong_readiness_probe() {
+  local namespace=$KONG_SERVICE_NAMESPACE
+
+  echo "Creating readinessProbe for deployment '${namespace}/kng"
+
+  kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kng
+  namespace: $namespace
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: kng
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+EOF
+
+  exit_on_error "Could not create Kong readinessProbe"
+  
+  echo "Kong readiness probe created!"
+}
+
+create_kong_ingress_v2() {
+#  if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
+#    echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
+#    return 0
+#    # KONG_INGRESS_SERVICE_NAME=kng
+#    # echo "KONG_INGRESS_SERVICE_NAME not defined, defaulting to $KONG_INGRESS_SERVICE_NAME"
+#  fi
+
+  if [ -z $KONG_INGRESS_HOSTNAME ]; then
+    # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
+    # in '*' for the host for the ingress - which means any host would apply
+    export KONG_INGRESS_HOSTNAME=localhost
   fi
 
-  echo "Creating Kubernetes Ingress resource for $KONG_INGRESS_SERVICE_NAME..."
-
   local service_name=$KONG_INGRESS_SERVICE_NAME
+  local hostname=$KONG_INGRESS_HOSTNAME
 
   servicename_is_unique_or_exit $service_name
 
   local service_namespace=$(get_service_namespace $service_name)
 
-  echo "Namespace for service '$service_name' is '$service_namespace'"
+  echo "Namespace for Kong service '$service_name' is '$service_namespace'"
 
-  # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
-  # in '*' for the host for the ingress - which means any host would apply
-  local host=$EXTERNAL_GATEWAY_HOST
+  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
@@ -525,16 +615,19 @@ metadata:
   name: $service_name
   namespace: $service_namespace
 spec:
+  backend:
+    serviceName: $service_name
+    servicePort: 8000
   rules:
-  - host: $host
+  - host: $hostname
     http:
       paths:
-      - path: /
-        backend:
+      - backend:
           serviceName: $service_name
-          servicePort: 8000
+          servicePort: 8001
 EOF
+
   exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."
 
-  echo "Kong ingress to '$service_namespace/$service_name' configured for '$host'."
+  echo "Kong ingress to '$service_namespace/$service_name' configured for '$hostname'."
 }

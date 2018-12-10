@@ -1,0 +1,55 @@
+name: policy
+description: The Default Policy Provider
+resource_type: Gestalt::Configuration::Provider::Policy
+properties:
+  config:
+    env:
+      public: {}
+      private:
+        RABBIT_EXCHANGE: policy-exchange
+        RABBIT_ROUTE: policy
+        LASER_USER: '#{Config SECURITY_KEY}'
+        LASER_PASSWORD: '#{Config SECURITY_SECRET}'
+  linked_providers:
+  - name: LASER
+    id: '#{Provider /root/default-laser id}'
+  - name: RABBIT
+    id: '#{Provider /root/default-rabbit id}'
+  services:
+  - init:
+      binding: eager
+      singleton: true
+    container_spec:
+      name: pol
+      properties:
+        cpus: 0.2
+        memory: 768
+        accepted_resource_roles:
+        - production
+        - '*'
+        env: {}
+        num_instances: 1
+        network: BRIDGE
+        container_type: DOCKER
+        image: '#{Config POLICY_IMAGE}'
+        force_pull: true
+        health_checks:
+        - grace_period_seconds: 300
+          interval_seconds: 60
+          max_consecutive_failures: 3
+          path: /health
+          port_index: 0
+          port_type: index
+          protocol: HTTP
+          timeout_seconds: 20
+        provider:
+          id: '#{Provider /root/default-kubernetes id}'
+        labels: {}
+        port_mappings:
+        - name: service
+          protocol: tcp
+          container_port: 9000
+          lb_port: 9000
+          expose_endpoint: true
+          # Expose externally for debugging
+          type: external

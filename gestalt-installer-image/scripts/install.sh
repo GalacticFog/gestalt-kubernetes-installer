@@ -54,11 +54,15 @@ do_get_security_credentials
 create_gestalt_security_creds_secret
 gestalt_cli_login
 
+# echo "Enable Debug..."
+# fog config set debug=true
+
 gestalt_cli_license_set
 gestalt_cli_context_set
 
 run gestalt_cli_create_resources #Default or Custom as per config
 # run create_kong_ingress #  AWS approach
-run create_kong_ingress_v2 #
+if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
+if_kong_ingress_service_name_is_set create_kong_ingress_v2
 
 echo "[Success] Gestalt platform installation completed."

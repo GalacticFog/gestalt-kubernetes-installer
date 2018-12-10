@@ -1,0 +1,17 @@
+#
+# Configuration only provider
+#
+name: default-security
+description: The Default Security Provider
+resource_type: Gestalt::Configuration::Provider::Security
+properties:
+  config:
+    env:
+      public:
+        KEY: '#{Config SECURITY_KEY}'
+        SECRET: '#{Config SECURITY_SECRET}'
+        HOSTNAME: gestalt-security.gestalt-system
+        PORT: '9455'
+        PROTOCOL: http
+      private: {}
+  services: []
