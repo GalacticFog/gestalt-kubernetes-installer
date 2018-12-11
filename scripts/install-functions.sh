@@ -20,13 +20,6 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
-  if ! is_dynamic_lb_enabled ; then
-    echo "Dynamic load balancing is not enabled, checking for required variables"
-    check_for_required_variables \
-      EXTERNAL_GATEWAY_HOST \
-      EXTERNAL_GATEWAY_PROTOCOL
-  fi
-
   # Check all variables in one call
   check_for_required_variables \
     ADMIN_PASSWORD \
@@ -214,13 +207,9 @@ http_post() {
 }
 
 check_for_existing_services() {
-  if is_dynamic_lb_enabled ; then
-    return 0
-  fi
-
-  service_name="default-kong"
-  kubectl get services --all-namespaces | grep $service_name > kong_service
-  if [ `cat kong_service | wc -l` -ne 0 ]; then
+  service_name="$1"
+  output=$(kubectl get services --all-namespaces | grep $service_name)
+  if [ `echo $output | wc -l` -ne 0 ]; then
     exit_with_error "'$service_name' service already exists, aborting."
   fi
 }
@@ -300,7 +289,6 @@ do_get_security_credentials() {
 
   export SECURITY_SECRET=`cat init_payload | jq '.[] .apiSecret' | sed -e 's/^"//' -e 's/"$//'`
   exit_on_error "Failed to obtain or parse API secret (error code $?), aborting."
-
 }
 
 create_gestalt_security_creds_secret() {
@@ -385,44 +373,6 @@ do_init_meta() {
   fi
 }
 
-do_get_loadbalancer_hostname() {
-
-  [ -z $KONG_INGRESS_SERVICE_NAME ] && KONG_INGRESS_SERVICE_NAME=kng
-
-  local service_name=$KONG_INGRESS_SERVICE_NAME
-
-  servicename_is_unique_or_exit $service_name
-
-  local service_namespace=$(get_service_namespace $service_name)
-
-  echo "Namespace for service '$service_name' is '$service_namespace'"
-
-  secs=10
-  for i in `seq 1 20`; do
-    echo "Polling for load balancer (attempt $i)"
-    lb=`kubectl get service $service_name -n $service_namespace -ojson | jq -r '.status.loadBalancer.ingress[0].hostname'`
-    if [ -z "$lb" ] || [ "$lb" == "null" ]; then
-      echo "Got \"$lb\", trying again in $secs seconds. (attempt $i)"
-      sleep $secs
-    else
-      echo "LB hostname = $lb"
-      LB_HOSTNAME=$lb
-      return 0
-    fi
-  done
-  exit_with_error "Could not get '$service_name' load balancer hostname"
-}
-
-is_dynamic_lb_enabled() {
-  # Check for 'yes' or 'true'
-  case $USE_DYNAMIC_LOADBALANCERS in
-    [Yy]*) return 0  ;;
-    [Tt]*) return 0  ;;
-  esac
-
-  return 1
-}
-
 gestalt_cli_set_opts() {
   if [ "${FOGCLI_DEBUG}" == "true" ]; then
     fog config set debug=true
@@ -443,10 +393,8 @@ gestalt_cli_license_set() {
 }
 
 gestalt_cli_context_set() {
-
   fog context set --path /root
   exit_on_error "Failed to set fog context '/root' (error code $?), aborting."
-
 }
 
 gestalt_cli_create_resources() {
