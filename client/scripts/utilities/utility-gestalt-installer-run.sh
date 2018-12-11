@@ -48,14 +48,16 @@ gestalt_install_validate_preconditions() {
 
 gestalt_install_create_configmaps() {
 
+  cp -r config ../resource_templates ../
+
   # Create configmap for install data
-  mkdir tmp && \
-  tar cfzv ./tmp/install-data.tar.gz -C .. \
-    gestalt \
+  tar cfzv ./stage/install-data.tar.gz \
+    config \
+    -C .. \
+    gestalt-helm-chart \
     resource_templates \
     scripts \
-    config \
-    && cat ./tmp/install-data.tar.gz | base64 > ./tmp/install-data.tar.gz.b64
+    && cat ./stage/install-data.tar.gz | base64 > ./stage/install-data.tar.gz.b64
   cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./tmp/install-data.tar.gz.b64"
   echo $cmd
   $cmd
@@ -63,14 +65,14 @@ gestalt_install_create_configmaps() {
 
   # for CACERTS file
   echo "TODO: Ensure cacerts is handled properly"
-  if [ -f tmp/cacerts ]; then
+  if [ -f stage/cacerts ]; then
     echo "Creating 'gestalt-security-cacerts' configmap from $gestalt_security_cacerts_file..."
-    kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=configmaps/cacerts
+    kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=stage/cacerts
     exit_on_error "Failed to build gestalt configmap data"
   fi
 
   # Cleanup
-  rm -r ./tmp
+  rm -r ./stage/*
 }
 
 # Run the install container with ConfigMaps
