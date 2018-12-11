@@ -1,5 +1,6 @@
 #!/bin/bash
-# set -e
+
+set -e
 
 function sleep_forever() {
     while [ 1 ]; do
@@ -16,11 +17,24 @@ if [ "$CMD" == 'install' ]; then
     echo "Installing Gestalt platform... ('install' container argument specified)"
 
     SECONDS=0
-    log=/install.log
+    log=./install.log
+
+    # If an install-data package was placed, overwrite the install directories on this image with them
+    if [ -f ./install-data/install-data.tar.gz.b64 ]; then
+        mkdir ./tmp
+        cat ./install-data/install-data.tar.gz.b64 | base64 -d | tar xfz -C ./tmp 
+        for d in scripts resource_templates gestalt-helm-chart ; do
+            if [ -d ./tmp/$d ] ; then
+                rm -r ./install/$d
+                cp -r ./tmp/$d ./install
+                chmod +x ./install/$d/*.sh
+            fi
+        done
+    fi
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 
-    scripts/install.sh $2 2>&1 | tee -a $log
+    ./install/scripts/install.sh $2 2>&1 | tee -a $log
 
     echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 

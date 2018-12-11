@@ -26,13 +26,9 @@ spec:
   - name: gestalt-installer
     image: "${gestalt_installer_image}"
     imagePullPolicy: Always
-    # 'deploy' arg signals deployment of gestalt platform
-    # 'debug' arg signals debug output
-    command:
-    - bash
     args: 
-    - -c
-    - rm -rf /gestalt /scripts /resource_templates && cat /install-data/install-data.tar.gz.b64 | base64 -d > /tmp/install-data.tar.gz && tar xfz /tmp/install-data.tar.gz -C / && chmod +x /scripts/*.sh /resource_templates/*.sh && /scripts/entrypoint.sh install ${gestalt_install_mode}
+    - install
+    - ${gestalt_install_mode}
     volumeMounts:
     - mountPath: /install-data
       name: install-data

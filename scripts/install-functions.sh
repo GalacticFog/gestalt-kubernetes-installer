@@ -8,7 +8,7 @@ getsalt_installer_load_configmap() {
 
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
-  yaml2json ${gestalt_config_yaml} > ${gestalt_config}
+  /app/bin/yaml2json ${gestalt_config_yaml} > ${gestalt_config}
 
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config} #process config map
