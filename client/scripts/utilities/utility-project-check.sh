@@ -9,7 +9,6 @@
   
   # Scripts and Utilities
   script_folder="./scripts"
-  installer_config="${script_folder}/build-config.sh"
   installer_spec="${script_folder}/build-installer-spec.sh"
 
   utility_folder="./scripts/utilities"

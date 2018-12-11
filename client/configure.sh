@@ -22,16 +22,26 @@ exit_on_error "Unable determine current context '${kubectl} config current-conte
 kube_process_kubeconfig
 exit_on_error "Failed to process kubeconfig, aborting."
 
-log_debug "Generate Installer Configuration '. ${installer_config}'"
-. "${installer_config}"
-exit_on_error "Issue during building '${installer_config}'"
+## CACERTS file
+echo "Checking for custom cacerts..."
+
+# First, delete the original file so it won't be staged
+[ -f ./stage/cacerts ] && \
+  rm ./stage/cacerts
+
+# Copy the file
+if [ ! -z "$gestalt_security_cacerts_file" ]; then
+  echo "Copying $gestalt_security_cacerts_file to ./stage/cacerts ..."
+  cp $gestalt_security_cacerts_file ./stage/cacerts
+  exit_on_error "Failed to copy $gestalt_security_cacerts_file"
+else
+  echo "No cacerts file"
+fi
 
 log_debug "Generate Installer Spec '. ${installer_spec}'"
 . "${installer_spec}"
 
-# # TODO: Move this into the installer image
-# cat config/install-config.yaml | ../gestalt-installer-image/bin/yaml2json > ${conf_install}
-# exit_on_error "Failed to generate ${conf_install}"
+echo "$installer_spec generated."
 
 echo
-echo "Installer Configurations Generated at '${conf_install}'"
+echo "Installer configuration succeeded."

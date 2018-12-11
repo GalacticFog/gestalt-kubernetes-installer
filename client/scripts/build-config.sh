@@ -20,6 +20,7 @@ fi
 
 # Copy the file
 if [ ! -z "$gestalt_security_cacerts_file" ]; then
-  cp $gestalt_security_cacerts_file ./configmaps/cacerts
+  echo "Copying $gestalt_security_cacerts_file to ./stage/cacerts ..."
+  cp $gestalt_security_cacerts_file ./stage/cacerts
   exit_on_error "Failed to copy $gestalt_security_cacerts_file"
 fi

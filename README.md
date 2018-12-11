@@ -2,9 +2,10 @@
 
 ## Step 1: Pre-Install Configuration
 
-1. Modify `credentials.conf` and `gestalt.conf` to match your target environment, and ensure `gestalt-license.json` is present.
-2. Ensure the kubectl current context is set to the target Kubernetes cluster.  Check with `kubectl config current-context`, and set with `kubectl config use-context <context name>`.
-3. Run `./configure.sh`
+1. Ensure `config/gestalt-license.json` is present.
+2. Modify `config/install-config.yaml` for the target environment and desired configuration.
+3. Ensure the kubectl current context is set to the target Kubernetes cluster.  Check with `kubectl config current-context`, and set with `kubectl config use-context <context name>`.
+4. Run `./configure.sh`
 
 This step generates the following:
 - `installer.yaml` - To deploy the installer pod to the Kubernetes cluster
