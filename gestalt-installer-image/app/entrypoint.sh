@@ -19,12 +19,18 @@ if [ "$CMD" == 'install' ]; then
     SECONDS=0
     log=./install.log
 
+    # Get a config map from the current namespace and write contents to local file
+    kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -D > ./install-data.tar.gz
+
+    # TODO: Test the file size, or check if the configmap didn't exist
+
     # If an install-data package was placed, overwrite the install directories on this image with them
-    if [ -f ./install-data/install-data.tar.gz.b64 ]; then
+    if [ -f ./install-data.tar.gz ]; then
         mkdir ./tmp
-        cat ./install-data/install-data.tar.gz.b64 | base64 -d | tar xfz -C ./tmp 
+        tar xfzv ./install-data.tar.gz -C ./tmp 
         for d in scripts resource_templates gestalt-helm-chart ; do
             if [ -d ./tmp/$d ] ; then
+                echo "Overwriting ./install/$d ..."
                 rm -r ./install/$d
                 cp -r ./tmp/$d ./install
                 chmod +x ./install/$d/*.sh

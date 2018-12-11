@@ -51,14 +51,14 @@ gestalt_install_create_configmaps() {
   cp -r config ../resource_templates ../
 
   # Create configmap for install data
-  tar cfzv ./stage/install-data.tar.gz \
+  tar cfzv - \
     config \
     -C .. \
     gestalt-helm-chart \
     resource_templates \
     scripts \
-    && cat ./stage/install-data.tar.gz | base64 > ./stage/install-data.tar.gz.b64
-  cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./tmp/install-data.tar.gz.b64"
+  | base64 > ./stage/b64data
+  cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
   echo $cmd
   $cmd
   exit_on_error "Failed create configmap from resource_templates directory, aborting."
@@ -70,9 +70,6 @@ gestalt_install_create_configmaps() {
     kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=stage/cacerts
     exit_on_error "Failed to build gestalt configmap data"
   fi
-
-  # Cleanup
-  rm -r ./stage/*
 }
 
 # Run the install container with ConfigMaps
