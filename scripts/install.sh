@@ -8,13 +8,8 @@ export script_folder="./scripts"
 scipt_install_helper="${script_folder}/install-functions.sh"
 
 gestalt_config="./config/install-config.json"
+gestalt_config_yaml="./config/install-config.yaml"
 gestalt_license="./config/gestalt-license.json"
-
-check_for_required_files \
-  ${utility_bash} \
-  ${scipt_install_helper} \
-  ${gestalt_config} \
-  ${gestalt_license}
 
 . ${utility_bash}
 if [ $? -ne 0 ]; then
@@ -27,6 +22,10 @@ if [ $? -ne 0 ]; then
     echo "[ERROR] Error sourcing '${scipt_install_helper}', aborting."
     exit 1
 fi
+
+check_for_required_files \
+  ${gestalt_config} \
+  ${gestalt_license}
 
 stage_1() {
 

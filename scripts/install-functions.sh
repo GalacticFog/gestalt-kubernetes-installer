@@ -5,6 +5,11 @@
 getsalt_installer_load_configmap() {
 
   check_for_required_variables gestalt_config
+
+  # Convert Yaml config to JSON for easier parsing
+  echo "Creating $gestalt_config from $gestalt_config_yaml..."
+  yaml2json ${gestalt_config_yaml} > ${gestalt_config}
+
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config} #process config map
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
@@ -12,7 +17,6 @@ getsalt_installer_load_configmap() {
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
-
 }
 
 getsalt_installer_setcheck_variables() {

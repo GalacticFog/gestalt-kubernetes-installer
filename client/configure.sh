@@ -29,9 +29,9 @@ exit_on_error "Issue during building '${installer_config}'"
 log_debug "Generate Installer Spec '. ${installer_spec}'"
 . "${installer_spec}"
 
-# TODO: Move this into the installer image
-cat config/install-config.yaml | ../gestalt-installer-image/bin/yaml2json > ${conf_install}
-exit_on_error "Failed to generate ${conf_install}"
+# # TODO: Move this into the installer image
+# cat config/install-config.yaml | ../gestalt-installer-image/bin/yaml2json > ${conf_install}
+# exit_on_error "Failed to generate ${conf_install}"
 
 echo
 echo "Installer Configurations Generated at '${conf_install}'"
