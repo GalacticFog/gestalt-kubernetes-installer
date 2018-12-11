@@ -4,12 +4,16 @@ metadata:
   name: gestalt-ui
   labels:
     gestalt-app: ui
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ui
 spec:
   replicas: 1
   template: # create pods using pod definition in this template
     metadata:
       labels:
         gestalt-app: ui
+        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/component: gestalt-ui
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1

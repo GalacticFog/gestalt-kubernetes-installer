@@ -2,12 +2,18 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: gestalt-meta
+  labels:
+    gestalt-app: meta
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-meta
 spec:
   replicas: 1
   template: # create pods using pod definition in this template
     metadata:
       labels:
         gestalt-app: meta
+        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/component: gestalt-meta
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1

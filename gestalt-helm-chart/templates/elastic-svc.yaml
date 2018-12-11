@@ -4,6 +4,8 @@ metadata:
   name: gestalt-elastic
   labels:
     gestalt-app: elastic
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-elastic
 spec:
   selector:
     gestalt-app: elastic

@@ -3,12 +3,10 @@ kind: Ingress
 metadata:
   labels:
     gestalt-app: ui
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ui
   name: gestalt-ui
 spec:
-  rules:
-  - host: "{{ .Values.ui.ingress.host }}"
-    http:
-      paths:
-      - backend:
-          serviceName: gestalt-ui
-          servicePort: 80
+  backend:
+    serviceName: gestalt-ui
+    servicePort: 80
