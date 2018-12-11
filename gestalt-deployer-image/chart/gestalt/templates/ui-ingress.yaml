@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    gestalt-app: ui
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ui
+  name: gestalt-ui
+spec:
+  backend:
+    serviceName: gestalt-ui
+    servicePort: 80
