@@ -2,22 +2,76 @@
 
 # Generic functions are in utilities-bash.sh
 
+echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
+["key"]="declare"
+  ["key"]="ADMIN_USERNAME"
+  ["key"]="ADMIN_PASSWORD"
+  ["key"]="ADMIN_USERNAME"
+  ["key"]="DATABASE_HOSTNAME"
+  ["key"]="DATABASE_PASSWORD"
+  ["key"]="DATABASE_USERNAME"
+  ["key"]="DOTNET_EXECUTOR_IMAGE"
+  ["key"]="ELASTICSEARCH_HOST"
+  ["key"]="ELASTICSEARCH_IMAGE"
+  ["key"]="GOLANG_EXECUTOR_IMAGE"
+  ["key"]="GWM_EXECUTOR_IMAGE"
+  ["key"]="JS_EXECUTOR_IMAGE"
+  ["key"]="JVM_EXECUTOR_IMAGE"
+  ["key"]="KONG_IMAGE"
+  ["key"]="KONG_0_VIRTUAL_HOST"
+  ["key"]="KUBECONFIG_BASE64"
+  ["key"]="LOGGING_IMAGE"
+  ["key"]="META_HOSTNAME"
+  ["key"]="META_IMAGE"
+  ["key"]="META_PORT"
+  ["key"]="META_PROTOCOL"
+  ["key"]="NODEJS_EXECUTOR_IMAGE"
+  ["key"]="POLICY_IMAGE"
+  ["key"]="PYTHON_EXECUTOR_IMAGE"
+  ["key"]="RABBIT_HOST"
+  ["key"]="RABBIT_HOSTNAME"
+  ["key"]="RABBIT_HTTP_PORT"
+  ["key"]="RABBIT_IMAGE"
+  ["key"]="RABBIT_PORT"
+  ["key"]="RUBY_EXECUTOR_IMAGE"
+  ["key"]="SECURITY_HOSTNAME"
+  ["key"]="SECURITY_IMAGE"
+  ["key"]="SECURITY_PORT"
+  ["key"]="SECURITY_PROTOCOL"
+  ["key"]="UI_HOSTNAME"
+  ["key"]="UI_IMAGE"
+  ["key"]="UI_PORT"
+  ["key"]="UI_PROTOCOL"
+)
+
 getsalt_installer_load_configmap() {
 
-  check_for_required_variables gestalt_config
+  check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
 
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
   /app/bin/yaml2json ${gestalt_config_yaml} > ${gestalt_config}
 
   validate_json ${gestalt_config}
-  convert_json_to_env_variables ${gestalt_config} #process config map
+  convert_json_to_env_variables ${gestalt_config}
+  convert_configmap_to_env_variables "${RELEASE_NAME}-deployer-config" deployer_config_to_env
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
 }
+
+get_configmap_data() {
+  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq '.data' )
+}
+
+convert_configmap_to_env_variables() {
+  local CONFIGMAP=$1
+  local KEYMAP=$2
+  local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+}
+
 
 getsalt_installer_setcheck_variables() {
 
