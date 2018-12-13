@@ -1,6 +1,6 @@
 **/*.bak
 **/*.tmp
-deps/*
+deps
 buildoutput
 helm-config.yaml
 app/*/**

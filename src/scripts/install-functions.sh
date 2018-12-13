@@ -3,54 +3,55 @@
 # Generic functions are in utilities-bash.sh
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
-["key"]="declare"
-  ["key"]="ADMIN_USERNAME"
-  ["key"]="ADMIN_PASSWORD"
-  ["key"]="ADMIN_USERNAME"
-  ["key"]="DATABASE_HOSTNAME"
-  ["key"]="DATABASE_PASSWORD"
-  ["key"]="DATABASE_USERNAME"
-  ["key"]="DOTNET_EXECUTOR_IMAGE"
-  ["key"]="ELASTICSEARCH_HOST"
-  ["key"]="ELASTICSEARCH_IMAGE"
-  ["key"]="GOLANG_EXECUTOR_IMAGE"
-  ["key"]="GWM_EXECUTOR_IMAGE"
-  ["key"]="JS_EXECUTOR_IMAGE"
-  ["key"]="JVM_EXECUTOR_IMAGE"
-  ["key"]="KONG_IMAGE"
-  ["key"]="KONG_0_VIRTUAL_HOST"
-  ["key"]="KUBECONFIG_BASE64"
-  ["key"]="LOGGING_IMAGE"
-  ["key"]="META_HOSTNAME"
-  ["key"]="META_IMAGE"
-  ["key"]="META_PORT"
-  ["key"]="META_PROTOCOL"
-  ["key"]="NODEJS_EXECUTOR_IMAGE"
-  ["key"]="POLICY_IMAGE"
-  ["key"]="PYTHON_EXECUTOR_IMAGE"
-  ["key"]="RABBIT_HOST"
-  ["key"]="RABBIT_HOSTNAME"
-  ["key"]="RABBIT_HTTP_PORT"
-  ["key"]="RABBIT_IMAGE"
-  ["key"]="RABBIT_PORT"
-  ["key"]="RUBY_EXECUTOR_IMAGE"
-  ["key"]="SECURITY_HOSTNAME"
-  ["key"]="SECURITY_IMAGE"
-  ["key"]="SECURITY_PORT"
-  ["key"]="SECURITY_PROTOCOL"
-  ["key"]="UI_HOSTNAME"
-  ["key"]="UI_IMAGE"
-  ["key"]="UI_PORT"
-  ["key"]="UI_PROTOCOL"
-)
+# ["key"]="declare"
+#   ["key"]="ADMIN_USERNAME"
+#   ["key"]="ADMIN_PASSWORD"
+#   ["key"]="ADMIN_USERNAME"
+#   ["key"]="DATABASE_HOSTNAME"
+#   ["key"]="DATABASE_PASSWORD"
+#   ["key"]="DATABASE_USERNAME"
+#   ["key"]="DOTNET_EXECUTOR_IMAGE"
+#   ["key"]="ELASTICSEARCH_HOST"
+#   ["key"]="ELASTICSEARCH_IMAGE"
+#   ["key"]="GOLANG_EXECUTOR_IMAGE"
+#   ["key"]="GWM_EXECUTOR_IMAGE"
+#   ["key"]="JS_EXECUTOR_IMAGE"
+#   ["key"]="JVM_EXECUTOR_IMAGE"
+#   ["key"]="KONG_IMAGE"
+#   ["key"]="KONG_0_VIRTUAL_HOST"
+#   ["key"]="KUBECONFIG_BASE64"
+#   ["key"]="LOGGING_IMAGE"
+#   ["key"]="META_HOSTNAME"
+#   ["key"]="META_IMAGE"
+#   ["key"]="META_PORT"
+#   ["key"]="META_PROTOCOL"
+#   ["key"]="NODEJS_EXECUTOR_IMAGE"
+#   ["key"]="POLICY_IMAGE"
+#   ["key"]="PYTHON_EXECUTOR_IMAGE"
+#   ["key"]="RABBIT_HOST"
+#   ["key"]="RABBIT_HOSTNAME"
+#   ["key"]="RABBIT_HTTP_PORT"
+#   ["key"]="RABBIT_IMAGE"
+#   ["key"]="RABBIT_PORT"
+#   ["key"]="RUBY_EXECUTOR_IMAGE"
+#   ["key"]="SECURITY_HOSTNAME"
+#   ["key"]="SECURITY_IMAGE"
+#   ["key"]="SECURITY_PORT"
+#   ["key"]="SECURITY_PROTOCOL"
+#   ["key"]="UI_HOSTNAME"
+#   ["key"]="UI_IMAGE"
+#   ["key"]="UI_PORT"
+#   ["key"]="UI_PROTOCOL"
+# )
 
 getsalt_installer_load_configmap() {
 
-  check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
+  # check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
+  check_for_required_variables gestalt_config
 
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
-  /app/bin/yaml2json ${gestalt_config_yaml} > ${gestalt_config}
+  yaml2json ${gestalt_config_yaml} > ${gestalt_config}
 
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
@@ -167,9 +168,16 @@ gestalt_installer_generate_helm_config() {
     postgres_memory_request \
     postgres_cpu_request
 
+
   cat > helm-config.yaml <<EOF
 common:
   imagePullPolicy: Always
+
+secrets:
+  databaseUsername: "${DATABASE_USERNAME}"
+  databasePassword: "${DATABASE_PASSWORD}"
+  adminUser: "${ADMIN_USERNAME}"
+  adminPassword: "${ADMIN_PASSWORD}"
 
 security:
   exposedServiceType: NodePort
@@ -177,14 +185,10 @@ security:
   hostname: "${SECURITY_HOSTNAME}"
   port: "${SECURITY_PORT}"
   protocol: "${SECURITY_PROTOCOL}"
-  adminUser: "${ADMIN_USERNAME}"
-  adminPassword: "${ADMIN_PASSWORD}"
   databaseName: gestalt-security
 
 db:
-  username: "${DATABASE_USERNAME}"
-  password: "${DATABASE_PASSWORD}"
-  hostname: ${database_hostname}
+  hostname: ${DATABASE_HOSTNAME}
   port: 5432
   databaseName: postgres
 
@@ -264,20 +268,12 @@ http_post() {
   unset HTTP_RESPONSE
 }
 
-check_for_existing_services() {
-  service_name="$1"
-  output=$(kubectl get services --all-namespaces | grep $service_name)
-  if [ `echo $output | wc -l` -ne 0 ]; then
-    exit_with_error "'$service_name' service already exists, aborting."
-  fi
-}
-
 wait_for_database() {
   echo "Waiting for database..."
   secs=30
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
-    ${script_folder}/psql.sh -c '\l'
+    ./psql.sh -c '\l'
     if [ $? -eq 0 ]; then
       echo "Database is available."
       return 0
@@ -296,12 +292,12 @@ init_database() {
 
   echo "TODO: Unhardcode database names"
   for db in gestalt-meta gestalt-security kong-db laser-db gateway-db ; do
-    ${script_folder}/drop_database.sh $db --yes
+    ./drop_database.sh $db --yes
     exit_on_error "Failed to initialize database, aborting."
   done
 
   echo "Attempting to initalize database..."
-  ${script_folder}/create_initial_databases.sh
+  ./create_initial_databases.sh
   exit_on_error "Failed to initialize database, aborting."
   echo "Database initialized."
 }
@@ -456,7 +452,7 @@ gestalt_cli_context_set() {
 }
 
 gestalt_cli_create_resources() {
-  cd /resource_templates
+  cd /app/install/resource_templates
 
   # Always assume there's a script called run.sh
   if [ -f ./run.sh ]; then 

@@ -1,22 +1,38 @@
-FROM ${base_image}
+FROM nginx:alpine
 
-ARG component_label=gestalt-installer
-LABEL application=gestalt
-LABEL component=${component_label}
-LABEL build.phase=target
 LABEL vendor="Galactic Fog IP, Inc."
-LABEL com.galacticfog.version=${version_label}
+LABEL com.galacticfog.version="5.0.0" 
+# Make sure to update this version and keep consistent with tag
 
-WORKDIR /app
+ENV BUILD_DEPS="gettext"  \
+    RUNTIME_DEPS="libintl"
 
-COPY /app /app
+# Add dependent packages
+RUN apk upgrade --no-cache && \
+    apk add --update $RUNTIME_DEPS && \
+    apk add --virtual build_deps $BUILD_DEPS &&  \
+    cp /usr/bin/envsubst /usr/local/bin/envsubst && \
+    apk del build_deps && \
+    apk add --update \
+    build-base \
+    bash \
+    curl \
+    jq \
+    postgresql-client \
+    python \
+    py-pip \
+    ca-certificates && \
+    pip install --upgrade pip && \
+    pip install httpie httpie-unixsocket && \
+    pip install PyYaml docopt && \
+    rm -rf /var/cache/apk/*
 
-RUN pwd && \
-    echo "--------------------------------------------------" && \
-    find /app -type f && \
-    echo "--------------------------------------------------" && \
-    echo "DEPLOYER BUILD DONE." && \
-    echo "--------------------------------------------------"
+# Copy dependencies
+COPY ./deps/* /usr/local/bin/
+RUN chmod 755 /usr/local/bin/*
 
-# The entrypoint script should launch the installer scripts.
+# scripts and utilities
+COPY ./app /app
+
+# define entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

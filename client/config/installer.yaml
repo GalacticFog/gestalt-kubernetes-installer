@@ -5,8 +5,6 @@ metadata:
   name: gestalt-installer
   labels:
     gestalt-app: installer
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-installer
 spec:
   restartPolicy: Never
   imagePullSecrets:
@@ -17,12 +15,15 @@ spec:
   - name: imagepullsecret-5
   containers:
   - name: gestalt-installer
-    image: "{{ .Values.installer.image }}"
-    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
-    # 'deploy' arg signals deployment of gestalt platform
-    # 'debug' arg signals debug output
-    command:
-    - bash
+    image: "docker.io/galacticfog/gestalt-installer:5.0.0"
+    imagePullPolicy: Always
     args: 
-    - -c
-    - ./entrypoint.sh install debug
+    - install
+    - debug
+    volumeMounts:
+    - mountPath: /install-data
+      name: install-data
+  volumes:
+    - name: install-data
+      configMap:
+        name: install-data

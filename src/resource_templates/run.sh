@@ -92,6 +92,8 @@ create nodejs-executor
 create python-executor
 create ruby-executor
 
+fog config set debug=true
+
 # Laser
 if [ "${LASER_PROVIDER_CUSTOMIZE}" == "1" ]; then
   for CURR_EXECUTOR in $(echo ${LASER_PROVIDER_CUSTOM_EXECUTORS[@]} | sed "s/:/ /g"); do

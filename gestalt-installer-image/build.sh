@@ -1,12 +1,12 @@
 #!/bin/bash
 
-PUBLISH=0
+PUBLISH=1
 SILENT=0
-VERBOSE=0
+VERBOSE=1
 PRINT_IMAGE_ID=0
-REGISTRY="gcr.io/galacticfog-public"
+REGISTRY="galacticfog"
 LABEL="gestalt-installer"
-DEFAULT_TAG="build"
+DEFAULT_TAG="5.0.0"
 declare -a TAGS
 declare -a BUILD_ARGS
 
@@ -153,7 +153,9 @@ for arg in ${BUILD_ARGS[@]}; do
 done
 BUILD_CMD="${BUILD_CMD} --build-arg component_label=$LABEL"
 debug "Building with command '$BUILD_CMD'"
-OUTPUT=$($BUILD_CMD 2>&1)
+
+$BUILD_CMD 2>&1 | tee buildoutput
+OUTPUT=$(cat buildoutput)
 [ $? -eq 0 ] || exit_with_error "FAILED image build for '$LABEL' using command '$BUILD_CMD' $(get_output)"
 debug "$(get_output)"
 

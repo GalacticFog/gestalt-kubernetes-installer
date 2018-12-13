@@ -54,11 +54,11 @@ prompt_to_continue(){
   done
   
   echo
-  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
-  case $value in
-      `kubectl config current-context`) return 0  ;;
-      *) echo "Aborted" ; exit  1 ;;
-  esac
+#  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
+#  case $value in
+#      `kubectl config current-context`) return 0  ;;
+#      *) echo "Aborted" ; exit  1 ;;
+#  esac
 }
 
 remove_gestalt_platform() {

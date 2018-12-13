@@ -21,7 +21,16 @@ kube_process_kubeconfig() {
     log_debug "[${FUNCNAME[0]}] Obtaining kubeconfig from kubectl context '`kubectl config current-context`'"
     data=$(kubectl config view --raw --flatten=true --minify=true)
     exit_on_error "[${FUNCNAME[0]}] Could not process kube config, aborting."
-    
+
+    kubeurl='https://kubernetes.default.svc'
+    log_debug "[${FUNCNAME[0]}] Converting server URL to '${kubeurl}'"
+    # for 'http'
+    data=$(echo "${data}" | sed "s;server: http://.*;server: ${kubeurl};g")
+    # for 'https'
+    data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
+
+    echo "$data" > ./stage/kubeconfig
+
     if [ "${os}" == "Darwin" ]; then
       kubeconfig_data=`echo "${data}" | base64`
     elif [ "${os}" == "Linux" ]; then

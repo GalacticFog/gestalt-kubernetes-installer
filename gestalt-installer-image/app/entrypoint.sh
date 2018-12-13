@@ -10,37 +10,40 @@ function sleep_forever() {
 
 CMD=${1:-install}
 
-pwd
-find . -type f
-
 if [ "$CMD" == 'install' ]; then
     echo "Installing Gestalt platform... ('install' container argument specified)"
 
+    cd /app
+
     SECONDS=0
-    log=./install.log
+    log=/app/install.log
 
     # Get a config map from the current namespace and write contents to local file
-    kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -D > ./install-data.tar.gz
+    kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
 
     # TODO: Test the file size, or check if the configmap didn't exist
 
     # If an install-data package was placed, overwrite the install directories on this image with them
     if [ -f ./install-data.tar.gz ]; then
-        mkdir ./tmp
-        tar xfzv ./install-data.tar.gz -C ./tmp 
-        for d in scripts resource_templates gestalt-helm-chart ; do
-            if [ -d ./tmp/$d ] ; then
-                echo "Overwriting ./install/$d ..."
-                rm -r ./install/$d
-                cp -r ./tmp/$d ./install
-                chmod +x ./install/$d/*.sh
-            fi
-        done
+        # mkdir ./tmp
+        # tar xfzv ./install-data.tar.gz -C ./tmp 
+        # for d in scripts resource_templates gestalt-helm-chart config ; do
+        #     if [ -d ./tmp/$d ] ; then
+        #         echo "Overwriting ./install/$d ..."
+        #         rm -r ./install/$d || true
+        #         cp -r ./tmp/$d ./install/
+        #     fi
+        # done
+
+        # Untar in place
+        tar xfzv ./install-data.tar.gz 
     fi
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 
-    ./install/scripts/install.sh $2 2>&1 | tee -a $log
+    cd /app/install/scripts
+    ./install.sh $2 2>&1 | tee -a $log
+    cd -
 
     echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 
