@@ -3,45 +3,44 @@
 # Generic functions are in utilities-bash.sh
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
-["key"]="declare"
-  ["key"]="ADMIN_USERNAME"
-  ["key"]="ADMIN_PASSWORD"
-  ["key"]="ADMIN_USERNAME"
-  ["key"]="DATABASE_HOSTNAME"
-  ["key"]="DATABASE_PASSWORD"
-  ["key"]="DATABASE_USERNAME"
-  ["key"]="DOTNET_EXECUTOR_IMAGE"
-  ["key"]="ELASTICSEARCH_HOST"
-  ["key"]="ELASTICSEARCH_IMAGE"
-  ["key"]="GOLANG_EXECUTOR_IMAGE"
-  ["key"]="GWM_EXECUTOR_IMAGE"
-  ["key"]="JS_EXECUTOR_IMAGE"
-  ["key"]="JVM_EXECUTOR_IMAGE"
-  ["key"]="KONG_IMAGE"
-  ["key"]="KONG_0_VIRTUAL_HOST"
-  ["key"]="KUBECONFIG_BASE64"
-  ["key"]="LOGGING_IMAGE"
-  ["key"]="META_HOSTNAME"
-  ["key"]="META_IMAGE"
-  ["key"]="META_PORT"
-  ["key"]="META_PROTOCOL"
-  ["key"]="NODEJS_EXECUTOR_IMAGE"
-  ["key"]="POLICY_IMAGE"
-  ["key"]="PYTHON_EXECUTOR_IMAGE"
-  ["key"]="RABBIT_HOST"
-  ["key"]="RABBIT_HOSTNAME"
-  ["key"]="RABBIT_HTTP_PORT"
-  ["key"]="RABBIT_IMAGE"
-  ["key"]="RABBIT_PORT"
-  ["key"]="RUBY_EXECUTOR_IMAGE"
-  ["key"]="SECURITY_HOSTNAME"
-  ["key"]="SECURITY_IMAGE"
-  ["key"]="SECURITY_PORT"
-  ["key"]="SECURITY_PROTOCOL"
-  ["key"]="UI_HOSTNAME"
-  ["key"]="UI_IMAGE"
-  ["key"]="UI_PORT"
-  ["key"]="UI_PROTOCOL"
+declare -A deployer_config_to_env=(
+  ["gestalt.admin.password"]="ADMIN_PASSWORD"
+  ["gestalt.admin.user"]="ADMIN_USERNAME"
+  ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
+  ["gestalt.postgresql.postgresPassword"]="DATABASE_PASSWORD"
+  ["gestalt.postgresql.postgresUser"]="DATABASE_USERNAME"
+  ["gestalt.laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
+  ["gestalt.elastic.hostname"]="ELASTICSEARCH_HOST"
+  ["gestalt.elastic.image"]="ELASTICSEARCH_IMAGE"
+  ["gestalt.laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
+  ["gestalt.gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
+  ["gestalt.laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
+  ["gestalt.laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
+  ["gestalt.kong.image"]="KONG_IMAGE"
+  ["gestalt.api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["gestalt.api.admin.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["gestalt.logging.image"]="LOGGING_IMAGE"
+  ["gestalt.meta.hostname"]="META_HOSTNAME"
+  ["gestalt.meta.image"]="META_IMAGE"
+  ["gestalt.meta.port"]="META_PORT"
+  ["gestalt.meta.protocol"]="META_PROTOCOL"
+  ["gestalt.laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
+  ["gestalt.policy.image"]="POLICY_IMAGE"
+  ["gestalt.laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
+  ["gestalt.rabbit.host"]="RABBIT_HOST"
+  ["gestalt.rabbit.hostname"]="RABBIT_HOSTNAME"
+  ["gestalt.rabbit.httpPort"]="RABBIT_HTTP_PORT"
+  ["gestalt.rabbit.image"]="RABBIT_IMAGE"
+  ["gestalt.rabbit.port"]="RABBIT_PORT"
+  ["gestalt.laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
+  ["gestalt.security.hostname"]="SECURITY_HOSTNAME"
+  ["gestalt.security.image"]="SECURITY_IMAGE"
+  ["gestalt.security.port"]="SECURITY_PORT"
+  ["gestalt.security.protocol"]="SECURITY_PROTOCOL"
+  ["gestalt.ui.image"]="UI_IMAGE"
+  ["gestalt.ui.ingress.host"]="UI_HOSTNAME"
+  ["gestalt.ui.ingress.port"]="UI_PORT"
+  ["getsalt.ui.ingress.protocol"]="UI_PROTOCOL"
 )
 
 getsalt_installer_load_configmap() {
@@ -66,6 +65,15 @@ convert_configmap_to_env_variables() {
   local CONFIGMAP=$1
   local KEYMAP=$2
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+  # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
+  for key in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
+    # Get the name of the ENV var to map for the JSON key
+    var=${trans[$key]}
+    val=$( echo $JSON_DATA | jq ".$key" | sed 's/"//g')
+    echo "Setting $var to '$val'"
+    # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
+    export $var=$( echo $JSON_DATA | jq ".$key" | sed 's/"//g')
+  done
 }
 
 getsalt_installer_setcheck_variables() {
@@ -95,7 +103,6 @@ getsalt_installer_setcheck_variables() {
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
     KONG_0_VIRTUAL_HOST \
-    KUBECONFIG_BASE64 \
     LOGGING_IMAGE \
     META_HOSTNAME \
     META_IMAGE \
