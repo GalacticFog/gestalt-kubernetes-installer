@@ -142,8 +142,8 @@ gestalt_installer_generate_helm_config() {
     SECURITY_PROTOCOL \
     ADMIN_USERNAME \
     ADMIN_PASSWORD \
-    DATABASE_IMAGE \
-    DATABASE_IMAGE_TAG \
+    POSTGRES_IMAGE_NAME \
+    POSTGRES_IMAGE_TAG \
     DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
@@ -234,8 +234,8 @@ EOF
 cat >> helm-config.yaml <<EOF
 
 postgresql:
-  image: "${DATABASE_IMAGE}"
-  imageTag: "${DATABASE_IMAGE_TAG}"
+  image: "${POSTGRES_IMAGE_NAME}"
+  imageTag: "${POSTGRES_IMAGE_TAG}"
   postgresUser: ${DATABASE_USERNAME}
   postgresPassword: "${DATABASE_PASSWORD}"
   postgresDatabase: ${DATABASE_NAME}

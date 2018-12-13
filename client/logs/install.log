@@ -1,0 +1,1718 @@
+Thu Dec 13 02:51:48 EST 2018
+[Error] Must specify a configuration file
+Thu Dec 13 02:51:53 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+./precheck.sh: line 11: .: filename argument required
+.: usage: . filename [arguments]
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+./install-gestalt-platform: line 27: run_pre_install: command not found
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.json
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.....Thu Dec 13 02:53:44 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+./precheck.sh: line 11: .: filename argument required
+.: usage: . filename [arguments]
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+/usr/bin/script: line 1: Οϊνώ: command not found
+[Error] Pre-install script failed, aborting.
+Thu Dec 13 02:55:26 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+./precheck.sh: line 11: .: filename argument required
+.: usage: . filename [arguments]
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+./helpers/docker-for-desktop/pre-install.sh: line 45: syntax error near unexpected token `docker'
+./helpers/docker-for-desktop/pre-install.sh: line 45: `for i in `cat config/install-config.yaml | grep "_IMAGE: " | grep -v '#' | awk '{print $2}'` ; docker'
+[Error] Pre-install script failed, aborting.
+Thu Dec 13 02:55:50 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+./precheck.sh: line 11: .: filename argument required
+.: usage: . filename [arguments]
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+Using default tag: latest
+latest: Pulling from library/postgres
+a5a6f2f73cd8: Pulling fs layer
+e50fbea8af5a: Pulling fs layer
+73b4855ad326: Pulling fs layer
+39616673f22b: Pulling fs layer
+94e1b79f69ee: Pulling fs layer
+c91e4af2ff8e: Pulling fs layer
+16ba314c612f: Pulling fs layer
+89011a174cee: Pulling fs layer
+d82b02de73e7: Pulling fs layer
+ef60eb07c042: Pulling fs layer
+225d0988f8bb: Pulling fs layer
+eebc8c1ff0d8: Pulling fs layer
+b11dada2e405: Pulling fs layer
+9723874e6b5f: Pulling fs layer
+94e1b79f69ee: Waiting
+c91e4af2ff8e: Waiting
+16ba314c612f: Waiting
+89011a174cee: Waiting
+b11dada2e405: Waiting
+9723874e6b5f: Waiting
+d82b02de73e7: Waiting
+ef60eb07c042: Waiting
+225d0988f8bb: Waiting
+eebc8c1ff0d8: Waiting
+39616673f22b: Waiting
+73b4855ad326: Download complete
+e50fbea8af5a: Verifying Checksum
+e50fbea8af5a: Download complete
+39616673f22b: Verifying Checksum
+39616673f22b: Download complete
+c91e4af2ff8e: Verifying Checksum
+c91e4af2ff8e: Download complete
+94e1b79f69ee: Verifying Checksum
+94e1b79f69ee: Download complete
+16ba314c612f: Download complete
+a5a6f2f73cd8: Verifying Checksum
+a5a6f2f73cd8: Download complete
+89011a174cee: Verifying Checksum
+89011a174cee: Download complete
+ef60eb07c042: Download complete
+225d0988f8bb: Download complete
+a5a6f2f73cd8: Pull complete
+eebc8c1ff0d8: Download complete
+e50fbea8af5a: Pull complete
+b11dada2e405: Verifying Checksum
+b11dada2e405: Download complete
+73b4855ad326: Pull complete
+9723874e6b5f: Verifying Checksum
+9723874e6b5f: Download complete
+39616673f22b: Pull complete
+94e1b79f69ee: Pull complete
+c91e4af2ff8e: Pull complete
+16ba314c612f: Pull complete
+89011a174cee: Pull complete
+d82b02de73e7: Download complete
+d82b02de73e7: Pull complete
+ef60eb07c042: Pull complete
+225d0988f8bb: Pull complete
+eebc8c1ff0d8: Pull complete
+b11dada2e405: Pull complete
+9723874e6b5f: Pull complete
+Digest: sha256:28b4a1b0d3ae9b38a16c97a4e655bdc13496a304d1a241c531ac1efc2faa7230
+Status: Downloaded newer image for postgres:latest
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+4fe2ade4980c: Already exists
+6fc58a8d4ae4: Already exists
+819f4a45746c: Already exists
+421c8f48590d: Already exists
+91183f03370d: Pulling fs layer
+3a46a321189a: Pulling fs layer
+d764ccde180b: Pulling fs layer
+58a598b5c105: Pulling fs layer
+58a598b5c105: Waiting
+91183f03370d: Verifying Checksum
+91183f03370d: Download complete
+91183f03370d: Pull complete
+d764ccde180b: Verifying Checksum
+d764ccde180b: Download complete
+58a598b5c105: Verifying Checksum
+58a598b5c105: Download complete
+3a46a321189a: Verifying Checksum
+3a46a321189a: Download complete
+3a46a321189a: Pull complete
+d764ccde180b: Pull complete
+58a598b5c105: Pull complete
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Downloaded newer image for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+4fe2ade4980c: Already exists
+6fc58a8d4ae4: Already exists
+819f4a45746c: Already exists
+421c8f48590d: Already exists
+177922b6d1ee: Pulling fs layer
+3f27808544cb: Pulling fs layer
+2e180370099d: Pulling fs layer
+99bc3f0035c2: Pulling fs layer
+99bc3f0035c2: Waiting
+177922b6d1ee: Download complete
+177922b6d1ee: Pull complete
+99bc3f0035c2: Verifying Checksum
+99bc3f0035c2: Download complete
+3f27808544cb: Verifying Checksum
+3f27808544cb: Download complete
+3f27808544cb: Pull complete
+2e180370099d: Verifying Checksum
+2e180370099d: Download complete
+2e180370099d: Pull complete
+99bc3f0035c2: Pull complete
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Downloaded newer image for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.................................................................Thu Dec 13 03:06:42 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+./precheck.sh: line 11: .: filename argument required
+.: usage: . filename [arguments]
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: Thu Dec 13 03:07:08 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.................Thu Dec 13 03:19:12 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+[Error] Gestalt gestalt-system deployment found, aborting.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+Error from server (AlreadyExists): configmaps "install-data" already exists
+
+[Error] Failed create configmap from resource_templates directory, aborting.
+Error from server (AlreadyExists): error when creating "./config/installer.yaml": pods "gestalt-installer" already exists
+
+[Error] Failed install: 'kubectl create -n gestalt-system -f ./config/installer.yaml', aborting.
+Waiting for Gestalt Platform installation to complete
+.................................Thu Dec 13 03:23:44 EST 2018
+[Error] Invalid Kubernetes type: docker-for-deskto
+Thu Dec 13 03:23:46 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+[Error] Gestalt gestalt-system deployment found, aborting.
+[Error] Precheck failed, aborting
+Thu Dec 13 03:25:09 EST 2018
+Checking for required dependencies...
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.................................................
+Installation complete.
+Capturing installer logs to './logs/gestalt-installer.log'
+Deleting 'gestalt-installer' pod...
+pod "gestalt-installer" deleted
+Checking for helper: ./helpers/docker-for-desktop/post-install.sh ...
+
+Running ./helpers/docker-for-desktop/post-install.sh ...
+
+
+Gestalt Platform installation complete!  Next Steps:
+
+  1) Login to Gestalt:
+
+         URL:       
+         User:      
+         Password:  
+
+  2) Next, navigate to the developer sandbox at:
+
+          -> Sandboxes -> Developer Sandbox -> Development
+
+     Or via URL:
+
+helpers/install-functions.sh: line 526: ./fog: No such file or directory
+         
+
+  3) You may access the Gestalt platform documentation at
+
+         http://docs.galacticfog.com/
+
+Done.
+Thu Dec 13 03:31:27 EST 2018
+Checking for required dependencies...
+Checking for 'fog' CLI...
+'fog' CLI not present.
+
+Downloading Gestalt fog CLI ...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100     9    0     9    0     0     17      0 --:--:-- --:--:-- --:--:--    17
+
+Unzipping...
+Archive:  fog.zip
+  End-of-central-directory signature not found.  Either this file is not
+  a zipfile, or it constitutes one disk of a multi-part archive.  In the
+  latter case the central directory and zipfile comment will be found on
+  the last disk(s) of this archive.
+unzip:  cannot find zipfile directory in one of fog.zip or
+        fog.zip.zip, and cannot find fog.zip.ZIP, period.
+[Error] Failed to unzip 'fog' CLI package, aborting.
+Thu Dec 13 03:38:39 EST 2018
+./install-gestalt-platform: line 28: configfile: No such file or directory
+Checking for required dependencies...
+Checking for 'fog' CLI...
+'fog' CLI not present.
+
+Downloading Gestalt fog CLI 0.10.6...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   623    0   623    0     0   3286      0 --:--:-- --:--:-- --:--:--  3278
+  4 15.4M    4  712k    0     0   563k      0  0:00:28  0:00:01  0:00:27  563k 46 15.4M   46 7355k    0     0  3334k      0  0:00:04  0:00:02  0:00:02 7059k 67 15.4M   67 10.5M    0     0  3384k      0  0:00:04  0:00:03  0:00:01 5243kThu Dec 13 03:38:56 EST 2018
+./install-gestalt-platform: line 28: configfile: No such file or directory
+Checking for required dependencies...
+Checking for 'fog' CLI...
+'fog' CLI not present.
+
+Downloading Gestalt fog CLI 0.10.6...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100   623    0   623    0     0   3273      0 --:--:-- --:--:-- --:--:--  3261
+  3 15.4M    3  542k    0     0   462k      0  0:00:34  0:00:01  0:00:33  462k  9 15.4M    9 1579k    0     0   731k      0  0:00:21  0:00:02  0:00:19 1051k 16 15.4M   16 2684k    0     0   853k      0  0:00:18  0:00:03  0:00:15 1086k 24 15.4M   24 3875k    0     0   938k      0  0:00:16  0:00:04  0:00:12 1127k 32 15.4M   32 5081k    0     0   991k      0  0:00:16  0:00:05  0:00:11 1148k 37 15.4M   37 5932k    0     0   968k      0  0:00:16  0:00:06  0:00:10 1087k 40 15.4M   40 6408k    0     0   896k      0  0:00:17  0:00:07  0:00:10  967k 43 15.4M   43 6901k    0     0   849k      0  0:00:18  0:00:08  0:00:10  846k 46 15.4M   46 7427k    0     0   813k      0  0:00:19  0:00:09  0:00:10  709k 50 15.4M   50 8057k    0     0   796k      0  0:00:19  0:00:10  0:00:09  595k 55 15.4M   55 8771k    0     0   786k      0  0:00:20  0:00:11  0:00:09  565k 60 15.4M   60 9536k    0     0   786k      0  0:00:20  0:00:12  0:00:08  628k 66 15.4M   66 10.2M    0     0   803k      0  0:00:19  0:00:13  0:00:06  728k 72 15.4M   72 11.2M    0     0   812k      0  0:00:19  0:00:14  0:00:05  810k 77 15.4M   77 11.9M    0     0   809k      0  0:00:19  0:00:15  0:00:04  836k 81 15.4M   81 12.6M    0     0   805k      0  0:00:19  0:00:16  0:00:03  847k 87 15.4M   87 13.5M    0     0   811k      0  0:00:19  0:00:17  0:00:02  870k 93 15.4M   93 14.5M    0     0   819k      0  0:00:19  0:00:18  0:00:01  860k100 15.4M  100 15.4M    0     0   833k      0  0:00:19  0:00:19 --:--:--  892k
+
+Unzipping...
+Archive:  fog.zip
+  inflating: fog                     
+OK - fog CLI 0.10.6 present.
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+OK - Kubernetes namespace 'gestalt-system' is present.
+[Error] Gestalt gestalt-system deployment found, aborting.
+[Error] Precheck failed, aborting
+Thu Dec 13 03:41:27 EST 2018
+./install-gestalt-platform: line 28: configfile: No such file or directory
+Checking for required dependencies...
+Checking for 'fog' CLI...
+OK - fog version 0.10.6 found.
+OK - fog CLI 0.10.6 present.
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+OK - Kubernetes namespace 'gestalt-system' is present.
+[Error] Gestalt gestalt-system deployment found, aborting.
+[Error] Precheck failed, aborting
+Thu Dec 13 03:42:48 EST 2018
+./install-gestalt-platform: line 28: configfile: No such file or directory
+Checking for required dependencies...
+Checking for 'fog' CLI...
+OK - fog version 0.10.6 found.
+OK - fog CLI 0.10.6 present.
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.................................................
+Installation complete.
+Capturing installer logs to './logs/gestalt-installer.log'
+Deleting 'gestalt-installer' pod...
+pod "gestalt-installer" deleted
+Checking for helper: ./helpers/docker-for-desktop/post-install.sh ...
+
+Running ./helpers/docker-for-desktop/post-install.sh ...
+
+
+Gestalt Platform installation complete!  Next Steps:
+
+  1) Login to Gestalt:
+
+         URL:       http://localhost:31112
+         User:      
+         Password:  
+
+  2) Next, navigate to the developer sandbox at:
+
+         http://localhost:31112 -> Sandboxes -> Developer Sandbox -> Development
+
+     Or via URL:
+
+         https://test.galacticfog.com/galactic-cap/hierarchy/a9fdc843-73c6-46fb-a0b2-a9c892e47e6f/environment/5c8b0dbd-50d8-4725-aeca-73253cccd04d
+
+  3) You may access the Gestalt platform documentation at
+
+         http://docs.galacticfog.com/
+
+Done.
+Thu Dec 13 04:02:59 EST 2018
+./install-gestalt-platform: line 28: configfile: No such file or directory
+Checking for required dependencies...
+Checking for 'fog' CLI...
+OK - fog version 0.10.6 found.
+OK - fog CLI 0.10.6 present.
+Checking for required dependencies...
+OK - Required tools found.
+OK - kubeconfig appears to be valid.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+OK - Kubernetes namespace 'gestalt-system' is present.
+OK - No prior Gestalt installation found.
+Checking cluster capacity...
+
+Kubernetes cluster 'docker-for-desktop' appears to have the following capacity: 6 CPUs, 11.6 GiB Memory
+
+System requirements:
+  - 2 CPUs recommended (1 CPUs required)
+  - 12 GiB Memory recommended (7.5 GiB Memory required)
+
+Warning - Minimum recommended CPU/Memory capacity specifications have been met, however, it is recommended that you have at least 2 CPUs and 12 GiB memory.
+Proceed anyway? [y/n]: 
+Checking for helper: ./helpers/docker-for-desktop/pre-install.sh ...
+
+Running ./helpers/docker-for-desktop/pre-install.sh ...
+===========================================
+  Docker CE Pre-Install Configuration
+===========================================
+
+
+Pulling Gestalt Platform images to local Docker environment...
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-dotnet
+Digest: sha256:595f33f7e045b4b7f1ca91b30a4efd3d5994ae1a2e3d9dd2812dab2f7af0719c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+
+5.3.1: Pulling from galacticfog/elasticsearch-docker
+Digest: sha256:80d822bb2a1f9bf9301d744299f8384b8d45cdb287db458edd0ba4e2f34105ee
+Status: Image is up to date for galacticfog/elasticsearch-docker:5.3.1
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-golang
+Digest: sha256:808af468579a637e82f1dfbf6bf9919e27d3e55f0e490651756466688838d5d7
+Status: Image is up to date for galacticfog/gestalt-laser-executor-golang:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-api-gateway
+Digest: sha256:65b49feb2bfb63bbc61d16e77d10ba098b7422146c0cd74c9092afa909778c6f
+Status: Image is up to date for galacticfog/gestalt-api-gateway:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-js
+Digest: sha256:baa9e164cde84500b08be2d371348c105f9a89f2889e6133989a00d215d9c054
+Status: Image is up to date for galacticfog/gestalt-laser-executor-js:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-jvm
+Digest: sha256:0d0c455e2240e87ac98184bcb6a6b802049468a5213cddf8d8672cfaeb371e9c
+Status: Image is up to date for galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/kong
+Digest: sha256:8764b8305d09c6b9cf766bd474b2ebf59483f5b82a67ea8c411f42ac4864d915
+Status: Image is up to date for galacticfog/kong:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser
+Digest: sha256:f8dc16e11e3b80f7b34d6aa29929b892d4acdfedd3e59c2b7368af1a3cfd55c8
+Status: Image is up to date for galacticfog/gestalt-laser:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-log
+Digest: sha256:0dbe4164d5573b8767c071ecb39b777aa4f1a3eecfce7a6b89b3d6c545bfaef7
+Status: Image is up to date for galacticfog/gestalt-log:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-meta
+Digest: sha256:3c60f2d6516316213eb119eb85fe2b6a00ed11d3a4d37276f32138cd834594c7
+Status: Image is up to date for galacticfog/gestalt-meta:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-nodejs
+Digest: sha256:33c0dc0aee0cf1d539f82072852d7ce10e33b80b6f75c683fb060eb3a3fc36c5
+Status: Image is up to date for galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-policy
+Digest: sha256:6d1688509e9c93466d5b52f629359aed2063dee8ce3773570f6e6386ad83e85b
+Status: Image is up to date for galacticfog/gestalt-policy:release-2.3.8
+
+python-3.6.1: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:3a8fae0d649c3f759a9d914faa1853ef66f5ef974de33dd1fb324e610f136d65
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.1
+
+python-3.6.3: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:c6a987c475970e6630f7092329a9f89c55b9a185871132339b771613104b6f10
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:python-3.6.3
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-python
+Digest: sha256:b56420454a40afa10053c73b2ee4d47c1583f3de28b8a16b5bc6931fc6171314
+Status: Image is up to date for galacticfog/gestalt-laser-executor-python:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/rabbit
+Digest: sha256:04fb67bbbb8ad0e235d5b9362dbb4eb37d7e1cb7fc06a319df4d18103d594f63
+Status: Image is up to date for galacticfog/rabbit:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-laser-executor-ruby
+Digest: sha256:870e62b32e59eebf8b86f59516cf12f333637d739c8e68859ab89789ad336675
+Status: Image is up to date for galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-security
+Digest: sha256:5dd1921461c458ecef329b4f8c20a86e70c7ad5b5006fcad453db49e33f7af20
+Status: Image is up to date for galacticfog/gestalt-security:release-2.3.8
+
+release-2.3.8: Pulling from galacticfog/gestalt-ui-react
+Digest: sha256:b917f8c92bbc9b7336686bfccf7bf378caf7318f2e24e4c6a3ad38055760c749
+Status: Image is up to date for galacticfog/gestalt-ui-react:release-2.3.8
+
+
+OK - Obtain kubectl configuration and set kubeurl for intaller
+Checking for custom cacerts...
+No cacerts file
+
+Installer configuration succeeded.
+Expectation, that user already successfully ran ./configure.sh
+All required variables: [kube_namespace] found.
+Checking for Kubernetes...
+OK - Kubernetes cluster 'docker-for-desktop' is accessible.
+Precondition check succeeded
+OK - Kubernetes namespace 'gestalt-system' is present.
+Creating ClusterRoleBinding for cluster-admin role for service account 'gestalt-system/default'...
+clusterrolebinding.rbac.authorization.k8s.io/gestalt-system-cluster-admin unchanged
+Creating ConfigMaps resources for installer...
+a config
+a config/gestalt-license.json
+a config/installer.yaml
+a config/gestalt.conf
+a config/install-config.yaml
+a gestalt-helm-chart
+a gestalt-helm-chart/requirements.yaml
+a gestalt-helm-chart/Chart.yaml
+a gestalt-helm-chart/charts
+a gestalt-helm-chart/.helmignore
+a gestalt-helm-chart/.gitignore
+a gestalt-helm-chart/templates
+a gestalt-helm-chart/requirements.lock
+a gestalt-helm-chart/templates/ui-ingress.yaml
+a gestalt-helm-chart/templates/meta-svc.yaml
+a gestalt-helm-chart/templates/elastic.yaml
+a gestalt-helm-chart/templates/_application.yaml
+a gestalt-helm-chart/templates/security.yaml
+a gestalt-helm-chart/templates/ui-svc.yaml
+a gestalt-helm-chart/templates/_installer.yaml
+a gestalt-helm-chart/templates/elastic-svc.yaml
+a gestalt-helm-chart/templates/gestalt-secret.yaml
+a gestalt-helm-chart/templates/rabbit-svc.yaml
+a gestalt-helm-chart/templates/ui.yaml
+a gestalt-helm-chart/templates/_helpers.tpl
+a gestalt-helm-chart/templates/security-svc.yaml
+a gestalt-helm-chart/templates/meta.yaml
+a gestalt-helm-chart/templates/rabbit.yaml
+a gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+a resource_templates
+a resource_templates/healthcheck-lambda.json
+a resource_templates/kubernetes-provider.yaml
+a resource_templates/gatewaymanager-provider.yaml
+a resource_templates/logging-provider.yaml
+a resource_templates/link-logging-provider.yaml
+a resource_templates/js-executor.yaml
+a resource_templates/laser-provider-multi-python.yaml
+a resource_templates/rabbit-provider.yaml
+a resource_templates/python-3x6x3-executor.yaml
+a resource_templates/ruby-executor.yaml
+a resource_templates/run.sh
+a resource_templates/healthcheck-apiendpoint.json
+a resource_templates/kong3-external-provider.yaml
+a resource_templates/license.yaml
+a resource_templates/nodejs-executor.yaml
+a resource_templates/dotnet-executor.yaml
+a resource_templates/laser-provider.yaml
+a resource_templates/security-provider.yaml
+a resource_templates/kong2-provider.yaml
+a resource_templates/python-3x6x1-executor.yaml
+a resource_templates/root-directory-account-store.yaml
+a resource_templates/golang-executor.yaml
+a resource_templates/python-executor.yaml
+a resource_templates/run_in_batch.sh
+a resource_templates/jvm-executor.yaml
+a resource_templates/db-provider.yaml
+a resource_templates/meta-migrate.json
+a resource_templates/link-python-3x6x1-executor.json
+a resource_templates/policy-provider.yaml
+a resource_templates/kong-provider.yaml
+a scripts
+a scripts/psql.sh
+a scripts/utility-bash.sh
+a scripts/install.sh
+a scripts/create_initial_databases.sh
+a scripts/install-functions.sh
+a scripts/init_database.sql
+a scripts/drop_database.sh
+kubectl create configmap -n gestalt-system install-data --from-file ./stage/b64data
+configmap/install-data created
+TODO: Ensure cacerts is handled properly
+pod/gestalt-installer created
+
+Gestalt Platform installer deployed to 'gestalt-system'.  To view the installer progress, run the following:
+
+  kubectl logs -n gestalt-system gestalt-installer --follow
+
+Done.
+Waiting for Gestalt Platform installation to complete
+.............................................
+Installation complete.
+Capturing installer logs to './logs/gestalt-installer.log'
+Deleting 'gestalt-installer' pod...
+pod "gestalt-installer" deleted
+Checking for helper: ./helpers/docker-for-desktop/post-install.sh ...
+
+Running ./helpers/docker-for-desktop/post-install.sh ...
+
+Logging in to http://localhost:31112...
+Login failed: Invalid username or password
+
+Please check the Gestalt URL endpoint and credentials and try again.
+
+Gestalt Platform installation complete!  Next Steps:
+
+  1) Login to Gestalt:
+
+         URL:       http://localhost:31112
+         User:      admin
+         Password:  gestaltpoc!
+
+  2) Next, navigate to the developer sandbox at:
+
+         http://localhost:31112 -> Sandboxes -> Developer Sandbox -> Development
+
+     Or via URL:
+
+         http://localhost:31112/root/hierarchy
+
+  3) You may access the Gestalt platform documentation at
+
+         http://docs.galacticfog.com/
+
+Done.

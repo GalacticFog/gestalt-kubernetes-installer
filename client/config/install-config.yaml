@@ -3,7 +3,6 @@ FOG_CLI_DEBUG: 'false'
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'
 DATABASE_HOSTNAME: gestalt-postgresql.gestalt-system.svc.cluster.local
-DATABASE_IMAGE_TAG: '9.6.2'
 DATABASE_NAME: postgres
 DATABASE_PORT: '5432'
 
@@ -65,9 +64,12 @@ UI_PROTOCOL: http
 # Elastic search
 ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 
+# Postgres image
+POSTGRES_IMAGE: docker.io/postgres:9.6.2    # Set this so the image gets downloaded.
+POSTGRES_IMAGE_TAG: '9.6.2'
+POSTGRES_IMAGE_NAME: postgres
 
 # Images
-DATABASE_IMAGE:        postgres
 DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
 ELASTICSEARCH_IMAGE:   docker.io/galacticfog/elasticsearch-docker:5.3.1
 GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:release-2.3.8

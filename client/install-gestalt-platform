@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -o pipefail
+
+gestalt_cli_version=0.10.6
+
+do_install() {
+
+  date
+
+  . helpers/install-functions.sh
+  . config/gestalt.conf
+
+  kube_type=$1
+
+  if [ -z "$kube_type" ]; then
+    exit_with_error "Must specify a kubernetes environment type"
+  elif [ ! -d ./helpers/$kube_type ]; then
+    exit_with_error "Invalid Kubernetes type: $kube_type" 
+  fi
+
+  configfile=helpers/$kube_type/env.conf
+
+  if [ ! -f "$configfile" ]; then
+    exit_with_error "Configuration file '$configfile' not found, aborting."
+  fi
+
+  . configfile
+
+  echo "Checking for required dependencies..."
+
+  download_fog_cli
+
+  ./precheck.sh
+  exit_on_error "Precheck failed, aborting"
+
+  run_helper pre-install
+
+  ./stage.sh
+  exit_on_error "Stage failed, aborting"
+
+  ./install.sh
+  exit_on_error "Install failed, aborting"
+
+  wait_for_install_completion
+
+  cleanup
+
+  run_helper post-install
+
+  ./fog login $gestalt_ui_service_url -u $gestalt_admin_username -p $gestalt_admin_password
+  exit_on_error "Login failed, aborting"
+
+  display_summary
+}
+
+if [ "$1" != "do_install" ]; then 
+  mkdir -p ./logs
+  ./install-gestalt-platform do_install $@ 2>&1 | tee -a ./logs/install.log
+else
+  shift
+  do_install $@
+fi

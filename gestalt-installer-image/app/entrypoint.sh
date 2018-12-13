@@ -36,14 +36,20 @@ if [ "$CMD" == 'install' ]; then
         # done
 
         # Untar in place
-        tar xfzv ./install-data.tar.gz 
+        mkdir -p ./install
+        tar xfzv ./install-data.tar.gz -C ./install
     fi
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 
     cd /app/install/scripts
     ./install.sh $2 2>&1 | tee -a $log
-    cd -
+
+    if [ $? -eq 0 ]; then
+        echo "[INSTALLATION_SUCCESS]"
+    else
+        echo "[INSTALLATION_FAILURE]"
+    fi
 
     echo "Total elapsed time: $SECONDS seconds." | tee -a $log
 

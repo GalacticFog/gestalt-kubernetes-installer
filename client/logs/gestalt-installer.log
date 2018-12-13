@@ -1,0 +1,463 @@
+Thu Dec 13 04:07:18 EST 2018
+Installing Gestalt platform... ('install' container argument specified)
+config/
+config/gestalt-license.json
+config/installer.yaml
+config/gestalt.conf
+config/install-config.yaml
+gestalt-helm-chart/
+gestalt-helm-chart/requirements.yaml
+gestalt-helm-chart/Chart.yaml
+gestalt-helm-chart/charts/
+gestalt-helm-chart/.helmignore
+gestalt-helm-chart/.gitignore
+gestalt-helm-chart/templates/
+gestalt-helm-chart/requirements.lock
+gestalt-helm-chart/templates/ui-ingress.yaml
+gestalt-helm-chart/templates/meta-svc.yaml
+gestalt-helm-chart/templates/elastic.yaml
+gestalt-helm-chart/templates/_application.yaml
+gestalt-helm-chart/templates/security.yaml
+gestalt-helm-chart/templates/ui-svc.yaml
+gestalt-helm-chart/templates/_installer.yaml
+gestalt-helm-chart/templates/elastic-svc.yaml
+gestalt-helm-chart/templates/gestalt-secret.yaml
+gestalt-helm-chart/templates/rabbit-svc.yaml
+gestalt-helm-chart/templates/ui.yaml
+gestalt-helm-chart/templates/_helpers.tpl
+gestalt-helm-chart/templates/security-svc.yaml
+gestalt-helm-chart/templates/meta.yaml
+gestalt-helm-chart/templates/rabbit.yaml
+gestalt-helm-chart/charts/postgresql-0.8.7.tgz
+resource_templates/
+resource_templates/healthcheck-lambda.json
+resource_templates/kubernetes-provider.yaml
+resource_templates/gatewaymanager-provider.yaml
+resource_templates/logging-provider.yaml
+resource_templates/link-logging-provider.yaml
+resource_templates/js-executor.yaml
+resource_templates/laser-provider-multi-python.yaml
+resource_templates/rabbit-provider.yaml
+resource_templates/python-3x6x3-executor.yaml
+resource_templates/ruby-executor.yaml
+resource_templates/run.sh
+resource_templates/healthcheck-apiendpoint.json
+resource_templates/kong3-external-provider.yaml
+resource_templates/license.yaml
+resource_templates/nodejs-executor.yaml
+resource_templates/dotnet-executor.yaml
+resource_templates/laser-provider.yaml
+resource_templates/security-provider.yaml
+resource_templates/kong2-provider.yaml
+resource_templates/python-3x6x1-executor.yaml
+resource_templates/root-directory-account-store.yaml
+resource_templates/golang-executor.yaml
+resource_templates/python-executor.yaml
+resource_templates/run_in_batch.sh
+resource_templates/jvm-executor.yaml
+resource_templates/db-provider.yaml
+resource_templates/meta-migrate.json
+resource_templates/link-python-3x6x1-executor.json
+resource_templates/policy-provider.yaml
+resource_templates/kong-provider.yaml
+scripts/
+scripts/psql.sh
+scripts/utility-bash.sh
+scripts/install.sh
+scripts/create_initial_databases.sh
+scripts/install-functions.sh
+scripts/init_database.sql
+scripts/drop_database.sh
+Initiating Gestalt platform installation at Thu Dec 13 09:03:38 UTC 2018
+BASH VERSION: 4.4.19(1)-release 
+[Running 'getsalt_installer_load_configmap']
+All required variables: [gestalt_config] found.
+Creating ../config/install-config.json from ../config/install-config.yaml...
+[convert_json_to_env_variables][For][../config/install-config.json]
+Error: unknown command "configmap" for "kubectl"
+Run 'kubectl --help' for usage.
+unknown command "configmap" for "kubectl"
+All required variables: [GESTALT_INSTALL_LOGGING_LVL] found.
+[Debug]  [Validation Passed] logging_lvl = 'debug'
+['getsalt_installer_load_configmap' finished in 2 seconds]
+
+[Running 'getsalt_installer_setcheck_variables']
+All required variables: [ADMIN_PASSWORD ADMIN_USERNAME DATABASE_HOSTNAME DATABASE_PASSWORD DATABASE_USERNAME DOTNET_EXECUTOR_IMAGE ELASTICSEARCH_HOST ELASTICSEARCH_IMAGE GOLANG_EXECUTOR_IMAGE GWM_EXECUTOR_IMAGE JS_EXECUTOR_IMAGE JVM_EXECUTOR_IMAGE KONG_IMAGE KONG_0_VIRTUAL_HOST KUBECONFIG_BASE64 LOGGING_IMAGE META_HOSTNAME META_IMAGE META_PORT META_PROTOCOL NODEJS_EXECUTOR_IMAGE POLICY_IMAGE PYTHON_EXECUTOR_IMAGE RABBIT_HOST RABBIT_HOSTNAME RABBIT_HTTP_PORT RABBIT_IMAGE RABBIT_PORT RUBY_EXECUTOR_IMAGE SECURITY_HOSTNAME SECURITY_IMAGE SECURITY_PORT SECURITY_PROTOCOL UI_HOSTNAME UI_IMAGE UI_PORT UI_PROTOCOL] found.
+All required variables: [SECURITY_URL META_URL UI_URL] found.
+Optional variable "META_BOOTSTRAP_PARAMS" not defined.
+['getsalt_installer_setcheck_variables' finished in 0 seconds]
+
+[Running 'gestalt_installer_generate_helm_config']
+All required variables: [SECURITY_IMAGE SECURITY_HOSTNAME SECURITY_PORT SECURITY_PROTOCOL ADMIN_USERNAME ADMIN_PASSWORD POSTGRES_IMAGE_NAME POSTGRES_IMAGE_TAG DATABASE_NAME DATABASE_PASSWORD DATABASE_USERNAME KUBECONFIG_BASE64 RABBIT_IMAGE RABBIT_HOSTNAME RABBIT_PORT RABBIT_HTTP_PORT ELASTICSEARCH_IMAGE META_IMAGE META_HOSTNAME META_PORT META_PROTOCOL META_NODEPORT KONG_NODEPORT LOGGING_NODEPORT UI_IMAGE UI_NODEPORT internal_database_pv_storage_size internal_database_pv_storage_class postgres_persistence_subpath postgres_memory_request postgres_cpu_request] found.
+['gestalt_installer_generate_helm_config' finished in 0 seconds]
+
+
+ADMIN_PASSWORD=gestaltpoc!
+ADMIN_USERNAME=admin
+BUILD_DEPS=gettext
+CUSTOM_IMAGE_PULL_SECRET=
+DATABASE_HOSTNAME=gestalt-postgresql.gestalt-system.svc.cluster.local
+DATABASE_NAME=postgres
+DATABASE_PASSWORD=abcd1234!
+DATABASE_PORT=5432
+DATABASE_USERNAME=postgres
+DOTNET_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-dotnet:release-2.3.8
+ELASTICSEARCH_HOST=gestalt-elastic.gestalt-system
+ELASTICSEARCH_IMAGE=docker.io/galacticfog/elasticsearch-docker:5.3.1
+EXTERNAL_GATEWAY_HOST=localhost
+EXTERNAL_GATEWAY_PROTOCOL=http
+FOG_CLI_DEBUG=false
+GESTALT_INSTALL_LOGGING_LVL=debug
+GOLANG_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-golang:release-2.3.8
+GWM_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-api-gateway:release-2.3.8
+GWM_IMAGE=docker.io/galacticfog/gestalt-api-gateway:release-2.3.8
+HOME=/root
+HOSTNAME=gestalt-installer
+JS_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-js:release-2.3.8
+JS_EXECUTOR_MIN_COOL=1
+JVM_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-jvm:release-2.3.8
+KONG_0_EXTERNAL_PROTOCOL=http
+KONG_0_VIRTUAL_HOST=localhost:31113
+KONG_IMAGE=docker.io/galacticfog/kong:release-2.3.8
+KONG_INGRESS_SERVICE_NAME=kng-ext
+KONG_MANAGEMENT_NODEPORT=
+KONG_NODEPORT=31113
+KUBECONFIG_BASE64=YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIGluc2VjdXJlLXNraXAtdGxzLXZlcmlmeTogdHJ1ZQogICAgc2VydmVyOiBodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMKICBuYW1lOiBkb2NrZXItZm9yLWRlc2t0b3AtY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogZG9ja2VyLWZvci1kZXNrdG9wLWNsdXN0ZXIKICAgIHVzZXI6IGRvY2tlci1mb3ItZGVza3RvcAogIG5hbWU6IGRvY2tlci1mb3ItZGVza3RvcApjdXJyZW50LWNvbnRleHQ6IGRvY2tlci1mb3ItZGVza3RvcApraW5kOiBDb25maWcKcHJlZmVyZW5jZXM6IHt9CnVzZXJzOgotIG5hbWU6IGRvY2tlci1mb3ItZGVza3RvcAogIHVzZXI6CiAgICBjbGllbnQtY2VydGlmaWNhdGUtZGF0YTogTFMwdExTMUNSVWRKVGlCRFJWSlVTVVpKUTBGVVJTMHRMUzB0Q2sxSlNVTTVSRU5EUVdSNVowRjNTVUpCWjBsSlRtOTRVWEpOTm5SSmFFVjNSRkZaU2t0dldrbG9kbU5PUVZGRlRFSlJRWGRHVkVWVVRVSkZSMEV4VlVVS1FYaE5TMkV6Vm1sYVdFcDFXbGhTYkdONlFXVkdkekI0VDBSRmVVMUVXWGROUkVVelRrUktZVVozTUhoUFZFVjVUVVJuZUU1NlNYcE5la1poVFVSWmVBcEdla0ZXUW1kT1ZrSkJiMVJFYms0MVl6TlNiR0pVY0hSWldFNHdXbGhLZWsxU2MzZEhVVmxFVmxGUlJFVjRTbXRpTWs1eVdsaEpkRnB0T1hsTVYxSnNDbU15ZERCaU0wRjNaMmRGYVUxQk1FZERVM0ZIVTBsaU0wUlJSVUpCVVZWQlFUUkpRa1IzUVhkblowVkxRVzlKUWtGUlJHNDFlVk5ZWWtoalMxWm1iMVlLZWt0TVNFSlFOR2dyUzNNMFYydDZhWFJOYlZaRmEzVlJhRTFYVjBSSGJHNTVWakpqZFZwM2F6TTNTM0phYm1zeFFUUjJZalowWmk5WlRXMU9SMGh4TXdwWE5WVXpiMEpYWTFsWllpdGhkMjh4VW5OSmJ6QnFja1pKU1ZJNFNqUkNha3RLT0UxWVIyUnpjMU0zZUhWaFpXeHpjbnBPUVc1Q1ZVSklNaTlKWTBrMkNuWkRiM295UjA1RU1UbExLMUZ6WlVSa09YVlpiMVZtWTFObVluTnNlVE5LYkVFNFpETjNMMU56WmxSUmJXZGxaMk42Vm1oSmNWWTNVRmhaUmtwd2VVc0tUemRFVFRsM1ZGSXlhMnN2YzJ4NVltYzRZM0JXVDNJMlJGa3dWbXd2U2tGTldEQlJiSGh0VjFBcmNUQjFjMDR6U1U5RFJuUkpibEZFTVVwaWRVRk9kd3BqVjJrM1VqRmFLM1UyVlRod1lscHVNVUV5U0RKRllWSnFTMlV6ZFdsdmNFaFpjMnQzY0ZjMVJVNVZiVUpaZFRsNU5HOWxMMW8wUm1Wb1ZHaHVNV1pwQ201UWJYUk1NV2RxUVdkTlFrRkJSMnBLZWtGc1RVRTBSMEV4VldSRWQwVkNMM2RSUlVGM1NVWnZSRUZVUW1kT1ZraFRWVVZFUkVGTFFtZG5ja0puUlVZS1FsRmpSRUZxUVU1Q1oydHhhR3RwUnpsM01FSkJVWE5HUVVGUFEwRlJSVUZHUkhSRE4wNVlUbTVLZVZVeFdtRjZTa1pFVVhwcU4xWlNSRkp0UkhVck5RcGtiRlozTVVveU5VcE5kM1pIWkVSb1JsaGlVRnBaZEZGWk1XZHFhMFJaSzFVd1RrMXZUWHBHVlhOSVFVdzFMMUJ4U0hsNVNqbHpNbGdyWkVjcmQyMU9DbWhZYms0elQwbEVZbll2YlVoUGVtdDJXVWxLTnpCM2QwUmtkbXRvZUcxNGJsTkRNVmw2WWtSbVpuaFlUMlJNUTBOeGIyZHllRWhUS3pGQldtd3laRU1LZVd0bE1taHJSR3BVVTJoMFdHdGhhbEpoVVhobVUyRmpZVWcwUWsxUVEwcFNUVmhzTm5rd09VVnFRaTl0ZFZSdldsUXdhSFkwWm5JNFJqQkVWV05WYXdwa016SnRjalZYT0RnNE5qbDNUbU0wTTJobVpFVTRjelJYY0d4WVQwazBhakpXYlhGWGVscG1lVmMzZVd4SVFtTkdNRGxMY2pWTll6ZDVMMlJYYjJWNENuVXdaa3h0VlcxUVZsRmFTamxIY1VGM2JYUmFNWFV4V21ocVExQk5kblJPUTJWM1NGcFRNRmh6TUdadmIyTnpaMEY0YWxoa1p6MDlDaTB0TFMwdFJVNUVJRU5GVWxSSlJrbERRVlJGTFMwdExTMEsKICAgIGNsaWVudC1rZXktZGF0YTogTFMwdExTMUNSVWRKVGlCU1UwRWdVRkpKVmtGVVJTQkxSVmt0TFMwdExRcE5TVWxGYjNkSlFrRkJTME5CVVVWQk5TdGphMnd5ZURORGJGZzJSbU41YVhoM1ZDdEpabWx5VDBad1RUUnlWRXBzVWtwTWEwbFVSbXhuZUhCYU9HeGtDbTVNYldOS1RpdDVjVEphTlU1UlQwd3lLM0pZTHpKRVNtcFNhRFowTVhWV1RqWkJWbTVIUjBjdmJYTkxUbFZpUTB0T1NUWjRVME5GWmtObFFWbDVhV1lLUkVaNGJtSk1SWFU0WW0xdWNHSkxPSHBSU25kV1FWSTVkbmxJUTA5eWQzRk5PV2hxVVRsbVUzWnJURWhuTTJaaWJVdEdTRE5GYmpJM1NtTjBlVnBSVUFwSVpEaFFNSEpJTURCS2IwaHZTRTB4V1ZOTGJHVjZNVEpDVTJGamFXcDFkM3BRWTBVd1pIQktVRGRLWTIwMFVFaExWbFJ4SzJjeVRrWmFabmxSUkVZNUNrVktZMXBzYWk5eGRFeHlSR1I1Ukdkb1lsTktNRUU1VTFjM1owUmpTRVp2ZFRCa1YyWnlkV3hRUzFjeVdqbFJUbWc1YUVkcldYbHVkRGR2Y1V0U01rd0tTazFMVm5WU1JGWktaMWRNZG1OMVMwaDJNbVZDV0c5Vk5GbzVXRFJ3ZWpWeVV6bFpTWGRKUkVGUlFVSkJiMGxDUVVoaU9WQXJXU3RpYW05elkxWjVZd3BIYlRKYU0zcG1Xa2Q1YlZsRk9XeEVVVU5sZDAxdWRXUXhURUYzUVVOdFZIaGxaWHA1VXpKWFdteDJVMEZoUlRGQ05UZzBkV050T0doTk5WUTBRM1ZUQ2pNeFlXbFhiRkpoUzIxVlF6QlZUVk0wYlRoR2NEaG5ZamRxTm5sSFozUkhMMWw2WmtsUFdrSmFOeTgyVEdNME1HcDJSakpNWlVzclVucE5Oa0pEYjFZS1FVZGhTSGRwT0N0WU1VUnRaazgyTVVsclZVaG9Ra3hDUms5VVFtd3hWWEozY25SRlFYVTNOMGR4YjB0WmQxbE9NRVJ1Y3l0SlpESmhWbFp0ZGtoSmJnb3lkRGgxVW5GNGJVWklWR0pqVGpsUEwzTXZhVUpSYUZSdFJUUTJVVmQzVkdob2NsWnNVRlpyWlc0eVFsSldWVUpKWVhCRFRUbG1kemRVV1ZrNGN5OVpDbmtyVmxOWVNqRjRjelUwTUhGcFVTOVlWRlpKVDB0c1ZXMTRlbWRyTWpodlJIaEViR2xwZUhONGVXeE9lVGRZUWpWTU9XbDZWSEJNTjJGamFrbGtVVFFLVGt4MWRYSTFSVU5uV1VWQkswRnFaV3AzTUN0WFMxSXdhVzlhTkZKc2MwRXlVbEJ3TTBvM1VEa3djM2N6WkRVNGVHbDNVMkZYYmswMmFGWkNkMXBQY0FwcWNXVmlRV2QxVW1OSVRpOHhSbW93YVRFM2JUSkRLekpITTBKQ01rZDFORE5YTm5aMU5rUTRlbE5XWm5WNWMzUmtiWFZqVGk5WkwybE1ZV1JhT0ZCdENtazVkMUZsV1M5M05rdHVjRTQxU0hwT1pVRkdhbGhxTmxWVUswNDNiSFJSTDI1V2IzTkRUVlJYVkVKbE4xbE1kVlZNWkN0M1RITkRaMWxGUVRjeGJXMEtOMEpsWTFobVlqWk9RVE5SWTA1YVlVODJhazU1WmpNMFoycHFaalEyV0ZGSlVTdElNVVpMT0RVelpscFZkRVEyZGtKRlZVNTRSbk5aZFdKb1dDOXJkUXB2VjFCcVFWUXdjMmcwUVdoRGVHWkpRMVphVVZSV1QwdFFNbmxxYlZGUVQwTkRWSEJwWTFVeE9IbzRORGhaZWxSb2VHOUxLMnQ1VFZNNWJqTm9kemxWQ2paM2JUZDZSMUJuWWpaWk1EaHpRalpuZFVoNGJIUktOVlI1UjNGalQydGpWVk5qZEc4M2EwTm5XVVZCTUc4NFl5dEZNbWt4Y21ST1dTdGxRbkJUUWs4S1IxQnZjSFJ4ZEhaSGNIcFFUVUp3VjNwQ2FsQjZTVTFRWmsxNGN6RlFjMWx1YzNsNk56QnRTWFoyUTJRelRrNXFWR2RzVkdGTlZXZEZRM281UTAwNWVBb3dWRVJOY1VScGFsRjZablZET0UwNGVHVklWMkpVT1hwaloybHpiVlpGV201NlRrUklVamxRZDFGUE1IZDNURFJrTkhwcmVXUlBaMnhIWVdsbk1qQnlDakZqWjNkQ1p6ZFJkSGM0TUVaMVltMXFjMnR1U21zNFEyZFpRamN2V0dSd1UyNXViMlV5TnpFeFJXOXphV1kxU1dSYVVGWnNZMnhOZGtkWVVFdHFRamtLVkN0NFVGa3lWVlZwTlU0M1VWZE5RMVprTm1oQlJtVnFha2hOYjBsdkszcGlNbXhFVmxGMGFWUnJMMUI2VlhkRksyb3Jla3g0Ylc4M1dVSTJXR1YzTXdwaU9XWkVWbEJSZW5oSllXUkxlRlJTU1dZMldqRXhiU3RYV0ZoUE9ETlNUVXBqYVhobmRsQmlTWE5ETDBkR1RHVjRiV3NyWkd3ek9WUnFWbUpPU1dSRkNubDNWSEpyVVV0Q1owUmFVWGd2SzNWT1lXbGpVV1I1VGxreGNuYzBWakZzT1dNNFFYcDNRWGRNVVdsNVUzVklkRmxRVWtwWVdFVXljaXN2VFdGb1ZEWUtSV2hXVFhSTE5YbDNVVlZLVURkMFZUY3pkRVpwTmxSUGFrWjFSM2hwU0ZaQ2F6aEdUVFJwVFU1SFVsVjZaelpaYmxaUFpXbENielphYlRsc05WRlVLd3BoZVdkMFVVMXNNekl3UlV4TWVsZERRa1pxU2swdmNFSk9VbVp5ZEdSMVMyNTJhRWt3YWpFcldXMXJjREJ5T1U0eWRWUnhDaTB0TFMwdFJVNUVJRkpUUVNCUVVrbFdRVlJGSUV0RldTMHRMUzB0Q2c9PQo=
+KUBERNETES_PORT=tcp://10.96.0.1:443
+KUBERNETES_PORT_443_TCP=tcp://10.96.0.1:443
+KUBERNETES_PORT_443_TCP_ADDR=10.96.0.1
+KUBERNETES_PORT_443_TCP_PORT=443
+KUBERNETES_PORT_443_TCP_PROTO=tcp
+KUBERNETES_SERVICE_HOST=10.96.0.1
+KUBERNETES_SERVICE_PORT=443
+KUBERNETES_SERVICE_PORT_HTTPS=443
+LASER_IMAGE=docker.io/galacticfog/gestalt-laser:release-2.3.8
+LASER_NODEPORT=
+LASER_PROVIDER_CUSTOMIZE=0
+LASER_PROVIDER_CUSTOM_EXECUTORS=python-3x6x1-executor:python-3x6x3-executor
+LASER_PROVIDER_DEFINITION=laser-provider
+LASER_SERVICE_VHOST=
+LOGGING_IMAGE=docker.io/galacticfog/gestalt-log:release-2.3.8
+LOGGING_NODEPORT=31114
+LOGGING_SERVICE_HOST=localhost:31114
+LOGGING_SERVICE_PROTOCOL=http
+META_HOSTNAME=gestalt-meta.gestalt-system.svc.cluster.local
+META_IMAGE=docker.io/galacticfog/gestalt-meta:release-2.3.8
+META_NODEPORT=31111
+META_PORT=10131
+META_PROTOCOL=http
+META_URL=http://gestalt-meta.gestalt-system.svc.cluster.local:10131
+NGINX_VERSION=1.15.7
+NODEJS_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-nodejs:release-2.3.8
+OLDPWD=/app
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+POLICY_IMAGE=docker.io/galacticfog/gestalt-policy:release-2.3.8
+POSTGRES_IMAGE=docker.io/postgres:9.6.2
+POSTGRES_IMAGE_NAME=postgres
+POSTGRES_IMAGE_TAG=9.6.2
+PROVISION_INTERNAL_DATABASE=Yes
+PWD=/app/install/scripts
+PYTHON_3_6_1_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.1
+PYTHON_3_6_1_EXECUTOR_MIN_COOL=1
+PYTHON_3_6_3_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.3
+PYTHON_3_6_3_EXECUTOR_MIN_COOL=1
+PYTHON_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-python:release-2.3.8
+PYTHON_EXECUTOR_MIN_COOL=1
+RABBIT_HOST=gestalt-rabbit.gestalt-system
+RABBIT_HOSTNAME=gestalt-rabbit.gestalt-system
+RABBIT_HTTP_PORT=15672
+RABBIT_IMAGE=docker.io/galacticfog/rabbit:release-2.3.8
+RABBIT_PORT=5672
+RUBY_EXECUTOR_IMAGE=docker.io/galacticfog/gestalt-laser-executor-ruby:release-2.3.8
+RUNTIME_DEPS=libintl
+SECURITY_HOSTNAME=gestalt-security.gestalt-system.svc.cluster.local
+SECURITY_IMAGE=docker.io/galacticfog/gestalt-security:release-2.3.8
+SECURITY_PORT=9455
+SECURITY_PROTOCOL=http
+SECURITY_URL=http://gestalt-security.gestalt-system.svc.cluster.local:9455
+SHLVL=2
+UI_HOSTNAME=gestalt-ui.gestalt-system.svc.cluster.local
+UI_IMAGE=docker.io/galacticfog/gestalt-ui-react:release-2.3.8
+UI_NODEPORT=31112
+UI_PORT=80
+UI_PROTOCOL=http
+UI_URL=http://gestalt-ui.gestalt-system.svc.cluster.local:80
+_=/usr/bin/env
+internal_database_pv_storage_class=hostpath
+internal_database_pv_storage_size=100Mi
+postgres_cpu_request=100m
+postgres_memory_request=100Mi
+postgres_persistence_subpath=postgres
+
+Rendering Helm templates...
+Creating Kubernetes resources...
+secret/gestalt-postgresql created
+secret/gestalt-secrets created
+persistentvolumeclaim/gestalt-postgresql created
+service/gestalt-postgresql created
+service/gestalt-elastic created
+service/gestalt-meta created
+service/gestalt-rabbit created
+service/gestalt-security created
+service/gestalt-ui created
+deployment.extensions/gestalt-postgresql created
+deployment.extensions/gestalt-elastic created
+deployment.extensions/gestalt-meta created
+deployment.extensions/gestalt-rabbit created
+deployment.extensions/gestalt-security created
+deployment.extensions/gestalt-ui created
+ingress.extensions/gestalt-ui created
+[Running 'wait_for_database']
+Waiting for database...
+Attempting database connection. (attempt 1)
+Running psql: postgres@gestalt-postgresql.gestalt-system.svc.cluster.local:5432 - postgres
+psql: could not connect to server: Connection refused
+	Is the server running on host "gestalt-postgresql.gestalt-system.svc.cluster.local" (10.105.54.180) and accepting
+	TCP/IP connections on port 5432?
+Database not available, trying again in 30 seconds. (attempt 1)
+Attempting database connection. (attempt 2)
+Running psql: postgres@gestalt-postgresql.gestalt-system.svc.cluster.local:5432 - postgres
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges   
+-----------+----------+----------+------------+------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+(3 rows)
+
+Database is available.
+['wait_for_database' finished in 106 seconds]
+
+[Running 'init_database']
+Dropping existing databases...
+TODO: Unhardcode database names
+Dropping database 'gestalt-meta'...
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+NOTICE:  database "gestalt-meta" does not exist, skipping
+DROP DATABASE
+Done.
+Dropping database 'gestalt-security'...
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+NOTICE:  database "gestalt-security" does not exist, skipping
+DROP DATABASE
+Done.
+Dropping database 'kong-db'...
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+NOTICE:  database "kong-db" does not exist, skipping
+DROP DATABASE
+Done.
+Dropping database 'laser-db'...
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+NOTICE:  database "laser-db" does not exist, skipping
+DROP DATABASE
+Done.
+Dropping database 'gateway-db'...
+ pg_terminate_backend 
+----------------------
+(0 rows)
+
+NOTICE:  database "gateway-db" does not exist, skipping
+DROP DATABASE
+Done.
+Attempting to initalize database...
+Creating initial databases...
+CREATE DATABASE
+You are now connected to database "gestalt-security" as user "postgres".
+psql:./init_database.sql:6: NOTICE:  extension "pgcrypto" does not exist, skipping
+DROP EXTENSION
+psql:./init_database.sql:7: NOTICE:  extension "uuid-ossp" does not exist, skipping
+DROP EXTENSION
+CREATE DATABASE
+You are now connected to database "gestalt-meta" as user "postgres".
+Database initialized.
+['init_database' finished in 3 seconds]
+
+Waiting a bit...
+[Running 'invoke_security_init']
+Initializing Security...
+Invoking http://gestalt-security.gestalt-system.svc.cluster.local:9455/init...
+Security initialization invoked, API key and secret obtained.
+['invoke_security_init' finished in 2 seconds]
+
+[Running 'wait_for_security_init']
+Waiting for Security to initialize...
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100    20  100    20    0     0    869      0 --:--:-- --:--:-- --:--:--   869
+Security initialized.
+['wait_for_security_init' finished in 0 seconds]
+
+[Running 'init_meta']
+Initializing Meta...
+Polling http://gestalt-meta.gestalt-system.svc.cluster.local:10131/root...
+Bootstrapping Meta at http://gestalt-meta.gestalt-system.svc.cluster.local:10131/bootstrap...
+Meta bootstrapped (returned 200).
+Syncing Meta at http://gestalt-meta.gestalt-system.svc.cluster.local:10131/sync...
+Meta synced (returned 200).
+['init_meta' finished in 6 seconds]
+
+secret/gestalt-security-creds created
+Running 'fog login'...
+Created /root/.fog.
+Logging in to http://gestalt-ui.gestalt-system.svc.cluster.local:80...
+Created /root/.fog/gestalt-ui.gestalt-system.svc.cluster.local:80.
+Authenticated. User admin logged in to http://gestalt-ui.gestalt-system.svc.cluster.local:80.
+[Debug] Looking up file '../config/gestalt-license.json'
+[Debug] All required files found.
+Loading license from file...
+Gestalt Platform license updated.
+Context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+[Running 'gestalt_cli_create_resources']
+All required variables: [SECURITY_KEY SECURITY_SECRET DATABASE_USERNAME DATABASE_PASSWORD DATABASE_HOSTNAME RABBIT_HOST DOTNET_EXECUTOR_IMAGE JS_EXECUTOR_IMAGE JVM_EXECUTOR_IMAGE NODEJS_EXECUTOR_IMAGE PYTHON_EXECUTOR_IMAGE RUBY_EXECUTOR_IMAGE GOLANG_EXECUTOR_IMAGE GWM_IMAGE KONG_IMAGE LOGGING_IMAGE POLICY_IMAGE KONG_0_VIRTUAL_HOST ELASTICSEARCH_HOST KUBECONFIG_BASE64] found.
+Context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Workspace 'gestalt-system-workspace' created.
+Environment 'gestalt-laser-environment' created.
+Creating resource from 'db-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'default-postgres' (Gestalt::Configuration::Provider::Data::PostgreSQL).
+Creating resource from 'security-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'default-security' (Gestalt::Configuration::Provider::Security).
+Creating resource from 'kubernetes-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'default-kubernetes' (Gestalt::Configuration::Provider::CaaS::Kubernetes).
+Creating resource from 'rabbit-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'default-rabbit' (Gestalt::Configuration::Provider::Messaging::RabbitMQ).
+Creating resource from 'js-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'js-executor' (Gestalt::Configuration::Provider::Lambda::Executor::Nashorn).
+Creating resource from 'jvm-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'jvm-executor' (Gestalt::Configuration::Provider::Lambda::Executor::Java).
+Creating resource from 'dotnet-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'dotnet-executor' (Gestalt::Configuration::Provider::Lambda::Executor::CSharp).
+Creating resource from 'golang-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'golang-executor' (Gestalt::Configuration::Provider::Lambda::Executor::GoLang).
+Creating resource from 'nodejs-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'nodejs-executor' (Gestalt::Configuration::Provider::Lambda::Executor::NodeJS).
+Creating resource from 'python-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'python-executor' (Gestalt::Configuration::Provider::Lambda::Executor::Python).
+Creating resource from 'ruby-executor.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Created resource 'ruby-executor' (Gestalt::Configuration::Provider::Lambda::Executor::Ruby).
+Creating resource from 'laser-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Will cache provider for path '/root/jvm-executor'
+Will cache provider for path '/root/default-postgres'
+Will cache provider for path '/root/default-kubernetes'
+Will cache provider for path '/root/default-rabbit'
+Will cache provider for path '/root/js-executor'
+Will cache provider for path '/root/default-security'
+Will cache provider for path '/root/dotnet-executor'
+Will cache provider for path '/root/golang-executor'
+Will cache provider for path '/root/nodejs-executor'
+Will cache provider for path '/root/python-executor'
+Will cache provider for path '/root/ruby-executor'
+Returning cached provider value for path '/root/ruby-executor'
+Returning cached provider value for path '/root/python-executor'
+Returning cached provider value for path '/root/golang-executor'
+Returning cached provider value for path '/root/dotnet-executor'
+Returning cached provider value for path '/root/nodejs-executor'
+Returning cached provider value for path '/root/jvm-executor'
+Returning cached provider value for path '/root/js-executor'
+Returning cached provider value for path '/root/default-rabbit'
+Returning cached provider value for path '/root/default-security'
+Returning cached provider value for path '/root/default-postgres'
+Created resource 'default-laser' (Gestalt::Configuration::Provider::Lambda).
+Creating resource from 'policy-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Returning cached provider value for path '/root/default-kubernetes'
+Returning cached provider value for path '/root/default-rabbit'
+Will cache provider for path '/root/dotnet-executor'
+Will cache provider for path '/root/default-postgres'
+Will cache provider for path '/root/default-kubernetes'
+Will cache provider for path '/root/default-rabbit'
+Will cache provider for path '/root/js-executor'
+Will cache provider for path '/root/jvm-executor'
+Will cache provider for path '/root/default-security'
+Will cache provider for path '/root/golang-executor'
+Will cache provider for path '/root/nodejs-executor'
+Will cache provider for path '/root/python-executor'
+Will cache provider for path '/root/ruby-executor'
+Will cache provider for path '/root/default-laser'
+Created resource 'policy' (Gestalt::Configuration::Provider::Policy).
+Creating resource from 'kong-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Returning cached provider value for path '/root/default-kubernetes'
+Returning cached provider value for path '/root/default-postgres'
+Created resource 'default-kong' (Gestalt::Configuration::Provider::Kong).
+Creating resource from 'gatewaymanager-provider.yaml'...
+Using context: gestalt-ui.gestalt-system.svc.cluster.local:80 / root
+Returning cached provider value for path '/root/default-kubernetes'
+Returning cached provider value for path '/root/default-security'
+Returning cached provider value for path '/root/default-postgres'
+Will cache provider for path '/root/golang-executor'
+Will cache provider for path '/root/default-postgres'
+Will cache provider for path '/root/default-kubernetes'
+Will cache provider for path '/root/default-rabbit'
+Will cache provider for path '/root/js-executor'
+Will cache provider for path '/root/jvm-executor'
+Will cache provider for path '/root/dotnet-executor'
+Will cache provider for path '/root/default-security'
+Will cache provider for path '/root/nodejs-executor'
+Will cache provider for path '/root/python-executor'
+Will cache provider for path '/root/ruby-executor'
+Will cache provider for path '/root/default-laser'
+Will cache provider for path '/root/policy'
+Will cache provider for path '/root/default-kong'
+Created resource 'default-gwm' (Gestalt::Configuration::Provider::GatewayManager).
+Returning cached provider value for path '/root/default-laser'
+TypeError: Assignment to constant variable.
+TODO: ensure there's a configure_ldap variable here
+/app/install/scripts
+Gestalt resource(s) created.
+['gestalt_cli_create_resources' finished in 83 seconds]
+
+---------- Checking KONG_INGRESS_SERVICE_NAME for 'create_kong_ingress_v2' ----------
+KONG_SERVICE_NAMESPACE == 1c71feb0-2ac3-498b-a5b1-c4a262ce6a3e
+KONG_INGRESS_SERVICE_NAME was '1c71feb0-2ac3-498b-a5b1-c4a262ce6a3e/kng-ext'
+Running 'create_kong_ingress_v2'
+Inspecting service 'kng'
+Inspecting service 'kng-ext'
+Found service with name 'kng-ext'
+Inspecting service 'gwm'
+Inspecting service 'pol'
+Inspecting service 'pol-ext'
+Inspecting service 'kubernetes'
+Inspecting service 'compose-api'
+Inspecting service 'lsr'
+Inspecting service 'gestalt-elastic'
+Inspecting service 'gestalt-meta'
+Inspecting service 'gestalt-postgresql'
+Inspecting service 'gestalt-rabbit'
+Inspecting service 'gestalt-security'
+Inspecting service 'gestalt-ui'
+Inspecting service 'kube-dns'
+Found uniquely named service 'kng-ext'
+Namespace for Kong service 'kng-ext' is '1c71feb0-2ac3-498b-a5b1-c4a262ce6a3e'
+Creating Kubernetes Ingress resource for service kng-ext hostname localhost...
+ingress.extensions/kng-ext created
+Kong ingress to '1c71feb0-2ac3-498b-a5b1-c4a262ce6a3e/kng-ext' configured for 'localhost'.
+[Success] Gestalt platform installation completed.
+[INSTALLATION_SUCCESS]
+Total elapsed time: 216 seconds.
+Debug was enabled, sleeping forever so container stays running...
