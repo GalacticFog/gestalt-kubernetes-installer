@@ -509,7 +509,7 @@ wait_for_installer_launch() {
 wait_for_install_completion() {
   local previous_status=""
 
-  echo "Waiting for Gestalt Platform installation to complete. Polling for installation status:"
+  echo "Waiting for Gestalt Platform installation to complete."
   for i in `seq 1 100`; do
     echo -n "."
 
@@ -547,7 +547,7 @@ wait_for_install_completion() {
   exit_with_error "Installation did not complete within expected timeframe."
 }
 
-fog_ci_login() {
+fog_cli_login() {
   gestalt_admin_username=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-username}' | base64 --decode`
   gestalt_admin_password=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-password}' | base64 --decode`
   ./fog login $gestalt_ui_service_url -u $gestalt_admin_username -p $gestalt_admin_password
