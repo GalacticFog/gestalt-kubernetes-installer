@@ -1,0 +1,24 @@
+resource_type: Gestalt::Resource::ApiEndpoint
+name: /sms-hello
+description: SMS Hello Example Endpoint
+properties:
+  resource: /sms-hello
+  methods:
+  - GET
+  - PUT
+  - POST
+  - DELETE
+  plugins:
+    rateLimit:
+      enabled: false
+      perMinute: 60
+    gestaltSecurity:
+      enabled: false
+      users: []
+      groups: []
+  synchronous: true
+  implementation_type: lambda
+  implementation_id: '#{Lambda sms-hello}'
+context:
+  api:
+    id: '#{Api #{Config api}}'

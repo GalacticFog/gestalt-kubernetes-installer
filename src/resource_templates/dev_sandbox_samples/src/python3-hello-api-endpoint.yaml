@@ -1,0 +1,24 @@
+resource_type: Gestalt::Resource::ApiEndpoint
+name: /hello-python3
+description: Python v3 Hello Endpoint
+properties:
+  resource: /hello-python3
+  methods:
+  - GET
+  - PUT
+  - POST
+  - DELETE
+  plugins:
+    rateLimit:
+      enabled: false
+      perMinute: 60
+    gestaltSecurity:
+      enabled: false
+      users: []
+      groups: []
+  synchronous: true
+  implementation_type: lambda
+  implementation_id: '#{Lambda python3-hello}'
+context:
+  api:
+    id: '#{Api #{Config api}}'

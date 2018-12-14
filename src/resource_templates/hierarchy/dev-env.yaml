@@ -1,0 +1,6 @@
+resource_type: 'Gestalt::Resource::Environment'
+name: dev
+description: Development
+properties:
+  environment_type: development
+contextPath: /sandbox/dev-sandbox
