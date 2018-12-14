@@ -34,6 +34,8 @@ do_install() {
   ./precheck.sh
   exit_on_error "Precheck failed, aborting"
 
+  prompt_or_wait_to_continue
+
   run_helper pre-install
 
   ./stage.sh

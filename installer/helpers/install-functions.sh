@@ -312,7 +312,7 @@ prompt_eula() {
                     \"message\": \"Gestalt Kubernetes Installer: EULA Accepted\",\
                     \"slackMessage\": \"\
                         \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
-                        \n\n          version: release-2.1.0 ($(uname))\
+                        \n\n          version: $UI_IMAGE ($(uname))\
                         \n\n          name: $name\
                         \n\n          company: $company\
                         \n\n          email: $email\"\
