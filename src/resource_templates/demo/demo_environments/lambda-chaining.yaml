@@ -1,0 +1,5 @@
+resource_type: 'Gestalt::Resource::Environment'
+name: lambda_chaining
+description: Lambda Chaining
+properties:
+  environment_type: development

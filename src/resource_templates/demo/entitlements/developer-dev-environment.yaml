@@ -1,0 +1,68 @@
+description: Developer role for DEV environments
+scope: environment
+actions:
+- actionprovider.create
+- actionprovider.delete
+- actionprovider.update
+- actionprovider.view
+- api.create
+- api.delete
+- api.update
+- api.view
+- apiendpoint.create
+- apiendpoint.delete
+- apiendpoint.invoke
+- apiendpoint.update
+- apiendpoint.view
+- blueprint.create
+- blueprint.delete
+- blueprint.deploy
+- blueprint.import
+- blueprint.update
+- blueprint.view
+- container.create
+- container.delete
+- container.import
+- container.migrate
+- container.promote
+- container.scale
+- container.update
+- container.view
+- datafeed.create
+- datafeed.delete
+- datafeed.update
+- datafeed.view
+# - entitlement.create
+# - entitlement.delete
+# - entitlement.update
+- entitlement.view
+- environment.create
+- environment.delete
+- environment.update
+- environment.view
+- integration.create
+- integration.delete
+- integration.update
+- integration.view
+- lambda.create
+- lambda.delete
+- lambda.invoke
+- lambda.update
+- lambda.view
+- policy.create
+- policy.delete
+- policy.update
+- policy.view
+# - provider.create
+# - provider.delete
+# - provider.update
+- provider.view
+- secret.create
+- secret.delete
+- secret.update
+- secret.view
+- volume.create
+- volume.delete
+- volume.import
+- volume.update
+- volume.view

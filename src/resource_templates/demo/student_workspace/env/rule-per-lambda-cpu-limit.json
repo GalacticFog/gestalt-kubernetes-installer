@@ -1,0 +1,22 @@
+{
+    "name": "per-lambda-cpu-limit",
+    "description": "CPU limit",
+    "properties": {
+        "match_actions": [
+            "lambda.create",
+            "lambda.update"
+        ],
+        "eval_logic": {
+            "property": "lambda.properties.cpus",
+            "operator": "<=",
+            "value": 1
+        },
+        "strict": false
+    },
+    "resource_type": "Gestalt::Resource::Rule::Limit",
+    "context": {
+        "policy": {
+            "id": "#{Policy default-policy}"
+        }
+    }
+}

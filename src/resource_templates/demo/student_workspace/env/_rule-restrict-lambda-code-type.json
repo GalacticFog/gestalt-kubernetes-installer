@@ -1,0 +1,22 @@
+{
+    "name": "restrict-lambda-code-type",
+    "description": "Lambda code type must be Package",
+    "properties": {
+        "match_actions": [
+            "lambda.create",
+            "lambda.update"
+        ],
+        "eval_logic": {
+            "property": "lambda.properties.code_type",
+            "operator": "equals",
+            "value": "package"
+        },
+        "strict": false
+    },
+    "resource_type": "Gestalt::Resource::Rule::Limit",
+    "context": {
+        "policy": {
+            "id": "#{Policy default-policy}"
+        }
+    }
+}

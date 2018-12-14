@@ -1,0 +1,17 @@
+description: Readonly environment role
+scope: environment
+actions:
+- actionprovider.view
+- api.view
+- apiendpoint.view
+- blueprint.view
+- container.view
+- datafeed.view
+- entitlement.view
+- environment.view
+- integration.view
+- lambda.view
+- policy.view
+- provider.view
+- secret.view
+- volume.view
