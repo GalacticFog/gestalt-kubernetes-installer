@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-redis
+  labels:
+    gestalt-app: redis
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-redis
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: redis
+        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/component: gestalt-redis
+    spec:
+      containers:
+      - name: gestalt-redis
+        args: ["--appendonly yes", "--auto-aof-rewrite-min-size 64mb", "--auto-aof-rewrite-percentage 100"]
+        image: "{{ .Values.redis.image }}"
+        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+        ports:
+        - containerPort: {{.Values.redis.port}}
+          name: service-api
+        volumeMounts:
+        - name: redis-storage
+          mountPath: /data
+      volumes:
+      - name: redis-storage
+        emptyDir: {}

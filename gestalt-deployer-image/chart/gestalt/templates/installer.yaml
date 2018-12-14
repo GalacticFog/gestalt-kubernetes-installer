@@ -14,8 +14,8 @@ spec:
     image: "{{ .Values.installer.image }}"
     imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
     volumeMounts:
-      - name: config-volume
-        mountPath: /app/config
+    - name: config-volume
+      mountPath: /app/config
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
     command:
@@ -24,12 +24,16 @@ spec:
     - -c
     - scripts/entrypoint.sh install debug
     env:
-      - name: RELEASE_NAME
-        value: "{{ .Release.Name }}"
-      - name: RELEASE_NAMESPACE
-        value: "{{ .Release.Namespace }}"
-      - name: REPORTING_SECRET
-        value: "{{ .Release.ReportingSecret }}"
+    - name: REPORTING_SECRET
+      value: "{{ .Values.reportingSecret }}"
+    - name: RELEASE_NAME
+      value: "{{ .Release.Name }}"
+    - name: RELEASE_NAMESPACE
+      value: "{{ .Release.Namespace }}"
+  volumes:
+  - name: config-volume
+    configMap:
+      name: {{ .Release.Name }}-deployer-config
 #    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install debug
 #    volumeMounts:
 #    - mountPath: /config

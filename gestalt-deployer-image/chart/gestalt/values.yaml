@@ -81,3 +81,17 @@ postgresql:
   service:
     port: 5432
     type: ClusterIP
+
+redis:
+  image: gcr.io/galacticfog-public/gestalt-redis:latest
+  hostname: gestalt-redis.gestalt-system
+  port: 6379
+  
+ubb:
+  image: gcr.io/galacticfog-public/gestalt-ubb-agent:latest
+  hostname: gestalt-ubb.gestalt-system
+  port: 6380
+
+trackingService:
+  image: gcr.io/galacticfog-public/gestalt-tracking-service:latest
+
