@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 function sleep_forever() {
     while [ 1 ]; do
@@ -8,7 +9,13 @@ function sleep_forever() {
     done
 }
 
+function handle_error() {
+    echo "[INSTALLATION_FAILURE] line=$1 code=$2 script=$0"
+}
+
 CMD=${1:-install}
+
+trap 'handle_error ${LINENO} $?' ERR
 
 if [ "$CMD" == 'install' ]; then
     echo "Installing Gestalt platform... ('install' container argument specified)"
@@ -25,16 +32,6 @@ if [ "$CMD" == 'install' ]; then
 
     # If an install-data package was placed, overwrite the install directories on this image with them
     if [ -f ./install-data.tar.gz ]; then
-        # mkdir ./tmp
-        # tar xfzv ./install-data.tar.gz -C ./tmp 
-        # for d in scripts resource_templates gestalt-helm-chart config ; do
-        #     if [ -d ./tmp/$d ] ; then
-        #         echo "Overwriting ./install/$d ..."
-        #         rm -r ./install/$d || true
-        #         cp -r ./tmp/$d ./install/
-        #     fi
-        # done
-
         # Untar in place
         mkdir -p ./install
         tar xfzv ./install-data.tar.gz -C ./install

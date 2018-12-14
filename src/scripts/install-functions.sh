@@ -80,11 +80,12 @@ convert_configmap_to_env_variables() {
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
 }
 
-
 getsalt_installer_setcheck_variables() {
 
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
+
+  export KUBECONFIG_BASE64=`cat ../config/kubeconfig | base64 | tr -d '\n'`
 
   # Check all variables in one call
   check_for_required_variables \

@@ -29,16 +29,16 @@ kube_process_kubeconfig() {
     # for 'https'
     data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
 
-    # echo "$data" > ./stage/kubeconfig
+    echo "$data" > ./config/kubeconfig
 
-    if [ "${os}" == "Darwin" ]; then
-      kubeconfig_data=`echo "${data}" | base64`
-    elif [ "${os}" == "Linux" ]; then
-      kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
-    else
-      log_info "[${FUNCNAME[0]}] Warning: unknown OS type '${os}', treating as Linux"
-      kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
-    fi
+    # if [ "${os}" == "Darwin" ]; then
+    #   kubeconfig_data=`echo "${data}" | base64`
+    # elif [ "${os}" == "Linux" ]; then
+    #   kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
+    # else
+    #   log_info "[${FUNCNAME[0]}] Warning: unknown OS type '${os}', treating as Linux"
+    #   kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
+    # fi
 
     exit_on_error "[${FUNCNAME[0]}] Could not base64 encode kube config, aborting."
 

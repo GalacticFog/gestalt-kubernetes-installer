@@ -79,6 +79,7 @@ tmp=""
 echo "Creating ConfigMaps resources for installer..."
 
 mkdir -p stage
+rm -rf stage/*
 tar cfzv - config $tmp | base64 > ./stage/b64data
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
 echo $cmd

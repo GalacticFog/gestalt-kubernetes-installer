@@ -2,3 +2,4 @@ fog
 stage/*
 logs
 .eula_info
+config/kubeconfig
