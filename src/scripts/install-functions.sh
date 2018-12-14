@@ -44,6 +44,13 @@ echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 #   ["key"]="UI_PROTOCOL"
 # )
 
+random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
+
+randompw() {
+  # Generate a random password (16 characters) that starts with an alpha character
+  echo `random [:alpha:] 1``random [:alnum:] 15`
+}
+
 getsalt_installer_load_configmap() {
 
   # check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
@@ -171,6 +178,7 @@ gestalt_installer_generate_helm_config() {
 
   cat > helm-config.yaml <<EOF
 common:
+  # imagePullPolicy: IfNotPresent
   imagePullPolicy: Always
 
 secrets:
@@ -268,8 +276,14 @@ http_post() {
   unset HTTP_RESPONSE
 }
 
+wait_for_database_pod() {
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    wait_for_pod_start "gestalt-postgresql"
+  fi
+}
+
 wait_for_database() {
-  echo "Waiting for database..."
+  echo "Waiting for database service..."
   secs=30
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
@@ -359,7 +373,42 @@ type: Opaque
 EOF
 }
 
+wait_for_pod_start() {
+
+  local previous_status=""
+  local pod=$1
+
+  echo "Waiting for $pod to launch"
+  for i in `seq 1 30`; do
+    status=$(kubectl get pod -n gestalt-system --no-headers | grep $pod | awk '{print $3}')
+
+    if [ "$status" != "$previous_status" ]; then
+      echo -n " $status "
+      previous_status=$status
+    else
+      echo -n "."
+    fi
+
+    if [ "$status" == "Running" ]; then
+      echo
+      return 0
+    elif [ "$status" == "Completed" ]; then
+      echo
+      return 0
+    fi
+
+    sleep 2
+  done
+
+  echo
+  exit_with_error "$pod did not launch within expected timeframe, aborting"  
+  return 1
+}
+
 wait_for_security_init() {
+
+  wait_for_pod_start "gestalt-security"
+
   echo "Waiting for Security to initialize..."
   secs=20
 
@@ -398,6 +447,8 @@ init_meta() {
 }
 
 do_init_meta() {
+
+  wait_for_pod_start "gestalt-meta"
 
   echo "Polling $META_URL/root..."
   # Check if meta initialized (ready to bootstrap when /root returns 500)

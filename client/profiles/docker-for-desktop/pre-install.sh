@@ -40,8 +40,12 @@ echo
 ## Pull docker images
 
 echo
-echo "Pulling Gestalt Platform images to local Docker environment..."
 
-for i in `cat config/install-config.yaml | grep "_IMAGE: " | grep -v '#' | awk '{print $2}'` ; do
-  pull_image $i
-done
+if [ ! -z "$skip_image_pull" ] ; then
+  echo "Skipping image pull due to 'skip_image_pull'"
+else
+  echo "Pulling Gestalt Platform images to local Docker environment..."
+  for i in `cat config/install-config.yaml | grep "_IMAGE: " | grep -v '#' | awk '{print $2}'` ; do
+    pull_image $i
+  done
+fi

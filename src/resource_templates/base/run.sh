@@ -1,25 +1,3 @@
-check_for_required_variables \
-    SECURITY_KEY \
-    SECURITY_SECRET \
-    DATABASE_USERNAME \
-    DATABASE_PASSWORD \
-    DATABASE_HOSTNAME \
-    RABBIT_HOST \
-    DOTNET_EXECUTOR_IMAGE \
-    JS_EXECUTOR_IMAGE \
-    JVM_EXECUTOR_IMAGE \
-    NODEJS_EXECUTOR_IMAGE \
-    PYTHON_EXECUTOR_IMAGE \
-    RUBY_EXECUTOR_IMAGE \
-    GOLANG_EXECUTOR_IMAGE \
-    GWM_IMAGE \
-    KONG_IMAGE \
-    LOGGING_IMAGE \
-    POLICY_IMAGE \
-    KONG_0_VIRTUAL_HOST \
-    ELASTICSEARCH_HOST \
-    KUBECONFIG_BASE64
-
 create() {
 
   # `fog` reads configuration from environment variables
@@ -142,5 +120,3 @@ if [ "$configure_ldap" == "Yes" ]; then
     fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
   fi
 fi
-
-return 0

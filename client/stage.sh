@@ -47,6 +47,10 @@ gestalt_install_validate_preconditions
 # Check that the `gestalt-system` namespace exists.  If not, print some commands to create it
 kube_check_for_required_namespace ${kube_namespace}
 
+# TODO # Create an install token, which has to match the target environment
+# install_token=`randompw`
+# kubectl create secret generic gestalt-install --from-literal=token=${install_token}
+
 # Make the gestalt-system/default service account a cluster-admin with the ability
 # to create namespaces and resources in other namespaces.
 echo "Creating ClusterRoleBinding for cluster-admin role for service account '${kube_namespace}/default'..."

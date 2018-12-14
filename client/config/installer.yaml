@@ -17,6 +17,7 @@ spec:
   - name: gestalt-installer
     image: "docker.io/galacticfog/gestalt-installer:5.0.0"
     imagePullPolicy: Always
+    # imagePullPolicy: IfNotPresent
     args: 
     - install
     - debug

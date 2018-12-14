@@ -1,8 +1,6 @@
 #!/bin/bash
 
-gestalt_cli_version=0.10.5
-
-
+gestalt_cli_version=0.10.6
 
 exit_with_error() {
   echo "[Error] $@"

@@ -62,6 +62,13 @@ exit_on_error() {
   fi
 }
 
+random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
+
+randompw() {
+  # Generate a random password (16 characters) that starts with an alpha character
+  echo `random [:alpha:] 1``random [:alnum:] 15`
+}
+
 ### Logging
 
 log_debug () {

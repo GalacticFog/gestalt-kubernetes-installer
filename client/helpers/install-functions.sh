@@ -473,17 +473,52 @@ prompt_or_wait_to_continue() {
   fi
 }
 
+wait_for_installer_launch() {
+
+  local previous_status=""
+
+  echo "Waiting for 'gestalt-installer' pod to launch:"
+  for i in `seq 1 30`; do
+    status=$(kubectl get pod -n gestalt-system gestalt-installer --no-headers | awk '{print $3}')
+
+    if [ "$status" != "$previous_status" ]; then
+      echo -n " $status "
+      previous_status=$status
+    else
+      echo -n "."
+    fi
+
+    if [ "$status" == "Running" ]; then
+      echo
+      return 0
+    elif [ "$status" == "Completed" ]; then
+      echo
+      return 0
+    fi
+
+    sleep 2
+  done
+
+  echo
+  echo "Error, 'gestalt-installer' pod did not launch within the expected timeframe."  
+  return 1
+}
+
+# Poll the log of the installer and search for "[Running " steps to display as status
+# Check for special markers that indicate installation success or failure
 wait_for_install_completion() {
-  echo "Waiting for Gestalt Platform installation to complete"
+  local previous_status=""
+
+  echo "Waiting for Gestalt Platform installation to complete. Polling for installation status:"
   for i in `seq 1 100`; do
     echo -n "."
 
-    line=$(kubectl logs -n gestalt-system gestalt-installer --tail 10 2> /dev/null)
+    line=$(kubectl logs -n gestalt-system gestalt-installer --tail 20 2> /dev/null)
 
     echo "$line" | grep "^\[INSTALLATION_SUCCESS\]" > /dev/null
     if [ $? -eq 0 ]; then
       echo
-      echo "Installation complete."
+      echo "[Success] Gestalt Platform Installation successful."
       return
     fi
     # Check for failure - no success message, but end of file found
@@ -496,20 +531,30 @@ wait_for_install_completion() {
       exit_with_error "Installation failed."
     fi
 
-    sleep 5
-    # Show progress more frequently than actual check
-    echo -n "."
+    local status=$(echo "$line" | grep "^\[Running " | tail -n 1)
+
+    if [ ! -z "$status" ]; then
+      if [ "$status" != "$previous_status" ]; then
+        echo ""
+        previous_status="$status"
+        echo "$status"
+      fi
+    fi
+
     sleep 5
   done
   echo
   exit_with_error "Installation did not complete within expected timeframe."
 }
 
-display_summary() {
-
+fog_ci_login() {
   gestalt_admin_username=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-username}' | base64 --decode`
   gestalt_admin_password=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-password}' | base64 --decode`
+  ./fog login $gestalt_ui_service_url -u $gestalt_admin_username -p $gestalt_admin_password
+  exit_on_error "Login failed, aborting"
+}
 
+display_summary() {
   echo
   echo "Gestalt Platform installation complete!  Next Steps:"
   echo ""

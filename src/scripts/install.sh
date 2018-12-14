@@ -12,6 +12,15 @@ check_for_required_files \
   ${gestalt_config_yaml} \
   ${gestalt_license}
 
+stage_0() {
+
+  # Try to create an install token, which has to match the target environment, which acts as a guard
+  # against the install pod running a second time
+  install_token=`randompw`
+  kubectl create secret -n gestalt-system generic gestalt-install --from-literal=token=${install_token}
+  exit_on_error "Error creating 'gestalt-install' secret, unable to proceed.  An installation already appears to be present or may presently be running."
+}
+
 stage_1() {
 
   #
@@ -49,15 +58,22 @@ stage_2() {
   # Stage 2 - Orchestrate the Gestalt Platform installation
   #
 
+  run wait_for_database_pod
   run wait_for_database
   run init_database
 
   echo "Waiting a bit..."
   sleep 10
 
+  run wait_for_pod_start "gestalt-rabbit"
+  run wait_for_pod_start "gestalt-rabbit"
+
   run invoke_security_init
   run wait_for_security_init
   run init_meta
+
+  run wait_for_pod_start "gestalt-ui"
+  run wait_for_pod_start "gestalt-elastic"
 
   gestalt_cli_set_opts
   do_get_security_credentials
@@ -77,6 +93,8 @@ stage_2() {
 }
 
 #### Main ####
+
+stage_0
 
 stage_1
 

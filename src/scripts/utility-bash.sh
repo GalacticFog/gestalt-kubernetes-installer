@@ -96,7 +96,7 @@ run() {
   SECONDS=0
   echo "[Running '$@']"
   $@
-  echo "['$@' finished in $SECONDS seconds]"
+  echo "[Result: '$@' finished in $SECONDS seconds]"
   echo ""
 }
 
