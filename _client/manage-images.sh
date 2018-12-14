@@ -9,16 +9,25 @@ exit_on_error() {
 }
 
 # Source
-gestalt_docker_release_tag="release-2.1.0"
-gestalt_installer_docker_release_tag="3.0.3"
+gestalt_docker_release_tag="release-2.3.9"
+gestalt_installer_docker_release_tag="4"
 docker_registry="galacticfog"
 # Target
-target_registry="gcr.io/kube-test-env-208414" #GF gke
+target_registry="gcr.io/galacticfog-public" #GF gke
 
 # Manually grap all applicable images for installer
 # grep '${docker_registry}' client/scripts/build-config.sh | awk -F'"' '{print $4}' | awk -F"/" '{print $2}' | sort -u
 ALL_IMAGES=(
+elasticsearch-docker:5.3.1
+#busybox:1.29.3
+#postgres:9.6.2
+gestalt-security:${gestalt_docker_release_tag}
+#rabbit:${gestalt_docker_release_tag}
+gestalt-meta:${gestalt_docker_release_tag}
+gestalt-log:${gestalt_docker_release_tag}
+gestalt-ui-react:${gestalt_docker_release_tag}
 gestalt-api-gateway:${gestalt_docker_release_tag}
+gestalt-laser:${gestalt_docker_release_tag}
 gestalt-laser-executor-dotnet:${gestalt_docker_release_tag}
 gestalt-laser-executor-golang:${gestalt_docker_release_tag}
 gestalt-laser-executor-js:${gestalt_docker_release_tag}
@@ -29,9 +38,10 @@ gestalt-laser-executor-ruby:${gestalt_docker_release_tag}
 gestalt-log:${gestalt_docker_release_tag}
 gestalt-policy:${gestalt_docker_release_tag}
 kong:${gestalt_docker_release_tag}
+#gestalt-installer:${gestalt_installer_docker_release_tag}
 )
 # grep '${docker_registry}' ./client/scripts/build-installer-spec.sh | awk -F'"' '{print $2}' | awk -F'/' '{print $2}'
-ALL_IMAGES="${ALL_IMAGES} gestalt-installer:${gestalt_installer_docker_release_tag}"
+#ALL_IMAGES="${ALL_IMAGES} "
 
 # Pull all images and save locally
 for CURR_IMAGE in ${ALL_IMAGES[@]}; do

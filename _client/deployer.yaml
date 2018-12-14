@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gestalt-deployer
+spec:
+  template:
+    metadata:
+      name: gestalt-deployer
+    spec:
+#      serviceAccountName: gestalt-deployer-sa
+      serviceAccountName: default
+      restartPolicy: Never
+      containers:
+      - name: gestalt-deployer
+        image: gcr.io/galacticfog-public/gestalt-deployer:testing
+        volumeMounts:
+        - name: config-volume
+          mountPath: /data/values
+      volumes:
+      - name: config-volume
+        configMap:
+          name: gestalt-deployer-config

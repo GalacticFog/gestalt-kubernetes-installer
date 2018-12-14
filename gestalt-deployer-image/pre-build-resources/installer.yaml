@@ -1,0 +1,80 @@
+# This is a pod w/ restartPolicy=Never so that the installer only runs once.
+apiVersion: v1
+kind: Pod
+metadata:
+<<<<<<< HEAD
+  name: gestalt-installer
+  labels:
+    gestalt-app: installer
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-installer
+spec:
+  restartPolicy: Never
+  imagePullSecrets:
+  - name: imagepullsecret-1
+  - name: imagepullsecret-2
+  - name: imagepullsecret-3
+  - name: imagepullsecret-4
+  - name: imagepullsecret-5
+  containers:
+  - name: gestalt-installer
+    image: "{{ .Values.installer.image }}"
+    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+    # 'deploy' arg signals deployment of gestalt platform
+    # 'debug' arg signals debug output
+=======
+  name: "{{ .Release.Name }}-installer"
+  labels:
+    gestalt-app: installer
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: "{{ .Release.Name }}-installer"
+spec:
+  restartPolicy: Never
+  containers:
+  - name: "{{ .Release.Name }}-installer"
+    image: "{{ .Values.installer.image }}"
+    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+>>>>>>> gke-install-sharing
+    command:
+    - bash
+    args: 
+    - -c
+<<<<<<< HEAD
+    - ./entrypoint.sh install debug
+=======
+    - scripts/entrypoint.sh install debug
+    env:
+      - name: RELEASE_NAME
+        value: "{{ .Release.Name }}"
+      - name: RELEASE_NAMESPACE
+        value: "{{ .Release.Namespace }}"
+      - name: REPORTING_SECRET
+        value: "{{ .Values.reportingSecret }}"
+#    - rm -rf /gestalt && cat /gestalt2/gestalt.tar.gz.b64 | base64 -d > /tmp/gestalt.tar.gz && tar xfz /tmp/gestalt.tar.gz -C / && rm -rf /scripts && cp -r /scripts2 /scripts && chmod +x /scripts/*.sh && /scripts/entrypoint.sh install debug
+#    volumeMounts:
+#    - mountPath: /config
+#      name: config
+#    - mountPath: /license
+#      name: license
+#    - mountPath: /scripts2
+#      name: scripts
+#    - mountPath: /gestalt2
+#      name: gestalt-targz
+#    - mountPath: /resource_templates
+#      name: resources
+#    - name: config
+#      configMap:
+#        name: installer-config
+#    - name: scripts
+#      configMap:
+#        name: installer-scripts
+#    - name: gestalt-targz
+#      configMap:
+#        name: gestalt-targz
+#    - name: license
+#      configMap:
+#        name: gestalt-license
+#    - name: resources
+#      configMap:
+#        name: gestalt-resources
+>>>>>>> gke-install-sharing
