@@ -479,7 +479,7 @@ wait_for_installer_launch() {
 
   echo "Waiting for 'gestalt-installer' pod to launch:"
   for i in `seq 1 30`; do
-    status=$(kubectl get pod -n gestalt-system gestalt-installer --no-headers | awk '{print $3}')
+    status=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
 
     if [ "$status" != "$previous_status" ]; then
       echo -n " $status "
