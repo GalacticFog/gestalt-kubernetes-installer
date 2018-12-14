@@ -70,8 +70,15 @@ roleRef:
 EOF
 
 # Create ConfigMap resources the installer pod depends on
+tmp=""
+[ -d ../src/gestalt-helm-chart ] && tmp="$tmp gestalt-helm-chart"
+[ -d ../src/resource_templates ] && tmp="$tmp resource_templates"
+[ -d ../src/scripts ] && tmp="$tmp scripts"
+[ ! -z "$tmp" ] && tmp="-C ../src $tmp"
+
 echo "Creating ConfigMaps resources for installer..."
-tar cfzv - config -C ../src gestalt-helm-chart resource_templates scripts | base64 > ./stage/b64data
+
+tar cfzv - config $tmp | base64 > ./stage/b64data
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
 echo $cmd
 $cmd
