@@ -31,7 +31,7 @@ do_install() {
 
   download_fog_cli
 
-  ./precheck.sh
+  ./precheck.sh $kube_type
   exit_on_error "Precheck failed, aborting"
 
   prompt_or_wait_to_continue
