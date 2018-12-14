@@ -1,0 +1,22 @@
+{
+    "name": "per-lambda-memory-limit",
+    "description": "Memory limit",
+    "properties": {
+        "match_actions": [
+            "lambda.create",
+            "lambda.update"
+        ],
+        "eval_logic": {
+            "property": "lambda.properties.memory",
+            "operator": "<=",
+            "value": 512
+        },
+        "strict": false
+    },
+    "resource_type": "Gestalt::Resource::Rule::Limit",
+    "context": {
+        "policy": {
+            "id": "#{Policy default-policy}"
+        }
+    }
+}

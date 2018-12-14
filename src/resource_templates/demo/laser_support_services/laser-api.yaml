@@ -1,0 +1,8 @@
+resource_type: Gestalt::Resource::Api
+name: laser
+description: Exposed Laser API
+properties:
+  provider:
+    locations:
+    - '#{Provider #{Config kong_provider}}'
+    id: '#{Provider #{Config gwm_provider}}'

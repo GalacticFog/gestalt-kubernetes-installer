@@ -1,0 +1,59 @@
+image: docker:latest
+
+services:
+- docker:dind
+
+stages:
+- build
+
+variables:
+  BASE_IMG: "galacticfog/gestalt-installer-base"
+  DOCKER_IMG: "galacticfog/gestalt-installer"
+  REGISTRY: "galacticfog"
+    
+build-image:
+  stage: build
+  script:
+    - echo "Install Dependencies:"
+    - apk add --update --no-cache bash gawk sed grep curl wget git jq tar
+    - echo "Login Docker Registry:"
+    - echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
+    - echo "Build and Publish image:"
+    - cd installer-base-image
+    - VERSION=$(grep 'ARG version_label=' Dockerfile | awk -F '=' '{print $2}')
+    - BASE_IMG_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}} 
+    - ./build.sh -r ${REGISTRY} -v -p -t ${BASE_IMG_TAG}
+    - cd ../gestalt-installer-image
+    - VERSION=$(grep 'ARG version_label=' Dockerfile | awk -F '=' '{print $2}')
+    - DOCKER_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}} 
+    - ./build.sh -r ${REGISTRY} -v -p -t ${DOCKER_TAG} -a base_image=${BASE_IMG}:${BASE_IMG_TAG}
+#    - ./dependencies-process.sh "clean"
+#    - ./dependencies-process.sh "fetch"
+#    - |
+#      if [ -z "${VERSION}" ]; then
+#        VERSION="SNAPSHOT"
+#      fi
+#    - echo building $DOCKER_IMG:$DOCKER_TAG
+#    - docker build -t $DOCKER_IMG:$DOCKER_TAG .
+#    - docker push     $DOCKER_IMG:$DOCKER_TAG
+    - |
+      if [ ${CI_COMMIT_REF_NAME} == "master" ]; then
+        docker tag $DOCKER_IMG:$DOCKER_TAG $DOCKER_IMG:latest
+        docker push $DOCKER_IMG:latest
+        if [[ ${VERSION} == *[^0-9.]* ]]; then
+          echo "[Warning] Tag does not match version pattern, no base version will be tagged..."
+        else
+          BASE_VERSION=`echo ${VERSION} | awk -F'.' '{print $1}'`
+          docker build -t $DOCKER_IMG:$DOCKER_TAG .
+          docker push     $DOCKER_IMG:$DOCKER_TAG
+        fi
+        echo "All tag(-s) applied: $DOCKER_TAG ${VERSION} ${BASE_VERSION}"
+      else
+        echo "[Not master branch][${CI_COMMIT_REF_NAME}]"
+      fi
+
+    # - docker rmi      $DOCKER_IMG:$DOCKER_TAG
+
+
+
+

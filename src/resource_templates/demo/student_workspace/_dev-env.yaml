@@ -1,0 +1,6 @@
+resource_type: 'Gestalt::Resource::Environment'
+name: dev
+description: Development Environment
+contextPath: '/#{Config org}/student-#{Config student_id}'
+properties:
+  environment_type: development

@@ -1,0 +1,23 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: lambda2
+description: 'Sets a custom output header'
+properties:
+  apiendpoints: []
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []
+  secrets: []
+  public: true
+  pre_warm: 0
+  code: '#{LambdaSource src/lambda2.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/plain
+    Content-Type: text/plain
+  periodic_info: {}
+  timeout: 60
+  handler: handler
+  runtime: nodejs
+  env: {}
+  memory: 128

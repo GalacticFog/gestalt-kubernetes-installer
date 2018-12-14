@@ -1,0 +1,18 @@
+description: Readonly Org role
+scope: org
+actions:
+- actionprovider.view
+- api.view
+- apiendpoint.view
+- blueprint.view
+- entitlement.view
+- group.view
+- lambda.view
+- license.view
+- org.view
+- policy.view
+- provider.view
+- resourcetype.view
+- typeproperty.view
+- user.view
+- workspace.view

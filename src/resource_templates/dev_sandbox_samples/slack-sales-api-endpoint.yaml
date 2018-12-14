@@ -1,0 +1,24 @@
+resource_type: Gestalt::Resource::ApiEndpoint
+name: /slack-sales
+description: Slack Sales Example Endpoint
+properties:
+  resource: /slack-sales
+  methods:
+  - GET
+  - PUT
+  - POST
+  - DELETE
+  plugins:
+    rateLimit:
+      enabled: false
+      perMinute: 60
+    gestaltSecurity:
+      enabled: false
+      users: []
+      groups: []
+  synchronous: true
+  implementation_type: lambda
+  implementation_id: '#{Lambda slack-sales}'
+context:
+  api:
+    id: '#{Api #{Config api}}'

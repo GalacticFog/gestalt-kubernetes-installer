@@ -1,0 +1,2 @@
+name: start-stream-default
+resource_type: Gestalt::Action::StartStream

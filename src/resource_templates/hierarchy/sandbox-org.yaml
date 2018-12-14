@@ -1,0 +1,10 @@
+resource_type: 'Gestalt::Resource::Organization'
+name: sandbox
+description: Sandbox
+properties:
+  fqon: sandbox
+  # env:
+  #   ORG_VAR_1: one
+  #   ORG_VAR_2: two
+  #   ORG_VAR_3: three
+contextPath: /root

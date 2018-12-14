@@ -1,0 +1,35 @@
+# This is a pod w/ restartPolicy=Never so that the installer only runs once.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gestalt-installer
+  labels:
+    gestalt-app: installer
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-installer
+spec:
+  restartPolicy: Never
+  imagePullSecrets:
+  - name: imagepullsecret-1
+  - name: imagepullsecret-2
+  - name: imagepullsecret-3
+  - name: imagepullsecret-4
+  - name: imagepullsecret-5
+  containers:
+  - name: gestalt-installer
+    image: "{{ .Values.installer.image }}"
+    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+    # 'deploy' arg signals deployment of gestalt platform
+    # 'debug' arg signals debug output
+    command:
+    - bash
+    args: 
+    - -c
+    - ./entrypoint.sh install debug
+    env:
+      - name: RELEASE_NAME
+        value: "{{ .Release.Name }}"
+      - name: RELEASE_NAMESPACE
+        value: "{{ .Release.Namespace }}"
+      - name: REPORTING_SECRET
+        value: "{{ .Release.ReportingSecret }}"

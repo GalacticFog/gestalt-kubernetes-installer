@@ -1,0 +1,24 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: sms-hello
+description: 'This lambda is a single page application, that allows it''s user to
+  specify a message that will be sent to a target phone via sms.  You need to set
+  the environment variables for the target phone number, and for your twilio account.
+  Code is available at: https://github.com/GalacticFog/lambda-examples/blob/master/js_lambda/sms.js'
+properties:
+  apiendpoints: []
+  public: true
+  code: '#{LambdaSource src/sms-hello.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/html
+  periodic_info: {}
+  timeout: 30
+  handler: run
+  runtime: nashorn
+  env:
+    phone: REPLACE ME
+  memory: 512
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []

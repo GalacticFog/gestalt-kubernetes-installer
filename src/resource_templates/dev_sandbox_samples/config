@@ -1,0 +1,4 @@
+laser_provider: /root/default-laser
+api: dev-sandbox
+kong_provider: /root/default-kong
+gwm_provider: /root/default-gwm

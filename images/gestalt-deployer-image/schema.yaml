@@ -1,0 +1,149 @@
+application_api_version: v1beta1
+properties:
+  name:
+    type: string
+    default: gestalt
+    x-google-marketplace:
+     type: NAME
+  namespace:
+    type: string
+    default: gestalt-system
+    x-google-marketplace:
+      type: NAMESPACE
+  reportingSecret:
+    type: string
+    x-google-marketplace:
+      type: REPORTING_SECRET
+  gestalt.common.imagePullPolicy:
+    type: string
+    default: Always
+  gestalt.common.releaseVersion:
+    type: string
+    default: release-2.3.8
+  gestalt.security.hostname:
+    type: string
+    default: gestalt-security.gestalt-system
+    description: The in-cloud hostname of the Gestalt Security service
+  gestalt.security.port:
+    type: integer
+    default: 9455
+    description: The port number Gestalt components use to connect to Gestalt Security service
+  gestalt.security.protocol:
+    type: string
+    default: http
+    description: The web protocol Gestalt components use to connect to Gestalt Security service (http or https)
+  gestalt.security.databaseName:
+    type: string
+    default: gestalt-security
+    description: The name of the database in which Gestalt Security service stores its data
+  gestalt.ui.ingress.host:
+    type: string
+    # default: no default value
+    description: Enter the DNS name for the Gestalt UI service
+  gestalt.postgresql.postgresDatabase:
+    type: string
+    default: postgres
+    description: The Postgres instance's default database name
+    gestalt.postgresql.postgresUser:
+    type: string
+    default: postgres
+    description: The Postgres instance admin user's username
+  gestalt.postgresql.postgresPassword:
+    type: string
+    default: abcd1234!
+    description: The Postgres instance admin user's password
+  # Each image var defined must supply a default value as GCP marketplace will look for them there.
+  gestalt.installer.image:
+    type: string
+    default: gcr.io/galacticfog-public/gestalt-installer:4
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.security.image:
+    type: string
+    default: gcr.io/galacticfog-public/gestalt-security:release-2.3.8
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.rabbit.image:
+    type: string
+    default: gcr.io/galacticfog-public/rabbit:release-2.3.8
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.elastic.image:
+    type: string
+    default: gcr.io/galacticfog-public/elasticsearch-docker:5.3.1
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.elastic.initContainer.image:
+    type: string
+    default: gcr.io/galacticfog-public/busybox:1.29.3
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.meta.image:
+    type: string
+    default: gcr.io/galacticfog-public/gestalt-meta:release-2.3.8
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.logging.image:
+    type: string
+    default: gcr.io/galacticfog-public/gestalt-log:release-2.3.8
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.ui.image:
+    type: string
+    default: gcr.io/galacticfog-public/gestalt-ui-react:release-2.3.8
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.database.image:
+    type: string
+    default: gcr.io/galacticfog-public/postgres:9.6.2
+    x-google-marketplace:
+      type: IMAGE
+#  gestalt.kong.image:
+#    type: string
+#    default: gcr.io/galacticfog-public/kong:release-2.3.8
+#    x-google-marketplace:
+#      type: IMAGE
+#  gestalt.laser.image:
+#    type: string
+#    default: gcr.io/galacticfog-public/gestalt-laser:release-2.3.8
+#    x-google-marketplace:
+#      type: IMAGE
+#  gestalt.policy.image:
+#    type: string
+#    default: gcr.io/galacticfog-public/gestalt-policy:release-2.3.8
+#    x-google-marketplace:
+#      type: IMAGE
+#  gestalt.Xexecutor.image:
+#    type: string
+#    default: # TODO - not sure if we need to define executor images in here.
+#    x-google-marketplace:
+#      type: IMAGE
+#  serverReplicas:
+#    title: Server replicas
+#    type: integer
+#    default: 1
+#    minimum: 1
+#  specialVar:
+#    title: Special Variable
+#    description: A special variable that you need included in your setup - must meet conditions below...
+#    type: string
+#    maxLength: 128
+#    pattern: '[A-Za-z0-9 -]+'
+required:
+- name
+- namespace
+- reportingSecret
+# - securityImage
+# - rabbitImage
+# - elasticImage
+# - elasticInitImage
+# - metaImage
+# - loggingImage
+# - uiImage
+# - databaseImage
+# - kongImage
+# - laserImage
+# - policyImage
+# - xExecutorImage
+# - serverReplicas
+# - specialVar
