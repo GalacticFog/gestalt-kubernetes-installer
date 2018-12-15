@@ -527,11 +527,13 @@ wait_for_install_completion() {
     # Check for failure - no success message, but end of file found
     echo "$line" | grep "^\[INSTALLATION_FAILURE\]" > /dev/null
     if [ $? -eq 0 ]; then
+      echo "Installation failed!"
       echo
-      echo ...
-      echo "$line"
+      echo "---Install log (last 10 lines)---"
+      kubectl logs -n gestalt-system gestalt-installer --tail 10
+      echo "----End Logs------"
       echo
-      exit_with_error "Installation failed."
+      exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
     fi
 
     local podstatus=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
