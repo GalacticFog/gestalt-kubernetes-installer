@@ -62,6 +62,7 @@ do_install() {
 
 if [ "$1" != "do_install" ]; then 
   mkdir -p ./logs
+  rm ./logs/*
   ./install-gestalt-platform do_install $@ 2>&1 | tee -a ./logs/install.log
 else
   shift
