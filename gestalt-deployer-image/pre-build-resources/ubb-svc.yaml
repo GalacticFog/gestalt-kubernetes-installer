@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gestalt-ubb
+  labels:
+    gestalt-app: gestalt-ubb
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ubb
+spec:
+  selector:
+    gestalt-app: gestalt-ubb
+  ports:
+    - name: service-api
+      port: {{.Values.ubb.port}}
+      targetPort: service-api

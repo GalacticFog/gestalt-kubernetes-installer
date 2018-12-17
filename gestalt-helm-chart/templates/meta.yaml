@@ -70,3 +70,9 @@ spec:
           value: "policy"
         - name: META_AUDIT_ENABLED
           value: "false"
+        - name: REDIS_HOSTNAME
+          value: "{{ .Values.redis.hostname }}"
+        - name: REDIS_PORT
+          value: "{{ .Values.redis.port }}"
+        - name: TRACKING_ENABLED
+          value: "true"

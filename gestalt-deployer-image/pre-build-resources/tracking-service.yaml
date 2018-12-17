@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-tracking-service
+  labels:
+    gestalt-app: tracking-service
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-tracking-service
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: tracking-service
+        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/component: gestalt-tracking-service
+    spec:
+      containers:
+      - name: gestalt-redis
+        image: "{{ .Values.trackingService.image }}"
+        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+        env:
+        - name: REDIS_HOSTNAME
+          value: "{{ .Values.redis.hostname }}"
+        - name: REDIS_PORT
+          value: "{{ .Values.redis.port }}"
+        - name: UBB_HOSTNAME
+          value: "{{ .Values.ubb.hostname }}"
+        - name: UBB_PORT
+          value: "{{ .Values.ubb.port }}"
