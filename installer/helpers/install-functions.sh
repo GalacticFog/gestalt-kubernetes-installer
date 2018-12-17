@@ -455,7 +455,7 @@ run_gestalt_install() {
 }
 
 run_helper() {
-  local script=./helpers/$kube_type/$1.sh
+  local script=./profiles/$kube_type/$1.sh
 
   echo "Checking for helper: $script ..."
   if [ -f "$script" ]; then

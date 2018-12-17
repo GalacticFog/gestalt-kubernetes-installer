@@ -13,7 +13,7 @@ gestalt_install_validate_preconditions() {
     check_for_required_variables \
       kube_namespace
       
-    check_for_kube
+    # check_for_kube
 
     echo "Precondition check succeeded"
 }

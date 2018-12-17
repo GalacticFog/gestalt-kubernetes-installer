@@ -36,10 +36,10 @@ do_install() {
 
   prompt_or_wait_to_continue
 
-  run_helper pre-install
-
   ./stage.sh
   exit_on_error "Stage failed, aborting"
+
+  run_helper pre-install
 
   ./install.sh
   exit_on_error "Install failed, aborting"

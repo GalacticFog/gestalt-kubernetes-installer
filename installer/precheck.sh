@@ -7,19 +7,18 @@ set -o pipefail
 kube_type=$1
 
 if [ -z "$kube_type" ]; then
-exit_with_error "Must specify a kubernetes environment type"
+    exit_with_error "Must specify a kubernetes environment type"
 elif [ ! -d ./profiles/$kube_type ]; then
-exit_with_error "Invalid Kubernetes type: $kube_type" 
+    exit_with_error "Invalid Kubernetes type: $kube_type" 
 fi
 
 envfile=profiles/$kube_type/env.conf
 
 if [ ! -f "$envfile" ]; then
-exit_with_error "Configuration file '$envfile' not found, aborting."
+    exit_with_error "Configuration file '$envfile' not found, aborting."
 fi
 
 . $envfile
-
 
 echo "Checking for required dependencies..."
 
