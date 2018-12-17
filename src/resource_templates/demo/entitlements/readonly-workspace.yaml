@@ -1,0 +1,12 @@
+description: Readonly workspace role
+scope: workspace
+actions:
+- actionprovider.view
+- api.view
+- blueprint.view
+- container.view
+- entitlement.view
+- environment.view
+- policy.view
+- provider.view
+- workspace.view

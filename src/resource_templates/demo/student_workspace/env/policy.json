@@ -1,0 +1,6 @@
+{
+    "resource_type": "Gestalt::Resource::Policy",
+    "name": "default-policy",
+    "description": "Default Environment Policy",
+    "properties": {}
+}

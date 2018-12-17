@@ -1,0 +1,8 @@
+resource_type: Gestalt::Resource::Api
+name: '#{Config api}'
+description: 'Lambda Chaining API'
+properties:
+  provider:
+    locations:
+    - '#{Provider #{Config kong_provider}}'
+    id: '#{Provider #{Config gwm_provider}}'

@@ -1,0 +1,6 @@
+resource_type: 'Gestalt::Resource::Environment'
+name: local
+description: 'Local Environment'
+contextPath: '/#{Config org}/#{Config user_lowercase}'
+properties:
+  environment_type: development

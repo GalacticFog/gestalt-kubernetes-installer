@@ -1,6 +1,0 @@
-**/*.bak
-**/*.tmp
-deps/*
-buildoutput
-helm-config.yaml
-app/*/**

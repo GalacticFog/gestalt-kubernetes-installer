@@ -1,0 +1,22 @@
+{
+    "name": "restrict-lambda-package-url",
+    "description": "Package URL must be https://",
+    "properties": {
+        "match_actions": [
+            "lambda.create",
+            "lambda.update"
+        ],
+        "eval_logic": {
+            "property": "lambda.properties.package_url",
+            "operator": "startsWith",
+            "value": "https://"
+        },
+        "strict": false
+    },
+    "resource_type": "Gestalt::Resource::Rule::Limit",
+    "context": {
+        "policy": {
+            "id": "#{Policy default-policy}"
+        }
+    }
+}

@@ -1,0 +1,24 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: child-lambda-5
+description: 'Demo of lambda chaining'
+properties:
+  apiendpoints: []
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []
+  secrets: []
+  public: true
+  pre_warm: 0
+  code: '#{LambdaSource src/child.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/plain
+    Content-Type: text/plain
+  periodic_info: {}
+  timeout: 60
+  handler: handler
+  runtime: nodejs
+  env:
+    TEST1: Test 1 value
+  memory: 128

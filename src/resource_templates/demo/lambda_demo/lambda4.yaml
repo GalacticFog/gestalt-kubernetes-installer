@@ -1,0 +1,23 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: lambda4
+description: 'Returns a 500 with stack trace'
+properties:
+  apiendpoints: []
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []
+  secrets: []
+  public: true
+  pre_warm: 0
+  code: '#{LambdaSource src/lambda4.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/plain
+    Content-Type: text/plain
+  periodic_info: {}
+  timeout: 60
+  handler: handler
+  runtime: nodejs
+  env: {}
+  memory: 128

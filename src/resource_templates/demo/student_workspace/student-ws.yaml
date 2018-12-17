@@ -1,0 +1,4 @@
+resource_type: 'Gestalt::Resource::Workspace'
+name: '#{Config user_lowercase}'
+description: '#{Config user} Training Workspace'
+contextPath: '/#{Config org}'

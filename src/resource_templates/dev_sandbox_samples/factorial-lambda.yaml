@@ -1,0 +1,20 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: factorial
+description: 'This lambda shows an example of displaying a UI and calling multiple
+  functions from a single lambda.  Code is available at: https://github.com/GalacticFog/lambda-examples/blob/master/js_lambda/lambda-factorial.js'
+properties:
+  public: true
+  code: '#{LambdaSource src/factorial.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/html
+  periodic_info: {}
+  timeout: 30
+  handler: run
+  runtime: nashorn
+  env: {}
+  memory: 512
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []

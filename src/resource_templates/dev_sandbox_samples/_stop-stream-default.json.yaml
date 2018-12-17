@@ -1,0 +1,2 @@
+name: stop-stream-default
+resource_type: Gestalt::Action::StopStream

@@ -1,71 +1,32 @@
-# Installation Steps
+# Installing Gestalt Platform on Kubernetes
 
-## Step 1: Pre-Install Configuration
+Installer repository: [https://github.com/GalacticFog/gestalt-k8s-install](https://github.com/GalacticFog/gestalt-k8s-install)
 
-1. Ensure `config/gestalt-license.json` is present.
-2. Modify `config/install-config.yaml` for the target environment and desired configuration.
-3. Ensure the kubectl current context is set to the target Kubernetes cluster.  Check with `kubectl config current-context`, and set with `kubectl config use-context <context name>`.
-4. Run `./configure.sh`
+## Prerequisites
 
-This step generates the following:
-- `installer.yaml` - To deploy the installer pod to the Kubernetes cluster
-- `install-config.json` - Installer settings
-- `./configmaps/gestalt/values.yaml` - Generated helm chart configuration
+A target Kubernetes cluster:
+* Kubernetes 1.7+
+* PV support on the underlying infrastructure
 
-**Advanced configuration:**
+A workstation for running the installer:
+* Mac OS or Linux
+* kubectl configured for the target cluster
 
-4. Modify `install-config.json` to change any fine-grained settings.
-5. Modify the Resource Templates at `./configmaps/resource_templates/*` if necessary.
-6. Modify the Helm chart at `./configmaps/gestalt/*` if necessary.
-7. Modify the `installer.yaml` if necessary.
+## Installation instructions
 
-## Step 2: Stage the Install Configuration
+Refer to the installation instructions appropriate for your environment:
 
-1. Run `kubectl create namespace gestalt-system` to create the installation namespace.
-2. Run `./stage.sh`
+- [General Installation Instructions](./docs/readme_general.md)
 
-This step creates the following configmaps for the installer:
-- `installer-config` - The `install-config.json` file.
-- `gestalt-license` - The `gestalt-license.json` file.
-- `gestalt-targz` - The Gestalt helm chart (tar.gz file).
-- `gestalt-resources` - The gestalt resource templates
-- `installer-scripts` - The installation scripts (in `../gestalt-installer-image/scripts`)
+- [Installation for Docker EE Kubernetes](./docs/readme_docker_ee.md)
 
-## Step 3: Initiate the Installation
+- [Installation for Docker CE for Desktop with Kubernetes](./docs/readme_docker_ce_for_desktop.md)
 
-1. Run `./install.sh`
+- [Installation for Minikube](./docs/readme_minikube.md)
 
-This step deploys `installer.yaml` to the Kubernetes cluster, which runs an installer Pod.  The Pod utilizes the ConfigMap resources defined in the previous step.
 
-2. Run `./follow_log.sh` to follow the Gestalt installation logs emitted by the installer Pod.  When the installation is complete (or fails), press `Ctrl-C` to stop following the logs.
+## Additional resources
 
-Installation is now complete.
+ - [Gestalt Platform Documentation](http://docs.galacticfog.com)
 
-# Removing Gestalt Platform
-
-Run `./remove.sh` and follow the prompts.
-
-# Building the `gestalt-installer` Docker Image 
-
-```
-cd ./gestalt-installer-image
-
-# build with repulling dependenies
-./dependencies-process.sh -c "clean"
-./dependencies-process.sh
-
-# Specify all applicable tags
-./build_and_publish.sh "3.0.0" "3"
-```
-
-# Troubleshooting
-
-View installer logs:
-```
-kubectl logs --namespace gestalt-system  ${INSTALLER_POD}
-```
-
-Get a shell to the installer Pod:
-```
-kubectl exec --namespace gestalt-system -ti gestalt-installer -- bash
-```
+ - [Galactic Fog Website](http://www.galacticfog.com)

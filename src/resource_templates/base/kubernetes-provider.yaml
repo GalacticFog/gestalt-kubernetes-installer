@@ -1,0 +1,13 @@
+name: default-kubernetes
+description: The Default Kubernetes Provider
+resource_type: Gestalt::Configuration::Provider::CaaS::Kubernetes
+properties:
+  config:
+    env:
+      public: {}
+      private: {}
+    networks: null
+  services: []
+  locations: []
+  data: '#{Config KUBECONFIG_BASE64}'
+  linked_providers: []

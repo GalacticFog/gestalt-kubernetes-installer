@@ -1,0 +1,21 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: slack-sales
+description: https://github.com/GalacticFog/lambda-examples/tree/master/nodejs_lambda/sales_slack_notification
+properties:
+  public: true
+  code: '#{LambdaSource src/slack-sales.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/plain
+  periodic_info: {}
+  timeout: 30
+  handler: run
+  runtime: nodejs
+  env:
+    SLACK_API_BASEPATH: hooks.slack.com
+    SLACK_PATH: /services/REPLACEME
+  memory: 512
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []
