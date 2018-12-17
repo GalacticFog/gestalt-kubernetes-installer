@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gestalt-ubb
+  labels:
+    gestalt-app: gestalt-ubb
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: gestalt-ubb
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        gestalt-app: gestalt-ubb
+        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/component: gestalt-ubb
+    spec:
+      containers:
+      - name: gestalt-ubb
+        image: "{{ .Values.ubb.image }}"
+        env:
+        - name: CONSUMER_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.reportingSecret }}
+              key: consumer-id
+        - name: ENCODED_SERVICE_ACCOUNT_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.reportingSecret }}
+              key: reporting-key
+        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+        ports:
+        - containerPort: {{.Values.ubb.port}}
+          name: service-api

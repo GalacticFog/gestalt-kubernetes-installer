@@ -216,7 +216,7 @@ properties:
     x-google-marketplace:
       type: IMAGE
   gestalt.gatewayManager.image:
-    tyoe: string
+    type: string
     default: "gcr.io/galacticfog-public/gestalt-api-gateway:release-2.3.8"
     x-google-marketplace:
       type: IMAGE
