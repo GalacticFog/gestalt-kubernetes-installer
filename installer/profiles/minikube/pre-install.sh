@@ -107,7 +107,8 @@ spec:
     path: /tmp/gestalt-postgresql-volume
     type: ""
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: gestalt-postgresql-volume
+  # storageClassName: gestalt-postgresql-volume
+  storageClassName: hostpath
 EOF
 exit_on_error "Could not create Kubernetes PV"
 echo 'Done.'

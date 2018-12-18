@@ -312,7 +312,7 @@ prompt_eula() {
                     \"message\": \"Gestalt Kubernetes Installer: EULA Accepted\",\
                     \"slackMessage\": \"\
                         \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
-                        \n\n          version: release-2.1.0 ($(uname))\
+                        \n\n          version: $UI_IMAGE ($(uname))\
                         \n\n          name: $name\
                         \n\n          company: $company\
                         \n\n          email: $email\"\
@@ -452,13 +452,15 @@ run_gestalt_install() {
 }
 
 run_helper() {
-  local script=./helpers/$kube_type/$1.sh
+  local script=./profiles/$kube_type/$1.sh
 
   echo "Checking for helper: $script ..."
   if [ -f "$script" ]; then
     echo ""
     echo "Running $script ..."
-    . $script
+    cd ./profiles/$kube_type/
+    . $1.sh
+    cd -
     exit_on_error "Pre-install script failed, aborting."
   fi
   echo
@@ -524,15 +526,27 @@ wait_for_install_completion() {
     # Check for failure - no success message, but end of file found
     echo "$line" | grep "^\[INSTALLATION_FAILURE\]" > /dev/null
     if [ $? -eq 0 ]; then
+      echo "Installation failed!"
       echo
-      echo ...
-      echo "$line"
+      echo "---Install log (last 10 lines)---"
+      kubectl logs -n gestalt-system gestalt-installer --tail 10
+      echo "----End Logs------"
       echo
-      exit_with_error "Installation failed."
+      exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
+    fi
+
+    local podstatus=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
+    if [ "$podstatus" == "Failed" ] || [ "$podstatus" == "Error" ]; then
+      echo "Installation failed!"
+      echo
+      echo "---Install log (last 10 lines)---"
+      kubectl logs -n gestalt-system gestalt-installer --tail 10
+      echo "----End Logs------"
+      echo
+      exit_with_error "Installation failed - 'gestalt-installer' pod returned $podstatus status.  View ./log/gestalt-installer.log for more details."
     fi
 
     local status=$(echo "$line" | grep "^\[Running " | tail -n 1)
-
     if [ ! -z "$status" ]; then
       if [ "$status" != "$previous_status" ]; then
         echo ""

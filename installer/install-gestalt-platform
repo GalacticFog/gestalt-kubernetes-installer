@@ -9,7 +9,7 @@ do_install() {
   date
 
   . helpers/install-functions.sh
-  . config/gestalt.conf
+  . gestalt.conf
 
   kube_type=$1
 
@@ -31,13 +31,31 @@ do_install() {
 
   download_fog_cli
 
-  ./precheck.sh
+  ./precheck.sh $kube_type
   exit_on_error "Precheck failed, aborting"
 
-  run_helper pre-install
+  prompt_or_wait_to_continue
+
+  mkdir -p ./stage
+  rm -r ./stage/*
+  mkdir -p ./stage/config
+
+  run_helper pre-stage
+
+  cp gestalt-license.json ./stage/config/
+
+    cat > ./stage/config/install-config.yaml <<EOF
+`cat base-config.yaml`
+`cat credentials.yaml`
+`cat ./profiles/$kube_type/config.yaml`
+EOF
+    
+  exit_on_error "Failed to generate config, aborting"
 
   ./stage.sh
   exit_on_error "Stage failed, aborting"
+
+  run_helper pre-install
 
   ./install.sh
   exit_on_error "Install failed, aborting"
@@ -60,6 +78,7 @@ do_install() {
 
 if [ "$1" != "do_install" ]; then 
   mkdir -p ./logs
+  rm ./logs/*
   ./install-gestalt-platform do_install $@ 2>&1 | tee -a ./logs/install.log
 else
   shift

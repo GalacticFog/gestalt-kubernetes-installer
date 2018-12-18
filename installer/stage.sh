@@ -69,16 +69,24 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
 
+# Copy from source
+[ -d ../src/gestalt-helm-chart ] && cp -r ../src/gestalt-helm-chart ./stage/
+[ -d ../src/resource_templates ] && cp -r ../src/resource_templates ./stage/
+[ -d ../src/scripts ] && cp -r ../src/scripts ./stage/
+
 # Create ConfigMap resources the installer pod depends on
-tmp=""
-[ -d ../src/gestalt-helm-chart ] && tmp="$tmp gestalt-helm-chart"
-[ -d ../src/resource_templates ] && tmp="$tmp resource_templates"
-[ -d ../src/scripts ] && tmp="$tmp scripts"
-[ ! -z "$tmp" ] && tmp="-C ../src $tmp"
+# tmp=""
+# [ -d ../src/gestalt-helm-chart ] && tmp="$tmp gestalt-helm-chart"
+# [ -d ../src/resource_templates ] && tmp="$tmp resource_templates"
+# [ -d ../src/scripts ] && tmp="$tmp scripts"
+# [ ! -z "$tmp" ] && tmp="-C ../src $tmp"
 
 echo "Creating ConfigMaps resources for installer..."
 
-tar cfzv - config $tmp | base64 > ./stage/b64data
+cd stage
+rm b64data
+tar cfzv - * | base64 > b64data
+cd -
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
 echo $cmd
 $cmd
