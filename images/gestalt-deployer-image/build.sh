@@ -1,12 +1,13 @@
 #!/bin/bash
 
-PUBLISH=0
+PUBLISH=1
 SILENT=0
 VERBOSE=0
 PRINT_IMAGE_ID=0
 REGISTRY="gcr.io/galacticfog-public"
 LABEL="gestalt-deployer"
-DEFAULT_TAG="build"
+DEFAULT_TAG="testing"
+PRE_BUILD_SCRIPT="./pre-build.sh"
 declare -a TAGS
 declare -a BUILD_ARGS
 
@@ -48,7 +49,6 @@ $CMD USAGE:
     -p
       Push the built image to the container image registry.  If this flag is NOT set, the
       script will build the image, but will not push it to a remote registry.
-      NOTE: This option has no effect if no tags are defined with the -t option.
     -s
       Run silent.  Do not print output to STDOUT, but print errors to STDERR.
     -a BUILD_ARG_NAME=BUILD_ARG_VALUE
@@ -128,7 +128,7 @@ if [ ${#TAGS[@]} -gt 0 ]; then
   debug "${#TAGS[@]} tags defined '${TAGS[*]}'"
 else
   debug "Building only the default tag '${DEFAULT_TAG}'"
-  PUBLISH=0
+  #PUBLISH=0
 fi
 
 NOT_STRING="NOT "
@@ -144,6 +144,18 @@ get_output() {
   echo "${OUTPUT}"
   echo "------------------------------- END OUTPUT -------------------------------"
 }
+
+if [ -z ${PRE_BUILD_SCRIPT:+x} ]; then
+  if [ -f ${PRE_BUILD_SCRIPT} ]; then
+    debug "Running pre-build script ${PRE_BUILD_SCRIPT}"
+    . $PRE_BUILD_SCRIPT
+    exit_on_error "FAILED while running pre-build script ${PRE_BUILD_SCRIPT}"
+  else
+    error "Defined pre-build script ${PRE_BUILD_SCRIPT} was not found!  Skipping..."
+  fi
+else
+  debug "No pre-build script defined.  Skipping pre-build..."
+fi
 
 #Build the image
 info "Building..."
