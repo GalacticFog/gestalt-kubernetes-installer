@@ -532,6 +532,7 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
+      # cleanup
       exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
     fi
 
@@ -543,6 +544,7 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
+      # cleanup
       exit_with_error "Installation failed - 'gestalt-installer' pod returned $podstatus status.  View ./log/gestalt-installer.log for more details."
     fi
 
@@ -558,6 +560,7 @@ wait_for_install_completion() {
     sleep 5
   done
   echo
+  # cleanup
   exit_with_error "Installation did not complete within expected timeframe."
 }
 

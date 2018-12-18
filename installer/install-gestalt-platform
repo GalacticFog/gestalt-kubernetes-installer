@@ -4,6 +4,18 @@ set -o pipefail
 
 gestalt_cli_version=0.10.6
 
+finish() {
+  code=$1
+  if [ $code -ne 0 ]; then
+    echo "Installation failed, cleaning up..."
+  fi
+  cleanup
+  if [ $code -ne 0 ]; then
+    echo
+    echo "Installation failed, check the 'logs' directory for details."
+  fi
+}
+
 do_install() {
 
   date
@@ -60,6 +72,8 @@ EOF
   ./install.sh
   exit_on_error "Install failed, aborting"
 
+  trap 'finish $?' EXIT
+
   if ! wait_for_installer_launch ; then
     cleanup
     exit_with_error "Install Pod did not launch in the expected timeframe, aborting."
@@ -68,6 +82,8 @@ EOF
   wait_for_install_completion
 
   cleanup
+
+  trap - EXIT
 
   run_helper post-install
 
