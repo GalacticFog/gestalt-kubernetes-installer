@@ -51,12 +51,15 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
+
 # Create base providers
 create db-provider
 create security-provider
 create kubernetes-provider
 create rabbit-provider
-# create logging-provider
+create logging-provider
 
 # Link the logging provider to the CaaS provider
 fog meta patch-provider --provider '/root/default-kubernetes' -f link-logging-provider.yaml
