@@ -9,6 +9,7 @@ properties:
   code_type: code
   headers:
     Accept: text/html
+    Content-Type: text/html
   periodic_info: {}
   timeout: 30
   handler: run
