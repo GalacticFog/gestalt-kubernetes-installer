@@ -28,7 +28,6 @@ echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 #   ["key"]="NODEJS_EXECUTOR_IMAGE"
 #   ["key"]="POLICY_IMAGE"
 #   ["key"]="PYTHON_EXECUTOR_IMAGE"
-#   ["key"]="RABBIT_HOST"
 #   ["key"]="RABBIT_HOSTNAME"
 #   ["key"]="RABBIT_HTTP_PORT"
 #   ["key"]="RABBIT_IMAGE"
@@ -111,7 +110,6 @@ getsalt_installer_setcheck_variables() {
     NODEJS_EXECUTOR_IMAGE \
     POLICY_IMAGE \
     PYTHON_EXECUTOR_IMAGE \
-    RABBIT_HOST \
     RABBIT_HOSTNAME \
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \

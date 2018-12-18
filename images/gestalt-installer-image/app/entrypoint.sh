@@ -20,8 +20,9 @@ if [ "$CMD" == 'install' ]; then
 
     # Get a config map from the current namespace and write contents to local file
     kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
-
-    # TODO: Test the file size, or check if the configmap didn't exist
+    if [ $? -ne 0 ]; then 
+        rm ./install-data.tar.gz
+    fi
 
     # If an install-data package was placed, overwrite the install directories on this image with them
     if [ -f ./install-data.tar.gz ]; then
