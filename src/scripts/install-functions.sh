@@ -52,7 +52,6 @@ randompw() {
 
 getsalt_installer_load_configmap() {
 
-  # check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
   check_for_required_variables gestalt_config
 
   # Convert Yaml config to JSON for easier parsing
@@ -61,41 +60,43 @@ getsalt_installer_load_configmap() {
 
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
-  convert_configmap_to_env_variables "${RELEASE_NAME}-deployer-config" deployer_config_to_env
-  check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
-  logging_lvl=debug # ${GESTALT_INSTALL_LOGGING_LVL}
+  [ $K8S_PROVIDER == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
 }
 
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq '.data' )
 }
 
-convert_configmap_to_env_variables() {
-  local CONFIGMAP=$1
-  local KEYMAP=$2
-  local JSON_DATA=$( get_configmap_data $CONFIGMAP )
-}
-
-get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq '.data' )
-}
-
-convert_configmap_to_env_variables() {
-  local CONFIGMAP=$1
-  local KEYMAP=$2
-  local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+map_env_vars_for_configmap() {
+  local JSON_DATA=$1
+  local KEY_TO_ENV_MAP=$2
+  local VAR_NAME
+  local VAR_VALUE
   # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
-  for key in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
-    # Get the name of the ENV var to map for the JSON key
-    var=${trans[$key]}
-    val=$( echo $JSON_DATA | jq ".$key" | sed 's/"//g')
-    echo "Setting $var to '$val'"
+  for KEY in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
+    # Get the name of the ENV var to map for the JSON key or the key itself if there is no key to env var map
+    if [ ${#KEY_TO_ENV_MAP[@]} -eq 0 ]; then
+      VAR_NAME="$KEY"
+    else
+      VAR_NAME="${KEY_TO_ENV_MAP[$KEY]}"
+    fi
+    VAR_VALUE=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
+    echo "Setting $VAR_NAME to '$VAR_VALUE'"
     # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
-    export $var=$( echo $JSON_DATA | jq ".$key" | sed 's/"//g')
+    export $VAR_NAME=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
   done
+}
+
+convert_configmap_to_env_variables() {
+  local CONFIGMAP=$1
+  local KEY_TO_ENV_MAP=$2
+  local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+  # If the ConfigMap was found, map the config values to env vars - ignore if not found
+  [ $? -eq 0 ] && map_env_var_for_configmap $JSON_DATA $KEY_TO_ENV_MAP
 }
 
 getsalt_installer_setcheck_variables() {
@@ -110,7 +111,7 @@ getsalt_installer_setcheck_variables() {
   fi
 
   # Check all variables in one call
-  check_for_required_variables
+  check_for_required_variables \
     ADMIN_PASSWORD \
     ADMIN_USERNAME \
     DATABASE_HOSTNAME \
@@ -545,7 +546,6 @@ servicename_is_unique_or_exit() {
   local list=$(kubectl get svc --all-namespaces -ojson | jq -r '.items[].metadata.name')
   local found="false"
   for s in $list; do
-    # echo "Inspecting service '$s'"
     # Trying to find a unique service name.  If the service was already found before, it's not a unique name
     if [ "$found" == "true" ]; then
       if [ "$s" == "$service_name" ]; then
