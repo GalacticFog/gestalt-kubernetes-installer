@@ -161,7 +161,7 @@ create_gke_healthchecks() {
   echo "----- Done creating healthchecks -----"
 }
 
-[ $K8S_PROVIDER == "gke" ] && create_gke_healthchecks
+[ ${K8S_PROVIDER:="default"} == "gke" ] && create_gke_healthchecks
 
 echo "TODO: ensure there's a configure_ldap variable here"
 if [ "$configure_ldap" == "Yes" ]; then

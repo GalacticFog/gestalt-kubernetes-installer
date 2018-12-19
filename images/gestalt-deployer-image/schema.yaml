@@ -119,6 +119,22 @@ properties:
     type: integer
     default: 15672
     description: "The port number components will use to access the Gestalt Rabbit MQ service via HTTP."
+  gestalt.redis.hostname:
+    type: string
+    default: "gestalt-redis.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Redis service host."
+  gestalt.redis.port:
+    type: integer
+    default: 6379
+    description: "The in-cluster port number components will use to access the Gestalt Redis service."
+  gestalt.ubb.hostname:
+    type: string
+    default: "gestalt-ubb.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Billing service host."
+  gestalt.ubb.port:
+    type: integer
+    default: 6380
+    description: "The in-cluster port number components will use to access the Gestalt Billing service."
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   gestalt.installer.image:
     type: string
@@ -158,6 +174,21 @@ properties:
   gestalt.ui.image:
     type: string
     default: "gcr.io/galacticfog-public/gestalt-ui-react:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.trackingService.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-tracking-service:latest"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.ubb.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-ubb-agent:latest"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.redis.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-redis:latest"
     x-google-marketplace:
       type: IMAGE
   gestalt.database.image:

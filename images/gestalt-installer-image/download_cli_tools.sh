@@ -139,7 +139,7 @@ get_fog() {
   unzip_fog $FOG_PKG
   if [ -f "${FOG_BIN}" ]; then
     chmod 0755 ${FOG_BIN}
-    ${FOG_BIN} --version
+    # ${FOG_BIN} --version
   else
     exit_with_error "FAILED to extract fog CLI binary '${FOG_BIN}' from package '${FOG_PKG}'!  Exiting..."
   fi
@@ -173,7 +173,7 @@ get_kubectl() {
   if [ -f "${KUBECTL_BIN}" ]; then
     chmod 0755 ${KUBECTL_BIN}
   fi
-  ${KUBECTL_BIN} version --client
+  # ${KUBECTL_BIN} version --client
 }
 
 resolve_helm_version() {
@@ -244,7 +244,7 @@ get_helm() {
   else
     exit_with_error "FAILED to find helm binary at '$HELM_BIN'!  Exiting..."
   fi
-  ${HELM_BIN} version -c
+  # ${HELM_BIN} version -c
 }
 
 get_kubectl $KUBECTL_VERSION

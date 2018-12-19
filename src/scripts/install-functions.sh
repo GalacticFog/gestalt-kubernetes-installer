@@ -60,7 +60,7 @@ getsalt_installer_load_configmap() {
 
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
-  [ $K8S_PROVIDER == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
   log_set_logging_lvl
   logging_lvl_validate 
@@ -104,11 +104,7 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
-  if ! is_dynamic_lb_enabled ; then
-    echo "Dynamic load balancing is not enabled, checking for required variables"
-    check_for_required_variables \
-      KONG_INGRESS_HOSTNAME
-  fi
+  export KUBECONFIG_BASE64=`cat ../config/kubeconfig | base64 | tr -d '\n'`
 
   # Check all variables in one call
   check_for_required_variables \
@@ -126,6 +122,7 @@ getsalt_installer_setcheck_variables() {
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
     KONG_0_VIRTUAL_HOST \
+    KUBECONFIG_BASE64 \
     LOGGING_IMAGE \
     META_HOSTNAME \
     META_IMAGE \
@@ -139,11 +136,18 @@ getsalt_installer_setcheck_variables() {
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \
     RABBIT_PORT \
+    REDIS_HOSTNAME \
+    REDIS_IMAGE \
+    REDIS_PORT \
     RUBY_EXECUTOR_IMAGE \
     SECURITY_HOSTNAME \
     SECURITY_IMAGE \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
+    TRACKING_SERVICE_IMAGE \
+    UBB_HOSTNAME \
+    UBB_IMAGE \
+    UBB_PORT \
     UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
@@ -190,6 +194,13 @@ gestalt_installer_generate_helm_config() {
     META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
+    TRACKING_SERVICE_IMAGE \
+    UBB_HOSTNAME \
+    UBB_IMAGE \
+    UBB_PORT \
+    REDIS_HOSTNAME \
+    REDIS_IMAGE \
+    REDIS_PORT \
     UI_IMAGE \
     UI_NODEPORT \
     internal_database_pv_storage_size \
@@ -198,6 +209,7 @@ gestalt_installer_generate_helm_config() {
     postgres_memory_request \
     postgres_cpu_request
 
+  [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
   cat > helm-config.yaml <<EOF
 common:
@@ -259,6 +271,20 @@ ui:
   nodePort: ${UI_NODEPORT}
   ingress:
     host: localhost
+
+redis:
+  image: ${REDIS_IMAGE}
+  hostname: ${REDIS_HOSTNAME}
+  port: ${REDIS_PORT}
+  
+ubb:
+  image: ${UBB_IMAGE}
+  hostname: ${UBB_HOSTNAME}
+  port: ${UBB_PORT}
+
+trackingService:
+  image: ${TRACKING_SERVICE_IMAGE}
+
 EOF
 
 
@@ -658,21 +684,8 @@ EOF
 }
 
 create_kong_ingress_v2() {
-#  if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
-#    echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
-#    return 0
-#    # KONG_INGRESS_SERVICE_NAME=kng
-#    # echo "KONG_INGRESS_SERVICE_NAME not defined, defaulting to $KONG_INGRESS_SERVICE_NAME"
-#  fi
-
-  if [ -z $KONG_INGRESS_HOSTNAME ]; then
-    # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
-    # in '*' for the host for the ingress - which means any host would apply
-    export KONG_INGRESS_HOSTNAME=localhost
-  fi
-
-  local service_name=$KONG_INGRESS_SERVICE_NAME
-  local hostname=$KONG_INGRESS_HOSTNAME
+  local service_name=${KONG_INGRESS_SERVICE_NAME:=kng}
+  local hostname=${KONG_INGRESS_HOSTNAME:=localhost}
 
   servicename_is_unique_or_exit $service_name
 
@@ -680,7 +693,7 @@ create_kong_ingress_v2() {
 
   echo "Namespace for Kong service '$service_name' is '$service_namespace'"
 
-  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
+  echo "Creating Kubernetes Ingress resource for service $service_name hostname $hostname..."
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
@@ -692,13 +705,6 @@ spec:
   backend:
     serviceName: $service_name
     servicePort: 8000
-  rules:
-  - host: $hostname
-    http:
-      paths:
-      - backend:
-          serviceName: $service_name
-          servicePort: 8001
 EOF
 
   exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."
