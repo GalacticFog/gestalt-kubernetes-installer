@@ -14,4 +14,5 @@ fog apply -d hierarchy
 
 fog apply -d dev_sandbox_samples --context /sandbox/dev-sandbox/dev
 
-# cd demo ; ./run.sh ; cd -
+# Demo needs meta > 2.3.8
+# cd demo ; ./apply.sh ; cd -

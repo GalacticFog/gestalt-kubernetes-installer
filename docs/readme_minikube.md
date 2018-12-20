@@ -65,7 +65,7 @@ minikube addons enable ingress
 
 ```
 
-Finally, just run the `install-gestalt-platform` script against the `minikube.conf` configuration file.  The installer script should complete the 
+Finally, just run the `install-gestalt-platform` script against the `minikube` profile.  The installer script should complete the 
 rest of the Gestalt install procedure for you.
 
 ```sh

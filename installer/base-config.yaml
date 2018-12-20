@@ -1,24 +1,19 @@
-FOG_CLI_DEBUG: 'false'
+# Installer debug settings
+FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
+GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
 
 # Database
-PROVISION_INTERNAL_DATABASE: 'Yes'
+PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
 DATABASE_HOSTNAME: gestalt-postgresql.gestalt-system.svc.cluster.local
 DATABASE_NAME: postgres
 DATABASE_PORT: '5432'
 
-# Credentials
-ADMIN_PASSWORD: gestaltpoc!
-ADMIN_USERNAME: admin
-DATABASE_USERNAME: postgres
-DATABASE_PASSWORD: abcd1234!
-
 CUSTOM_IMAGE_PULL_SECRET: ''
-GESTALT_INSTALL_LOGGING_LVL: debug
 JS_EXECUTOR_MIN_COOL: '1'
 
 # Kong
 KONG_0_EXTERNAL_PROTOCOL: http
-KONG_0_VIRTUAL_HOST: localhost:31113
+KONG_0_VIRTUAL_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
 KONG_NODEPORT: '31113'
@@ -45,7 +40,6 @@ PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
 PYTHON_EXECUTOR_MIN_COOL: '1'
 
 # RABBIT
-RABBIT_HOST: gestalt-rabbit.gestalt-system
 RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
 RABBIT_HTTP_PORT: '15672'
 RABBIT_PORT: '5672'
