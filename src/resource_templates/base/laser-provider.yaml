@@ -40,6 +40,9 @@ properties:
         RABBIT_MONITOR_TOPIC: default-monitor-topic
         RABBIT_RESPONSE_EXCHANGE: default-laser-exchange
         RABBIT_RESPONSE_TOPIC: default-response-topic
+        REDIS_HOSTNAME: gestalt-redis.gestalt-system
+        REDIS_PORT: '6379'
+        TRACKING_ENABLED: 'true'
         # SCALE_DOWN_TIME_SECONDS: '15'
         SCALE_DOWN_TIME_SECONDS: '300'
         # SERVICE_VHOST_0: '# {Config LASER_SERVICE_VHOST}'

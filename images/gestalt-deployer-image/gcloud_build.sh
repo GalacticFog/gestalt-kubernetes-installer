@@ -16,5 +16,7 @@ echo "APP_NAME: ${APP_NAME}"
 export DEPLOYER_TAG="$REGISTRY/${APP_NAME}-deployer:testing"
 echo "DEPLOYER_TAG: ${DEPLOYER_TAG}"
 
-docker build --tag $DEPLOYER_TAG .
-docker push $DEPLOYER_TAG
+echo "DO NOT BUILD USING THIS SCRIPT!!! Use build.sh instead."
+
+#docker build --tag $DEPLOYER_TAG .
+#docker push $DEPLOYER_TAG

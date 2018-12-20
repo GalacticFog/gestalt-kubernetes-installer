@@ -2,148 +2,256 @@ application_api_version: v1beta1
 properties:
   name:
     type: string
-    default: gestalt
+    default: "gestalt"
     x-google-marketplace:
      type: NAME
   namespace:
     type: string
-    default: gestalt-system
+    default: "gestalt-system"
     x-google-marketplace:
       type: NAMESPACE
   reportingSecret:
     type: string
     x-google-marketplace:
       type: REPORTING_SECRET
+  gestalt.admin.user:
+    type: string
+    default: "admin"
+    description: "The username of the Gestalt admin user."
+  gestalt.admin.password:
+    type: string
+    default: "gestaltgcp!"
+    description: "The password for the Gestalt admin user."
   gestalt.common.imagePullPolicy:
     type: string
-    default: Always
+    default: "Always"
+    description: "Pull new container images? (Valid values are Always, IfNotPresent or Never)"
   gestalt.common.releaseVersion:
     type: string
-    default: release-2.3.8
+    default: "release-2.3.8"
+    description: "The release version you want to install for this Gestalt instance."
+  gestalt.database.hostname:
+    type: string
+    default: "gestalt-postgresql.gestalt-system.svc.cluster.local"
+    description: "The in-cluster hostname of the Gestalt database server."
   gestalt.security.hostname:
     type: string
-    default: gestalt-security.gestalt-system
-    description: The in-cloud hostname of the Gestalt Security service
+    default: "gestalt-security.gestalt-system"
+    description: "The in-cloud hostname of the Gestalt Security service"
   gestalt.security.port:
     type: integer
     default: 9455
-    description: The port number Gestalt components use to connect to Gestalt Security service
+    description: "The port number Gestalt components use to connect to Gestalt Security service"
   gestalt.security.protocol:
     type: string
-    default: http
-    description: The web protocol Gestalt components use to connect to Gestalt Security service (http or https)
+    default: "http"
+    description: "The web protocol Gestalt components use to connect to Gestalt Security service (http or https)"
   gestalt.security.databaseName:
     type: string
-    default: gestalt-security
-    description: The name of the database in which Gestalt Security service stores its data
+    default: "gestalt-security"
+    description: "The name of the database in which Gestalt Security service stores its data"
+  gestalt.ui.hostname:
+    type: string
+    default: "gestalt-ui.gestalt-system.svc.cluster.local"
+    description: "The in-cluster hostname of the Gestalt UI service host."
   gestalt.ui.ingress.host:
     type: string
     # default: no default value
-    description: Enter the DNS name for the Gestalt UI service
+    description: "Enter the DNS name for the Gestalt UI service"
+  gestalt.ui.ingress.port:
+    type: integer
+    default: 80
+    description: "The port numner for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
+  gestalt.ui.ingress.protocol:
+    type: string
+    default: "http"
+    description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
+  gestalt.postgresql.provisionInstance:
+    type: boolean
+    detault: true
+    description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
   gestalt.postgresql.postgresDatabase:
     type: string
-    default: postgres
-    description: The Postgres instance's default database name
-    gestalt.postgresql.postgresUser:
+    default: "postgres"
+    description: "The Postgres instance's default database name"
+  gestalt.postgresql.postgresUser:
     type: string
-    default: postgres
-    description: The Postgres instance admin user's username
+    default: "postgres"
+    description: "The Postgres instance admin user's username"
   gestalt.postgresql.postgresPassword:
     type: string
-    default: abcd1234!
-    description: The Postgres instance admin user's password
+    default: "abcd1234!"
+    description: "The Postgres instance admin user's password"
+  gestalt.elastic.hostname:
+    type: string
+    default: "gestalt-elastic.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Elasticsearch service host."
+  gestalt.api.gateway.hostname:
+    type: string
+    default: "api.yourdomain.com"
+    description: "The DNS name to use for Gestalt's API Gateway."
+  gestalt.api.admin.hostname:
+    type: string
+    default: "api-admin.yourdomain.com"
+    description: "The DNS name to use for Gestalt's API Gateway Admin interface."
+  gestalt.meta.hostname:
+    type: string
+    default: "gestalt-meta.gestalt-system.svc.cluster.local"
+    description: "The in-cluster hostname of the Gestalt Meta service host."
+  gestalt.meta.port:
+    type: integer
+    default: 10131
+    description: "The in-cluster port number that components will use to access the Gestalt Meta service."
+  # TODO - Why are there two of these?
+  gestalt.rabbit.host:
+    type: string
+    default: "gestalt-rabbit.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
+  gestalt.rabbit.hostname:
+    type: string
+    default: "gestalt-rabbit.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
+  gestalt.rabbit.port:
+    type: integer
+    default: 5672
+    description: "The in-cluster port number components will use to access the Gestalt Rabbit MQ service."
+  gestalt.rabbit.httpPort:
+    type: integer
+    default: 15672
+    description: "The port number components will use to access the Gestalt Rabbit MQ service via HTTP."
+  gestalt.redis.hostname:
+    type: string
+    default: "gestalt-redis.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Redis service host."
+  gestalt.redis.port:
+    type: integer
+    default: 6379
+    description: "The in-cluster port number components will use to access the Gestalt Redis service."
+  gestalt.ubb.hostname:
+    type: string
+    default: "gestalt-ubb.gestalt-system"
+    description: "The in-cluster hostname of the Gestalt Billing service host."
+  gestalt.ubb.port:
+    type: integer
+    default: 6380
+    description: "The in-cluster port number components will use to access the Gestalt Billing service."
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   gestalt.installer.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-installer:4
+    default: "gcr.io/galacticfog-public/gestalt-installer:4"
     x-google-marketplace:
       type: IMAGE
   gestalt.security.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-security:release-2.3.8
+    default: "gcr.io/galacticfog-public/gestalt-security:release-2.3.8"
     x-google-marketplace:
       type: IMAGE
   gestalt.rabbit.image:
     type: string
-    default: gcr.io/galacticfog-public/rabbit:release-2.3.8
+    default: "gcr.io/galacticfog-public/rabbit:release-2.3.8"
     x-google-marketplace:
       type: IMAGE
   gestalt.elastic.image:
     type: string
-    default: gcr.io/galacticfog-public/elasticsearch-docker:5.3.1
+    default: "gcr.io/galacticfog-public/elasticsearch-docker:5.3.1"
     x-google-marketplace:
       type: IMAGE
   gestalt.elastic.initContainer.image:
     type: string
-    default: gcr.io/galacticfog-public/busybox:1.29.3
+    default: "gcr.io/galacticfog-public/busybox:1.29.3"
     x-google-marketplace:
       type: IMAGE
   gestalt.meta.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-meta:release-2.3.8
+    default: "gcr.io/galacticfog-public/gestalt-meta:release-2.3.8"
     x-google-marketplace:
       type: IMAGE
   gestalt.logging.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-log:release-2.3.8
+    default: "gcr.io/galacticfog-public/gestalt-log:release-2.3.8"
     x-google-marketplace:
       type: IMAGE
   gestalt.ui.image:
     type: string
-    default: gcr.io/galacticfog-public/gestalt-ui-react:release-2.3.8
+    default: "gcr.io/galacticfog-public/gestalt-ui-react:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.trackingService.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-tracking-service:latest"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.ubb.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-ubb-agent:latest"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.redis.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-redis:latest"
     x-google-marketplace:
       type: IMAGE
   gestalt.database.image:
     type: string
-    default: gcr.io/galacticfog-public/postgres:9.6.2
+    default: "gcr.io/galacticfog-public/postgres:9.6.2"
     x-google-marketplace:
       type: IMAGE
-#  gestalt.kong.image:
-#    type: string
-#    default: gcr.io/galacticfog-public/kong:release-2.3.8
-#    x-google-marketplace:
-#      type: IMAGE
-#  gestalt.laser.image:
-#    type: string
-#    default: gcr.io/galacticfog-public/gestalt-laser:release-2.3.8
-#    x-google-marketplace:
-#      type: IMAGE
-#  gestalt.policy.image:
-#    type: string
-#    default: gcr.io/galacticfog-public/gestalt-policy:release-2.3.8
-#    x-google-marketplace:
-#      type: IMAGE
-#  gestalt.Xexecutor.image:
-#    type: string
-#    default: # TODO - not sure if we need to define executor images in here.
-#    x-google-marketplace:
-#      type: IMAGE
-#  serverReplicas:
-#    title: Server replicas
-#    type: integer
-#    default: 1
-#    minimum: 1
-#  specialVar:
-#    title: Special Variable
-#    description: A special variable that you need included in your setup - must meet conditions below...
-#    type: string
-#    maxLength: 128
-#    pattern: '[A-Za-z0-9 -]+'
+  gestalt.kong.image:
+    type: string
+    default: "gcr.io/galacticfog-public/kong:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.dotnetExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-dotnet:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.golangExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-golang:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.jsExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-js:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.nodejsExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-nodejs:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.jvmExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-jvm:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.pythonExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-python:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.laser.rubyExecutor.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-laser-executor-ruby:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.policy.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-policy:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
+  gestalt.gatewayManager.image:
+    type: string
+    default: "gcr.io/galacticfog-public/gestalt-api-gateway:release-2.3.8"
+    x-google-marketplace:
+      type: IMAGE
 required:
 - name
 - namespace
 - reportingSecret
-# - securityImage
-# - rabbitImage
-# - elasticImage
-# - elasticInitImage
-# - metaImage
-# - loggingImage
-# - uiImage
-# - databaseImage
-# - kongImage
-# - laserImage
-# - policyImage
-# - xExecutorImage
-# - serverReplicas
-# - specialVar

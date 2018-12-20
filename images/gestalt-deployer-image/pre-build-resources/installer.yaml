@@ -1,0 +1,37 @@
+# This is a pod w/ restartPolicy=Never so that the installer only runs once.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-installer"
+  labels:
+    gestalt-app: installer
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: "{{ .Release.Name }}-installer"
+spec:
+  restartPolicy: Never
+  imagePullSecrets:
+  - name: imagepullsecret-1
+  - name: imagepullsecret-2
+  - name: imagepullsecret-3
+  - name: imagepullsecret-4
+  - name: imagepullsecret-5
+  containers:
+  - name: "{{ .Release.Name }}-installer"
+    image: "{{ .Values.installer.image }}"
+    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+    command:
+    - bash
+    args: 
+    - -c
+    - ./entrypoint.sh install debug
+    env:
+    - name: REPORTING_SECRET
+      value: "{{ .Values.reportingSecret }}"
+    - name: RELEASE_NAME
+      value: "{{ .Release.Name }}"
+    - name: RELEASE_NAMESPACE
+      value: "{{ .Release.Namespace }}"
+    - name: K8S_PROVIDER
+      value: "gke"
+    - name: MARKETPLACE_INSTALL
+      value: "true"

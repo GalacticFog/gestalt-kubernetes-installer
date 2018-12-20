@@ -3,45 +3,45 @@
 # Generic functions are in utilities-bash.sh
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
-# ["key"]="declare"
-#   ["key"]="ADMIN_USERNAME"
-#   ["key"]="ADMIN_PASSWORD"
-#   ["key"]="ADMIN_USERNAME"
-#   ["key"]="DATABASE_HOSTNAME"
-#   ["key"]="DATABASE_PASSWORD"
-#   ["key"]="DATABASE_USERNAME"
-#   ["key"]="DOTNET_EXECUTOR_IMAGE"
-#   ["key"]="ELASTICSEARCH_HOST"
-#   ["key"]="ELASTICSEARCH_IMAGE"
-#   ["key"]="GOLANG_EXECUTOR_IMAGE"
-#   ["key"]="GWM_EXECUTOR_IMAGE"
-#   ["key"]="JS_EXECUTOR_IMAGE"
-#   ["key"]="JVM_EXECUTOR_IMAGE"
-#   ["key"]="KONG_IMAGE"
-#   ["key"]="KONG_0_VIRTUAL_HOST"
-#   ["key"]="KUBECONFIG_BASE64"
-#   ["key"]="LOGGING_IMAGE"
-#   ["key"]="META_HOSTNAME"
-#   ["key"]="META_IMAGE"
-#   ["key"]="META_PORT"
-#   ["key"]="META_PROTOCOL"
-#   ["key"]="NODEJS_EXECUTOR_IMAGE"
-#   ["key"]="POLICY_IMAGE"
-#   ["key"]="PYTHON_EXECUTOR_IMAGE"
-#   ["key"]="RABBIT_HOSTNAME"
-#   ["key"]="RABBIT_HTTP_PORT"
-#   ["key"]="RABBIT_IMAGE"
-#   ["key"]="RABBIT_PORT"
-#   ["key"]="RUBY_EXECUTOR_IMAGE"
-#   ["key"]="SECURITY_HOSTNAME"
-#   ["key"]="SECURITY_IMAGE"
-#   ["key"]="SECURITY_PORT"
-#   ["key"]="SECURITY_PROTOCOL"
-#   ["key"]="UI_HOSTNAME"
-#   ["key"]="UI_IMAGE"
-#   ["key"]="UI_PORT"
-#   ["key"]="UI_PROTOCOL"
-# )
+declare -A deployer_config_to_env=(
+  ["gestalt.admin.password"]="ADMIN_PASSWORD"
+  ["gestalt.admin.user"]="ADMIN_USERNAME"
+  ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
+  ["gestalt.postgresql.postgresPassword"]="DATABASE_PASSWORD"
+  ["gestalt.postgresql.postgresUser"]="DATABASE_USERNAME"
+  ["gestalt.laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
+  ["gestalt.elastic.hostname"]="ELASTICSEARCH_HOST"
+  ["gestalt.elastic.image"]="ELASTICSEARCH_IMAGE"
+  ["gestalt.laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
+  ["gestalt.gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
+  ["gestalt.laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
+  ["gestalt.laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
+  ["gestalt.kong.image"]="KONG_IMAGE"
+  ["gestalt.api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["gestalt.api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
+  ["gestalt.logging.image"]="LOGGING_IMAGE"
+  ["gestalt.meta.hostname"]="META_HOSTNAME"
+  ["gestalt.meta.image"]="META_IMAGE"
+  ["gestalt.meta.port"]="META_PORT"
+  ["gestalt.meta.protocol"]="META_PROTOCOL"
+  ["gestalt.laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
+  ["gestalt.policy.image"]="POLICY_IMAGE"
+  ["gestalt.laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
+  ["gestalt.rabbit.host"]="RABBIT_HOST"
+  ["gestalt.rabbit.hostname"]="RABBIT_HOSTNAME"
+  ["gestalt.rabbit.httpPort"]="RABBIT_HTTP_PORT"
+  ["gestalt.rabbit.image"]="RABBIT_IMAGE"
+  ["gestalt.rabbit.port"]="RABBIT_PORT"
+  ["gestalt.laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
+  ["gestalt.security.hostname"]="SECURITY_HOSTNAME"
+  ["gestalt.security.image"]="SECURITY_IMAGE"
+  ["gestalt.security.port"]="SECURITY_PORT"
+  ["gestalt.security.protocol"]="SECURITY_PROTOCOL"
+  ["gestalt.ui.image"]="UI_IMAGE"
+  ["gestalt.ui.ingress.host"]="UI_HOSTNAME"
+  ["gestalt.ui.ingress.port"]="UI_PORT"
+  ["getsalt.ui.ingress.protocol"]="UI_PROTOCOL"
+)
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
 
@@ -52,31 +52,54 @@ randompw() {
 
 getsalt_installer_load_configmap() {
 
-  # check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
   check_for_required_variables gestalt_config
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
   yaml2json ${gestalt_config_yaml} > ${gestalt_config}
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
-  # This does NOT work as duding execution RELEASE_NAME RELEASE_NAMESPACE are not set.
-  # Commenting out atm - so if we really need implement this we have reference
-  # convert_configmap_to_env_variables "${RELEASE_NAME}-deployer-config" deployer_config_to_env
+
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
+  
+  # GKE specific
+  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
 }
 
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq '.data' )
+}
+
+map_env_vars_for_configmap() {
+  local JSON_DATA=$1
+  local KEY_TO_ENV_MAP=$2
+  local VAR_NAME
+  local VAR_VALUE
+  # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
+  for KEY in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
+    # Get the name of the ENV var to map for the JSON key or the key itself if there is no key to env var map
+    if [ ${#KEY_TO_ENV_MAP[@]} -eq 0 ]; then
+      VAR_NAME="$KEY"
+    else
+      VAR_NAME="${KEY_TO_ENV_MAP[$KEY]}"
+    fi
+    VAR_VALUE=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
+    echo "Setting $VAR_NAME to '$VAR_VALUE'"
+    # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
+    export $VAR_NAME=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
+  done
 }
 
 convert_configmap_to_env_variables() {
   local CONFIGMAP=$1
-  local KEYMAP=$2
+  local KEY_TO_ENV_MAP=$2
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+  # If the ConfigMap was found, map the config values to env vars - ignore if not found
+  [ $? -eq 0 ] && map_env_var_for_configmap $JSON_DATA $KEY_TO_ENV_MAP
 }
 
 getsalt_installer_setcheck_variables() {
@@ -115,6 +138,9 @@ getsalt_installer_setcheck_variables() {
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \
     RABBIT_PORT \
+    REDIS_HOSTNAME \
+    REDIS_IMAGE \
+    REDIS_PORT \
     RUBY_EXECUTOR_IMAGE \
     SECURITY_HOSTNAME \
     SECURITY_IMAGE \
@@ -124,6 +150,14 @@ getsalt_installer_setcheck_variables() {
     UI_IMAGE \
     UI_PORT \
     UI_PROTOCOL
+
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    check_for_required_variables \
+        GCP_TRACKING_SERVICE_IMAGE \
+        GCP_UBB_IMAGE \
+        UBB_HOSTNAME \
+        UBB_PORT
+  fi
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -166,6 +200,9 @@ gestalt_installer_generate_helm_config() {
     META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
+    REDIS_HOSTNAME \
+    REDIS_IMAGE \
+    REDIS_PORT \
     UI_IMAGE \
     UI_NODEPORT \
     internal_database_pv_storage_size \
@@ -174,6 +211,15 @@ gestalt_installer_generate_helm_config() {
     postgres_memory_request \
     postgres_cpu_request
 
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    check_for_required_variables \
+        GCP_TRACKING_SERVICE_IMAGE \
+        GCP_UBB_IMAGE \
+        UBB_HOSTNAME \
+        UBB_PORT
+  fi
+
+  [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
   cat > helm-config.yaml <<EOF
 common:
@@ -235,10 +281,28 @@ ui:
   nodePort: ${UI_NODEPORT}
   ingress:
     host: localhost
+
+redis:
+  image: ${REDIS_IMAGE}
+  hostname: ${REDIS_HOSTNAME}
+  port: ${REDIS_PORT}
 EOF
 
+  # Marketplace specific
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    cat >> helm-config.yaml <<EOF
 
-cat >> helm-config.yaml <<EOF
+ubb:
+  image: ${UBB_IMAGE}
+  hostname: ${UBB_HOSTNAME}
+  port: ${UBB_PORT}
+
+trackingService:
+  image: ${GCP_TRACKING_SERVICE_IMAGE}
+EOF
+fi
+
+  cat >> helm-config.yaml <<EOF
 
 postgresql:
   image: "${POSTGRES_IMAGE_NAME}"
@@ -516,14 +580,12 @@ gestalt_cli_create_resources() {
   echo "Gestalt resource(s) created."
 }
 
-
 servicename_is_unique_or_exit() {
   local service_name=$1
   # Get a list of all services by name across all namespaces
   local list=$(kubectl get svc --all-namespaces -ojson | jq -r '.items[].metadata.name')
   local found="false"
   for s in $list; do
-    echo "Inspecting service '$s'"
     # Trying to find a unique service name.  If the service was already found before, it's not a unique name
     if [ "$found" == "true" ]; then
       if [ "$s" == "$service_name" ]; then
@@ -636,21 +698,8 @@ EOF
 }
 
 create_kong_ingress_v2() {
-#  if [ -z $KONG_INGRESS_SERVICE_NAME ]; then
-#    echo "Skipping Kong Ingress setup since KONG_INGRESS_SERVICE_NAME not provided"
-#    return 0
-#    # KONG_INGRESS_SERVICE_NAME=kng
-#    # echo "KONG_INGRESS_SERVICE_NAME not defined, defaulting to $KONG_INGRESS_SERVICE_NAME"
-#  fi
-
-  if [ -z $KONG_INGRESS_HOSTNAME ]; then
-    # Note - if EXTERNAL_GATEWAY_HOST isn't specified, providing an empty host will result
-    # in '*' for the host for the ingress - which means any host would apply
-    export KONG_INGRESS_HOSTNAME=localhost
-  fi
-
-  local service_name=$KONG_INGRESS_SERVICE_NAME
-  local hostname=$KONG_INGRESS_HOSTNAME
+  local service_name=${KONG_INGRESS_SERVICE_NAME:=kng}
+  local hostname=${KONG_INGRESS_HOSTNAME:=localhost}
 
   servicename_is_unique_or_exit $service_name
 
@@ -658,7 +707,7 @@ create_kong_ingress_v2() {
 
   echo "Namespace for Kong service '$service_name' is '$service_namespace'"
 
-  echo "Creating Kubernetes Ingress resource for service ${KONG_INGRESS_SERVICE_NAME} hostname ${KONG_INGRESS_HOSTNAME}..."
+  echo "Creating Kubernetes Ingress resource for service $service_name hostname $hostname..."
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
@@ -670,13 +719,6 @@ spec:
   backend:
     serviceName: $service_name
     servicePort: 8000
-  rules:
-  - host: $hostname
-    http:
-      paths:
-      - backend:
-          serviceName: $service_name
-          servicePort: 8001
 EOF
 
   exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."

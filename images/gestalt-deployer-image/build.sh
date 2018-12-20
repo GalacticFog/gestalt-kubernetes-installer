@@ -1,12 +1,15 @@
 #!/bin/bash
 
-PUBLISH=0
+PUBLISH=1
 SILENT=0
 VERBOSE=0
 PRINT_IMAGE_ID=0
 REGISTRY="gcr.io/galacticfog-public"
 LABEL="gestalt-deployer"
-DEFAULT_TAG="build"
+DEFAULT_TAG="testing"
+PRE_BUILD_SCRIPT="./pre-build.sh"
+# BUILD_OUTPUT_FILE="buildoutput"
+RM_BUILDER_IMAGE=0
 declare -a TAGS
 declare -a BUILD_ARGS
 
@@ -48,7 +51,6 @@ $CMD USAGE:
     -p
       Push the built image to the container image registry.  If this flag is NOT set, the
       script will build the image, but will not push it to a remote registry.
-      NOTE: This option has no effect if no tags are defined with the -t option.
     -s
       Run silent.  Do not print output to STDOUT, but print errors to STDERR.
     -a BUILD_ARG_NAME=BUILD_ARG_VALUE
@@ -128,7 +130,8 @@ if [ ${#TAGS[@]} -gt 0 ]; then
   debug "${#TAGS[@]} tags defined '${TAGS[*]}'"
 else
   debug "Building only the default tag '${DEFAULT_TAG}'"
-  PUBLISH=0
+  #PUBLISH=0
+  TAGS=( "$DEFAULT_TAG" )
 fi
 
 NOT_STRING="NOT "
@@ -145,15 +148,28 @@ get_output() {
   echo "------------------------------- END OUTPUT -------------------------------"
 }
 
+if [ -z ${PRE_BUILD_SCRIPT:+x} ]; then
+  debug "No pre-build script defined.  Skipping pre-build..."
+else
+  if [ -f ${PRE_BUILD_SCRIPT} ]; then
+    debug "Running pre-build script ${PRE_BUILD_SCRIPT}"
+    OUTPUT=$( $PRE_BUILD_SCRIPT )
+    [ $? -eq 0 ] || exit_with_error "FAILED while running pre-build script ${PRE_BUILD_SCRIPT} $(get_output)"
+    debug "${PRE_BUILD_SCRIPT} output was $(get_output)"
+  else
+    error "Defined pre-build script ${PRE_BUILD_SCRIPT} was not found!  Skipping..."
+  fi
+fi
+
 #Build the image
 info "Building..."
 BUILD_CMD="docker build -t ${REGISTRY}/${LABEL}:${DEFAULT_TAG} ."
 for arg in ${BUILD_ARGS[@]}; do
   BUILD_CMD="${BUILD_CMD} --build-arg $arg"
 done
-BUILD_CMD="${BUILD_CMD} --build-arg component_label=$LABEL"
+# BUILD_CMD="${BUILD_CMD} --build-arg component_label=$LABEL"
 debug "Building with command '$BUILD_CMD'"
-OUTPUT=$($BUILD_CMD 2>&1)
+OUTPUT=$($BUILD_CMD 2>&1 | tee $BUILD_OUTPUT_FILE)
 [ $? -eq 0 ] || exit_with_error "FAILED image build for '$LABEL' using command '$BUILD_CMD' $(get_output)"
 debug "$(get_output)"
 
@@ -164,18 +180,20 @@ fi
 info "----- Successfully built ${LABEL} image with ID '$imageid'"
 [ $PRINT_IMAGE_ID -eq 0 ] || echo "$imageid"
 
-FIND_BUILDER_IMAGE_CMD="docker image ls --filter=label=build.phase=builder --filter=label=component=$LABEL --filter=dangling=true --format={{.ID}}"
-debug "Searching for builder image with command '$FIND_BUILDER_IMAGE_CMD'"
-builder_imageid=$($FIND_BUILDER_IMAGE_CMD)
-if [ $? -eq 0 ]; then
-  RM_BUILDER_IMAGE_CMD="docker image rm $builder_imageid"
-  debug "Removing builder image with command '$FIND_BUILDER_IMAGE_CMD'"
-  OUTPUT=$($RM_BUILDER_IMAGE_CMD)
-  [ $? -eq 0 ] || error "Unable to remove builder image $builder_imageid with command '$RM_BUILDER_IMAGE_CMD'"
-  debug "$(get_output)"
-  info "Removed builder image $builder_imageid"
-else
-  error "Unable to search for builder image $builder_imageid with command '$FIND_BUILDER_IMAGE_CMD'"
+if [ ${RM_BUILDER_IMAGE} -ne 0 ]; then
+  FIND_BUILDER_IMAGE_CMD="docker image ls --filter=label=build.phase=builder --filter=label=component=$LABEL --filter=dangling=true --format={{.ID}}"
+  debug "Searching for builder image with command '$FIND_BUILDER_IMAGE_CMD'"
+  builder_imageid=$($FIND_BUILDER_IMAGE_CMD)
+  if [ $? -eq 0 ]; then
+    RM_BUILDER_IMAGE_CMD="docker image rm $builder_imageid"
+    debug "Removing builder image with command '$RM_BUILDER_IMAGE_CMD'"
+    OUTPUT=$($RM_BUILDER_IMAGE_CMD)
+    [ $? -eq 0 ] || error "Unable to remove builder image $builder_imageid with command '$RM_BUILDER_IMAGE_CMD'"
+    debug "$(get_output)"
+    info "Removed builder image $builder_imageid"
+  else
+    error "Unable to search for builder image $builder_imageid with command '$FIND_BUILDER_IMAGE_CMD'"
+  fi
 fi
 
 #Tag and Push

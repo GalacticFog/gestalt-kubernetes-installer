@@ -215,7 +215,6 @@ validate_json () {
 
 ### Manipulations
 convert_json_to_env_variables() {
-  echo "[${FUNCNAME[0]}][For][$1]"
   json_file_to_process=$1
   log_debug "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}

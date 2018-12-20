@@ -88,16 +88,16 @@ stage_2() {
 
   run gestalt_cli_create_resources #Default or Custom as per config
 
-  # if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
+  [ ${K8S_PROVIDER:=default} == "gke" ] && if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
   if_kong_ingress_service_name_is_set create_kong_ingress_v2
 }
 
 #### Main ####
 
-stage_0
-
-stage_1
-
+if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+  stage_0
+  stage_1
+fi
 stage_2
 
 echo "[Success] Gestalt platform installation completed."

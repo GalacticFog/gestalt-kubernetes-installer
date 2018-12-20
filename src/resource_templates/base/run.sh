@@ -12,6 +12,36 @@ create() {
   fi
 }
 
+retry_fails() {
+  local tries=5
+  local retry_delay=20
+  local cmd=$*
+  local try=0
+  local cmd_output
+  local exit_code
+  echo "Attempting $tries tries of command '$cmd'"
+  for try in `seq $tries`; do
+    echo "attempt $try of '$cmd'"
+    cmd_output=$($cmd)
+    exit_code=$?
+    echo $cmd_output
+    if [ $exit_code -eq 0 ]; then
+      echo "SUCCESS attempt $try of '$cmd'"
+      return $exit_code
+    fi
+    echo "FAIL attempt $try of '$cmd' exit code $exit_code"
+    echo "retrying in $retry_delay seconds"
+    sleep $retry_delay
+  done
+  echo "FAILED!!! $tries attempts of command '$cmd'"
+  return $exit_code
+}
+
+exit_if_fail() {
+  $*
+  [ $? -eq 0 ] || (echo "FATAL ERROR - exiting" && exit 1)
+}
+
 kube_copy_secret () {
 
   [[ $# -ne 4 ]] && echo && exit_with_error "[${FUNCNAME[0]}] Function expects 4 parameter(-s) ($# provided) [$@], aborting."
@@ -51,8 +81,8 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
-fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --type 'production'
-[ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment"--type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-environment', aborting" && exit 1)
 
 # Create base providers
 create db-provider
@@ -112,6 +142,26 @@ fi
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog meta POST /migrate -f meta-migrate.json | jq .
+
+create_gke_healthchecks() {
+  local healthcheck_environment=gestalt-health-environment
+  sleep 15
+  exit_if_fail retry_fails fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --type 'production' --description '"Gestalt HealthCheck Environment"'
+  sleep 15
+  local gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
+  exit_if_fail retry_fails fog context set $gestalt_healthcheck_context
+  echo "----- Creating the Kong healthcheck lambda -----"
+  exit_if_fail retry_fails fog create resource -f healthcheck-lambda.json
+  sleep 15
+  echo "----- Creating the Kong healthcheck API -----"
+  exit_if_fail retry_fails fog create api --name health --description healthcheck-api --provider default-kong
+  sleep 15
+  echo "----- Creating the Kong healthcheck API endpoint -----"
+  exit_if_fail retry_fails fog create api-endpoint -f healthcheck-apiendpoint.json --api health --lambda health-lambda
+  echo "----- Done creating healthchecks -----"
+}
+
+[ ${K8S_PROVIDER:="default"} == "gke" ] && create_gke_healthchecks
 
 echo "TODO: ensure there's a configure_ldap variable here"
 if [ "$configure_ldap" == "Yes" ]; then
