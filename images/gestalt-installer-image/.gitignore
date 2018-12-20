@@ -4,3 +4,4 @@ deps
 buildoutput
 helm-config.yaml
 app/*/**
+license-definitions

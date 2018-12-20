@@ -84,9 +84,9 @@ EOF
 echo "Creating ConfigMaps resources for installer..."
 
 cd stage
-rm b64data
+if [ -e b64data ]; then rm b64data; fi
 tar cfzv - * | base64 > b64data
-cd -
+cd ~-
 
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
 echo $cmd
