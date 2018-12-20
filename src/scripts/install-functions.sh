@@ -54,14 +54,14 @@ getsalt_installer_load_configmap() {
 
   # check_for_required_variables RELEASE_NAME RELEASE_NAMESPACE REPORTING_SECRET gestalt_config
   check_for_required_variables gestalt_config
-
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
   yaml2json ${gestalt_config_yaml} > ${gestalt_config}
-
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
-  convert_configmap_to_env_variables "${RELEASE_NAME}-deployer-config" deployer_config_to_env
+  # This does NOT work as duding execution RELEASE_NAME RELEASE_NAMESPACE are not set.
+  # Commenting out atm - so if we really need implement this we have reference
+  # convert_configmap_to_env_variables "${RELEASE_NAME}-deployer-config" deployer_config_to_env
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
   log_set_logging_lvl
