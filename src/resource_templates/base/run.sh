@@ -85,7 +85,6 @@ fi
 
 # Create other providers
 create policy-provider # Policy depends on Rabbit and Laser
-
 create kong-provider
 
 # Uncomment to enable, and also ensure that the gatewaymanager provider has linked providers for each kong.
@@ -94,7 +93,7 @@ create kong-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
-sleep 20
+
 ## Copy in secrets to all Gestalt Managed Namespaces
 if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
   kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml

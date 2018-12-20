@@ -87,6 +87,7 @@ cd stage
 rm b64data
 tar cfzv - * | base64 > b64data
 cd -
+
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
 echo $cmd
 $cmd

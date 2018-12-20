@@ -79,7 +79,6 @@ convert_configmap_to_env_variables() {
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
 }
 
-
 getsalt_installer_setcheck_variables() {
 
   export EXTERNAL_GATEWAY_HOST=localhost

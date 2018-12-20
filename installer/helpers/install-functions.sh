@@ -62,6 +62,9 @@ check_for_kube() {
   echo "Checking for Kubernetes..."
   local kubecontext="`kubectl config current-context`"
 
+  echo "$kubecontext"
+  echo $target_kube_context
+
   if [ ! -z "$target_kube_context" ]; then
       if [ "$kubecontext" != "$target_kube_context" ]; then
       do_prompt_to_continue \
@@ -532,7 +535,6 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
-      # cleanup
       exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
     fi
 
@@ -544,7 +546,6 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
-      # cleanup
       exit_with_error "Installation failed - 'gestalt-installer' pod returned $podstatus status.  View ./log/gestalt-installer.log for more details."
     fi
 
@@ -560,7 +561,6 @@ wait_for_install_completion() {
     sleep 5
   done
   echo
-  # cleanup
   exit_with_error "Installation did not complete within expected timeframe."
 }
 
