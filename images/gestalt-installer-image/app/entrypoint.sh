@@ -26,7 +26,7 @@ if [ "$CMD" == 'install' ]; then
     log=/app/install.log
 
     # Get a config map from the current namespace and write contents to local file
-    kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
+    [ -z ${MARKETPLACE_INSTALL+x} ] && kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
 
     # TODO: Test the file size, or check if the configmap didn't exist
 

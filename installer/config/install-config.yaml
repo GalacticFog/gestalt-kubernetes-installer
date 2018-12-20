@@ -1,5 +1,5 @@
-# K8S_PROVIDER: 'gke' - Must be set for GCP Kubernetes installs
-K8S_PROVIDER: 'default'
+K8S_PROVIDER: 'gke'
+# K8S_PROVIDER: 'default' - Must be set for GCP Kubernetes installs
 FOG_CLI_DEBUG: 'false'
 
 # Database
@@ -129,8 +129,8 @@ UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:release-2.3.
 # UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:latest
 
 # POSTGRES database settings
-# internal_database_pv_storage_class: standard - Must set to 'standard' for GCP Kubernetes installs
-internal_database_pv_storage_class: hostpath
+internal_database_pv_storage_class: standard
+# internal_database_pv_storage_class: hostpath - Must set to 'standard' for GCP Kubernetes installs
 internal_database_pv_storage_size: 100Mi
 postgres_persistence_subpath: postgres
 postgres_memory_request: 100Mi

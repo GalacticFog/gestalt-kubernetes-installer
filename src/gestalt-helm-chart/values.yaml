@@ -5,6 +5,12 @@ common:
   imagePullPolicy: Always
   releaseVersion: release-2.3.8
 
+secrets:
+  adminUser: admin
+  adminPassword: ''
+  databaseUsername: postgres
+  databasePassword: ''
+
 installer:
   image: gcr.io/galacticfog-public/gestalt-installer:testing
 
@@ -15,8 +21,6 @@ security:
   port: 9455
   protocol: http
   databaseName: gestalt-security
-  adminUser: admin
-  adminPassword: gestaltpoc!
 
 rabbit:
   image: gcr.io/galacticfog-public/rabbit:release-2.3.8
@@ -60,15 +64,13 @@ db:
   # Hostname must be fully qualified
   hostname: gestalt-postgresql.gestalt-system.svc.cluster.local
   port: 5432
-  username: postgres
-  password: abcd1234!
   databaseName: postgres
 
 postgresql:
   image: postgres
   imageTag: 9.6.2
   postgresUser: postgres
-  postgresPassword: abcd1234!
+  postgresPassword: 'XXXX'
   postgresDatabase: postgres
   persistence:
     size: 100Mi

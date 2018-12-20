@@ -4,9 +4,9 @@ PUBLISH=1
 SILENT=0
 VERBOSE=1
 PRINT_IMAGE_ID=0
-REGISTRY="galacticfog"
+REGISTRY="gcr.io/galacticfog-public"
 LABEL="gestalt-installer"
-DEFAULT_TAG="5.0.0"
+DEFAULT_TAG="testing"
 declare -a TAGS
 declare -a BUILD_ARGS
 

@@ -27,8 +27,6 @@ stage_1() {
   # Stage 1 - Building configuration
   #
 
-  run getsalt_installer_load_configmap
-  run getsalt_installer_setcheck_variables
   run gestalt_installer_generate_helm_config
 
   echo
@@ -93,6 +91,9 @@ stage_2() {
 }
 
 #### Main ####
+
+run getsalt_installer_load_configmap
+run getsalt_installer_setcheck_variables
 
 if [ -z ${MARKETPLACE_INSTALL+x} ]; then
   stage_0

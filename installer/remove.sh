@@ -75,7 +75,7 @@ remove_gestalt_platform() {
 
   echo ""
   echo "Removing Gestalt Platform components from '$install_namespace' namespace..."
-  kubectl delete daemonsets,replicasets,statefulsets,services,deployments,pods,rc,secrets,configmaps,pvc,ingresses \
+  kubectl delete applications,daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
     --timeout=30s --all --namespace $install_namespace
 
   if [ $? -ne 0 ]; then

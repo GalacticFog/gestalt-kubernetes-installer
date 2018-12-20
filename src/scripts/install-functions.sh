@@ -4,11 +4,11 @@
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 declare -A deployer_config_to_env=(
-  ["gestalt.admin.password"]="ADMIN_PASSWORD"
-  ["gestalt.admin.user"]="ADMIN_USERNAME"
+  ["gestalt.secrets.adminPassword"]="ADMIN_PASSWORD"
+  ["gestalt.secrets.adminUser"]="ADMIN_USERNAME"
   ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
-  ["gestalt.postgresql.postgresPassword"]="DATABASE_PASSWORD"
-  ["gestalt.postgresql.postgresUser"]="DATABASE_USERNAME"
+  ["gestalt.secrets.databasePassword"]="DATABASE_PASSWORD"
+  ["gestalt.secrets.databaseUsername"]="DATABASE_USERNAME"
   ["gestalt.laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
   ["gestalt.elastic.hostname"]="ELASTICSEARCH_HOST"
   ["gestalt.elastic.image"]="ELASTICSEARCH_IMAGE"
@@ -52,6 +52,15 @@ randompw() {
 
 getsalt_installer_load_configmap() {
 
+  map_env_vars_for_configyaml
+  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
+  log_set_logging_lvl
+  logging_lvl_validate 
+  # print_env_variables #will print only if debug
+}
+
+map_env_vars_for_configyaml() {
   check_for_required_variables gestalt_config
 
   # Convert Yaml config to JSON for easier parsing
@@ -60,11 +69,6 @@ getsalt_installer_load_configmap() {
 
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
-  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
-  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
-  log_set_logging_lvl
-  logging_lvl_validate 
-  # print_env_variables #will print only if debug
 }
 
 get_configmap_data() {

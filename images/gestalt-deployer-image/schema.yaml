@@ -14,14 +14,6 @@ properties:
     type: string
     x-google-marketplace:
       type: REPORTING_SECRET
-  gestalt.admin.user:
-    type: string
-    default: "admin"
-    description: "The username of the Gestalt admin user."
-  gestalt.admin.password:
-    type: string
-    default: "gestaltgcp!"
-    description: "The password for the Gestalt admin user."
   gestalt.common.imagePullPolicy:
     type: string
     default: "Always"
@@ -30,6 +22,22 @@ properties:
     type: string
     default: "release-2.3.8"
     description: "The release version you want to install for this Gestalt instance."
+  gestalt.secrets.adminUser:
+    type: string
+    default: "admin"
+    description: "The username of the Gestalt admin user."
+  gestalt.secrets.adminPassword:
+    type: string
+    default: "gestaltpoc!"
+    description: "The password for the Gestalt admin user."
+  gestalt.secrets.databaseUsername:
+    type: string
+    default: "postgres"
+    description: "The admin username for the Gestalt database."
+  gestalt.secrets.databasePassword:
+    type: string
+    default: "abcd1234!"
+    description: "The admin password for the Gestalt database."
   gestalt.database.hostname:
     type: string
     default: "gestalt-postgresql.gestalt-system.svc.cluster.local"
@@ -80,7 +88,7 @@ properties:
     description: "The Postgres instance admin user's username"
   gestalt.postgresql.postgresPassword:
     type: string
-    default: "abcd1234!"
+    default: ''
     description: "The Postgres instance admin user's password"
   gestalt.elastic.hostname:
     type: string
