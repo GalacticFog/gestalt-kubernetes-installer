@@ -1,26 +1,22 @@
+# Installer debug settings
+FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
+GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
+
 K8S_PROVIDER: 'gke'
 # K8S_PROVIDER: 'default' - Must be set for GCP Kubernetes installs
-FOG_CLI_DEBUG: 'false'
 
 # Database
-PROVISION_INTERNAL_DATABASE: 'Yes'
+PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
 DATABASE_HOSTNAME: gestalt-postgresql.gestalt-system.svc.cluster.local
 DATABASE_NAME: postgres
 DATABASE_PORT: '5432'
 
-# Credentials
-ADMIN_PASSWORD: gestaltpoc!
-ADMIN_USERNAME: admin
-DATABASE_USERNAME: postgres
-DATABASE_PASSWORD: abcd1234!
-
 CUSTOM_IMAGE_PULL_SECRET: ''
-GESTALT_INSTALL_LOGGING_LVL: debug
 JS_EXECUTOR_MIN_COOL: '1'
 
 # Kong
 KONG_0_EXTERNAL_PROTOCOL: http
-KONG_0_VIRTUAL_HOST: localhost:31113
+KONG_0_VIRTUAL_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
 # KONG_INGRESS_HOSTNAME: unused - would be needed to set a hostname for API Ingress
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
@@ -48,7 +44,6 @@ PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
 PYTHON_EXECUTOR_MIN_COOL: '1'
 
 # RABBIT
-RABBIT_HOST: gestalt-rabbit.gestalt-system
 RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
 RABBIT_HTTP_PORT: '15672'
 RABBIT_PORT: '5672'
@@ -104,6 +99,12 @@ SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:release-2.3.
 TRACKING_SERVICE_IMAGE:     docker.io/galacticfog/gestalt-tracking-service:latest
 UBB_IMAGE:                   docker.io/galacticfog/gestalt-ubb-agent:latest
 UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:release-2.3.8
+REDIS_IMAGE:                 redis # gcr.io/galacticfog/gestalt-redis:latest
+
+
+# GKE specific
+GCP_TRACKING_SERVICE_IMAGE:       gcr.io/galacticfog/gestalt-tracking-service:latest
+GCP_UBB_IMAGE:                    gcr.io/galacticfog/gestalt-ubb-agent:latest
 
 
 # DATABASE_IMAGE:        postgres

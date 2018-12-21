@@ -1,50 +1,47 @@
 #!/bin/bash
+set -e
 
-exit_on_error() {
-  if [ $? -ne 0 ]; then
-    echo
-    echo "[Error] $@"
-    exit 1
-  fi
-}
-
-exit_with_error() {
-    echo
-    echo "[Error] $@"
-    exit 1
-}
-
-# Source common project configuration and utilities
-utility_file='./utilities/utility-image-initialize.sh'
-if [ -f ${utility_file} ]; then
-  . ${utility_file}
-else
-  echo "[ERROR] Project initialization script '${utility_file}' can not be located, aborting. "
-  exit 1
-fi
+# Use this only for local builds !!!!
 
 # TODO: Make as options publish flag and tag(-s)
-publish="true" # true - do docker push, false - don't
+publish="false"
+# publish="true" # true - do docker push, false - don't
+build_log="./buildoutput"
 
-# Validate that at least one tag provided
-if [ $# -lt 1 ]; then
-  build_and_publish_help
+echo "------------------------------------------------------"
+echo "Build: Step 0: Initialize..."
+. ./utilities/utility-bash.sh
+echo "------------------------------------------------------"
+echo "Build: Step 1: Run pre-build.."
+./pre-build.sh 
+echo "------------------------------------------------------"
+echo "Build: Step 2: Clone License(-s) Repository / get up-to-date master.."
+if [ ! -d "./license-definitions" ]; then
+  echo "Next: Clone: 'git@gitlab.com:galacticfog/license-definitions.git'"
+  git clone git@gitlab.com:galacticfog/license-definitions.git
+else
+  echo "Next: Get up-to date master"
+  cd license-definitions
+  git checkout master
+  git pull
+  cd ~-
 fi
-
-# Validate that all dependency binaries are downloaded
-build_and_publish_validate_deps
-
-#Build
-echo "Building..."
-docker build -t gestalt-installer . | tee buildoutput
+echo "------------------------------------------------------" | tee ${build_log}
+echo "Build: Step 3: Build Image" | tee -a ${build_log}
+echo "++++++++++Dockerfile:START++++++++++"
+cat Dockerfile | tee -a ${build_log}
+echo
+echo "++++++++++Dockerfile:END++++++++++"
+docker build -t gestalt-installer . | tee -a ${build_log}
 exit_on_error "docker build failed, aborting."
 imageid=`tail buildoutput | grep "^Successfully built" | awk '{ print $3 }'`
 if [ "${imageid}" == "" ]; then
   exit_with_error "Failed obtain newly created image id"
+else
+  echo "Image Built: ${imageid}"
 fi
-
-
-#Tag and Push
+echo "------------------------------------------------------"
+echo "Build: Step 4: Tag and Push(Optional)"
 for curr_tag in $@; do
   echo "Tagging ${curr_tag}"
   docker tag $imageid galacticfog/gestalt-installer:${curr_tag}
@@ -52,6 +49,8 @@ for curr_tag in $@; do
   if [ ${publish} == "true" ]; then
     docker push galacticfog/gestalt-installer:${curr_tag}
     exit_on_error "docker push failed, aborting."
+  else
+    echo "Skipping push due publish=${publish}"
   fi
 done
 

@@ -27,12 +27,15 @@ RUN apk upgrade --no-cache && \
     pip install PyYaml docopt && \
     rm -rf /var/cache/apk/*
 
-# Copy dependencies
+# Copy: dependencies
 COPY ./deps/* /usr/local/bin/
 RUN chmod 755 /usr/local/bin/*
 
-# scripts and utilities
+# Copy: scripts and utilities
 COPY ./app /app
+
+# Copy: licenses
+COPY ./license-definitions/licenses /usr/share/licenses
 
 # define entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

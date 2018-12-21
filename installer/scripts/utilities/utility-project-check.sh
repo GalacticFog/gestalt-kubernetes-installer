@@ -5,7 +5,7 @@
 ############################################
 
   # Credentials and Configs
-  conf_gestalt_conf="./config/gestalt.conf"
+  conf_gestalt_conf="./gestalt.conf"
   
   # Scripts and Utilities
   script_folder="./scripts"
@@ -16,7 +16,7 @@
   utility_kubectl="${utility_folder}/utility-kubectl.sh"
 
   #Generated Files
-  kube_install="./config/installer.yaml"
+  kube_install="./installer.yaml"
 
 ############################################
 # Main base utility script

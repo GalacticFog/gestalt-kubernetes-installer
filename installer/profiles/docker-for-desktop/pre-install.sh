@@ -45,7 +45,12 @@ if [ ! -z "$skip_image_pull" ] ; then
   echo "Skipping image pull due to 'skip_image_pull'"
 else
   echo "Pulling Gestalt Platform images to local Docker environment..."
-  for i in `cat config/install-config.yaml | grep "_IMAGE: " | grep -v '#' | awk '{print $2}'` ; do
+
+  # Filter out GCP specific images
+  images=$( cat ./../../stage/config/install-config.yaml | grep "_IMAGE: " | grep -v '#' |  grep -v '^GCP_' | awk '{print $2}' )
+
+  for i in $images ; do
+    echo "Pulling image $i"
     pull_image $i
   done
 fi

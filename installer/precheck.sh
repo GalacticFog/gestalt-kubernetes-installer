@@ -2,7 +2,7 @@
 set -o pipefail
 
 . helpers/install-functions.sh
-. config/gestalt.conf
+. gestalt.conf
 
 kube_type=$1
 

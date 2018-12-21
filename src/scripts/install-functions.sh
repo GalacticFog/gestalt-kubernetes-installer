@@ -53,8 +53,12 @@ randompw() {
 getsalt_installer_load_configmap() {
 
   map_env_vars_for_configyaml
+  # GKE specific
   [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+
+  check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
+
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
@@ -62,11 +66,9 @@ getsalt_installer_load_configmap() {
 
 map_env_vars_for_configyaml() {
   check_for_required_variables gestalt_config
-
   # Convert Yaml config to JSON for easier parsing
   echo "Creating $gestalt_config from $gestalt_config_yaml..."
   yaml2json ${gestalt_config_yaml} > ${gestalt_config}
-
   validate_json ${gestalt_config}
   convert_json_to_env_variables ${gestalt_config}
 }
@@ -135,7 +137,6 @@ getsalt_installer_setcheck_variables() {
     NODEJS_EXECUTOR_IMAGE \
     POLICY_IMAGE \
     PYTHON_EXECUTOR_IMAGE \
-    RABBIT_HOST \
     RABBIT_HOSTNAME \
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \
@@ -156,6 +157,14 @@ getsalt_installer_setcheck_variables() {
     UI_IMAGE \
     UI_PORT \
     UI_PROTOCOL
+
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    check_for_required_variables \
+        GCP_TRACKING_SERVICE_IMAGE \
+        GCP_UBB_IMAGE \
+        UBB_HOSTNAME \
+        UBB_PORT
+  fi
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -198,10 +207,6 @@ gestalt_installer_generate_helm_config() {
     META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
-    TRACKING_SERVICE_IMAGE \
-    UBB_HOSTNAME \
-    UBB_IMAGE \
-    UBB_PORT \
     REDIS_HOSTNAME \
     REDIS_IMAGE \
     REDIS_PORT \
@@ -212,6 +217,14 @@ gestalt_installer_generate_helm_config() {
     postgres_persistence_subpath \
     postgres_memory_request \
     postgres_cpu_request
+
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    check_for_required_variables \
+        GCP_TRACKING_SERVICE_IMAGE \
+        GCP_UBB_IMAGE \
+        UBB_HOSTNAME \
+        UBB_PORT
+  fi
 
   [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
@@ -280,19 +293,23 @@ redis:
   image: ${REDIS_IMAGE}
   hostname: ${REDIS_HOSTNAME}
   port: ${REDIS_PORT}
-  
+EOF
+
+  # Marketplace specific
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    cat >> helm-config.yaml <<EOF
+
 ubb:
   image: ${UBB_IMAGE}
   hostname: ${UBB_HOSTNAME}
   port: ${UBB_PORT}
 
 trackingService:
-  image: ${TRACKING_SERVICE_IMAGE}
-
+  image: ${GCP_TRACKING_SERVICE_IMAGE}
 EOF
+fi
 
-
-cat >> helm-config.yaml <<EOF
+  cat >> helm-config.yaml <<EOF
 
 postgresql:
   image: "${POSTGRES_IMAGE_NAME}"

@@ -461,7 +461,9 @@ run_helper() {
   if [ -f "$script" ]; then
     echo ""
     echo "Running $script ..."
-    . $script
+    cd ./profiles/$kube_type/
+    . $1.sh
+    cd -
     exit_on_error "Pre-install script failed, aborting."
   fi
   echo

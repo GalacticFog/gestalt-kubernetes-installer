@@ -1,0 +1,10 @@
+KONG_0_EXTERNAL_PROTOCOL: https
+KONG_0_VIRTUAL_HOST: apigw1.eks-dev.galacticfog.com
+
+LOGGING_SERVICE_HOST: log.eks-dev.galacticfog.com.
+LOGGING_SERVICE_PROTOCOL: https
+
+PROVISION_INTERNAL_DATABASE: No
+DATABASE_HOSTNAME: gestalt-eks-dev.crqimf2biim3.us-east-1.rds.amazonaws.com
+
+# Do not forget change credentials in: ../../credentials.yaml

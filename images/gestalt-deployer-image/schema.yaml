@@ -14,6 +14,14 @@ properties:
     type: string
     x-google-marketplace:
       type: REPORTING_SECRET
+  gestalt.admin.user:
+    type: string
+    default: "admin"
+    description: "The username of the Gestalt admin user."
+  gestalt.admin.password:
+    type: string
+    default: "gestaltgcp!"
+    description: "The password for the Gestalt admin user."
   gestalt.common.imagePullPolicy:
     type: string
     default: "Always"
