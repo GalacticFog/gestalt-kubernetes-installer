@@ -35,6 +35,5 @@ cp -r ../../src/gestalt-helm-chart ./app/install/
 echo "Next: Create './app/install'"
 [ -d ./app/install/config ] || mkdir ./app/install/config
 echo "Next: Populate './app/install/config' with license and config files:"
-cp ../../installer/config/gestalt-license.json ./app/install/config/
-cp ../../installer/config/install-config.yaml ./app/install/config/
+cp -r ../../src/providers ./app/install/
 echo "======================================================"

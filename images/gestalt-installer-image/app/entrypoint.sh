@@ -26,16 +26,24 @@ if [ "$CMD" == 'install' ]; then
     log=/app/install.log
 
     # Get a config map from the current namespace and write contents to local file
-    [ -z ${MARKETPLACE_INSTALL+x} ] && kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
+    if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+      # NOT a Marketplace install
+      kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
+
+      # If an install-data package was placed, overwrite the install directories on this image with them
+      if [ -f ./install-data.tar.gz ]; then
+          # Untar in place
+          mkdir -p ./install
+          tar xfzv ./install-data.tar.gz -C ./install
+      fi
+
+    else
+      # Marketplace install - copy config files over
+      mkdir -p /app/install/config
+      cp /app/install/providers/gcp/* /app/install/config/
+    fi
 
     # TODO: Test the file size, or check if the configmap didn't exist
-
-    # If an install-data package was placed, overwrite the install directories on this image with them
-    if [ -f ./install-data.tar.gz ]; then
-        # Untar in place
-        mkdir -p ./install
-        tar xfzv ./install-data.tar.gz -C ./install
-    fi
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 

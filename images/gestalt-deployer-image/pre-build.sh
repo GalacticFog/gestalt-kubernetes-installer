@@ -6,4 +6,4 @@
 
 cp -r ../../src/gestalt-helm-chart ./chart/gestalt
 
-[ -d ./pre-build-resources ] && cp ./pre-build-resources/* ./chart/gestalt/templates/
+[ -d ./pre-build-resources/chart/gestalt ] && cp -r ./pre-build-resources/chart/gestalt ./chart/

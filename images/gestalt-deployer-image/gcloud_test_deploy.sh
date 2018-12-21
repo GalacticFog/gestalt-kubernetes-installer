@@ -36,7 +36,7 @@ kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketpl
 # mpdev /scripts/doctor.py
 
 # Run `mpdev install` to kick off your deployer
-mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\"}"
+mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"gestalt.secrets.adminUser\": \"admin\", \"gestalt.secrets.adminPassword\": \"gestaltpoc!\", \"gestalt.secrets.databaseUsername\": \"postgres\", \"gestalt.secrets.databasePassword\": \"abcd1234!\", \"gestalt.postgresql.postgresUser\": \"postgres\", \"gestalt.postgresql.postgresPassword\": \"abcd1234!\"}"
 
 echo "Project ${PROJECT} install complete..."
 echo "You should see the project has been deployed at https://console.cloud.google.com/kubernetes/application?project=${PROJECT}"

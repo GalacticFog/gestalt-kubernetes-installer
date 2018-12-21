@@ -3,7 +3,7 @@
 # Generic functions are in utilities-bash.sh
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
-declare -A deployer_config_to_env=(
+declare -A CONFIG_TO_ENV=(
   ["gestalt.secrets.adminPassword"]="ADMIN_PASSWORD"
   ["gestalt.secrets.adminUser"]="ADMIN_USERNAME"
   ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
@@ -54,7 +54,7 @@ getsalt_installer_load_configmap() {
 
   map_env_vars_for_configyaml
   # GKE specific
-  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+  [ ${K8S_PROVIDER:=default} == "gke" ] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
 
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
@@ -74,35 +74,49 @@ map_env_vars_for_configyaml() {
 }
 
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq -c '.data' )
 }
 
 map_env_vars_for_configmap() {
   local JSON_DATA=$1
-  local KEY_TO_ENV_MAP=$2
   local VAR_NAME
   local VAR_VALUE
+  echo "ConfigMap JSON Data: $JSON_DATA"
+  echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
   # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
   for KEY in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
     # Get the name of the ENV var to map for the JSON key or the key itself if there is no key to env var map
-    if [ ${#KEY_TO_ENV_MAP[@]} -eq 0 ]; then
-      VAR_NAME="$KEY"
+    if [ ${#CONFIG_TO_ENV[@]} -eq 0 ]; then
+      VAR_NAME=""
     else
-      VAR_NAME="${KEY_TO_ENV_MAP[$KEY]}"
+      VAR_NAME="${CONFIG_TO_ENV[$KEY]}"
     fi
-    VAR_VALUE=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
-    echo "Setting $VAR_NAME to '$VAR_VALUE'"
-    # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
-    export $VAR_NAME=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
+    if [ -z ${VAR_NAME:+x} ]; then
+      echo "No ENV var mapped for ConfigMap key '${KEY}'"
+    else
+      echo "Mapping ENV var '${VAR_NAME}' for ConfigMap key '${KEY}'"
+      VAR_VALUE=$( echo $JSON_DATA | jq ".[\"$KEY\"]" | sed 's/"//g')
+      echo "Setting ENV var '$VAR_NAME' to '$VAR_VALUE'"
+      # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
+      export $VAR_NAME="${VAR_VALUE}"
+    fi
   done
 }
 
 convert_configmap_to_env_variables() {
   local CONFIGMAP=$1
-  local KEY_TO_ENV_MAP=$2
+  echo "Obtaining ConfigMap data for $CONFIGMAP"
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+  local EXIT_CODE=$?
+  echo "Mapping ConfigMap data for $CONFIGMAP"
   # If the ConfigMap was found, map the config values to env vars - ignore if not found
-  [ $? -eq 0 ] && map_env_var_for_configmap $JSON_DATA $KEY_TO_ENV_MAP
+  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap $JSON_DATA
+  local EXIT_CODE2=$?
+  if [ $EXIT_CODE2 -eq 0 ]; then
+    echo "SUCCESS mapping ConfigMap data for $CONFIGMAP"
+  else
+    echo "FAIL mapping ConfigMap data for $CONFIGMAP"
+  fi
 }
 
 getsalt_installer_setcheck_variables() {
@@ -110,7 +124,11 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
-  export KUBECONFIG_BASE64=`cat ../config/kubeconfig | base64 | tr -d '\n'`
+  if [ -f ../config/kubeconfig ]; then
+    export KUBECONFIG_BASE64=`cat ../config/kubeconfig | base64 | tr -d '\n'`
+  else
+    export KUBECONFIG_BASE64=""
+  fi
 
   # Check all variables in one call
   check_for_required_variables \
@@ -128,7 +146,6 @@ getsalt_installer_setcheck_variables() {
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
     KONG_0_VIRTUAL_HOST \
-    KUBECONFIG_BASE64 \
     LOGGING_IMAGE \
     META_HOSTNAME \
     META_IMAGE \
@@ -149,10 +166,6 @@ getsalt_installer_setcheck_variables() {
     SECURITY_IMAGE \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
-    TRACKING_SERVICE_IMAGE \
-    UBB_HOSTNAME \
-    UBB_IMAGE \
-    UBB_PORT \
     UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
@@ -194,7 +207,6 @@ gestalt_installer_generate_helm_config() {
     DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
-    KUBECONFIG_BASE64 \
     RABBIT_IMAGE \
     RABBIT_HOSTNAME \
     RABBIT_PORT \
@@ -300,7 +312,7 @@ EOF
     cat >> helm-config.yaml <<EOF
 
 ubb:
-  image: ${UBB_IMAGE}
+  image: ${GCP_UBB_IMAGE}
   hostname: ${UBB_HOSTNAME}
   port: ${UBB_PORT}
 
