@@ -75,6 +75,10 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment" --type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-environment', aborting" && exit 1)
+
+
 # Create base providers
 create db-provider
 create security-provider
