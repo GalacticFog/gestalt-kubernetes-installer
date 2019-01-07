@@ -38,6 +38,9 @@ META_PORT: '10131'
 META_PROTOCOL: http
 META_NODEPORT: 31111
 
+# Upgrader
+UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
+
 # Catalog
 CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
 
