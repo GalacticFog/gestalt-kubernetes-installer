@@ -38,6 +38,9 @@ META_PORT: '10131'
 META_PROTOCOL: http
 META_NODEPORT: 31111
 
+# Catalog
+CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
+
 
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
