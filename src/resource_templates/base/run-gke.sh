@@ -17,8 +17,7 @@ check_for_required_variables \
     LOGGING_IMAGE \
     POLICY_IMAGE \
     KONG_0_VIRTUAL_HOST \
-    ELASTICSEARCH_HOST \
-    KUBECONFIG_BASE64
+    ELASTICSEARCH_HOST
 
 create() {
 
@@ -61,12 +60,12 @@ retry_fails() {
 
 exit_if_fail() {
   $*
-  [ $? -eq 0 ] || (echo "FATAL ERROR - exiting" && exit 1)
+  [ $? -eq 0 ] || echo "FATAL ERROR - exiting" && exit 1
 }
 
 # Set context
 fog context set '/root'
-[ $? -eq 0 ] || (echo "Error setting context, aborting" && exit 1)
+[ $? -eq 0 ] || echo "Error setting context, aborting" && exit 1
 
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
@@ -110,7 +109,7 @@ create gatewaymanager-provider  # Create the gateway manager provider after
 
 create_healthchecks() {
   local healthcheck_environment=gestalt-health-environment
-  exit_if_fail retry_fails fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --type 'production' --description '"Gestalt HealthCheck Environment"'
+  exit_if_fail retry_fails 'fog create environment $healthcheck_environment --org root --workspace gestalt-system-workspace --type production --description "Gestalt HealthCheck Environment"'
   sleep 15
   gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
   exit_if_fail retry_fails fog context set $gestalt_healthcheck_context

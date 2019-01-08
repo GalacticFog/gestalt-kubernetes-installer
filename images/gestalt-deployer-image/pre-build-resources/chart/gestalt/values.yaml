@@ -6,16 +6,16 @@ common:
   releaseVersion: latest
 
 secrets:
-  adminUser: admin
+  adminUser: ''
   adminPassword: ''
-  databaseUsername: postgres
+  databaseUsername: ''
   databasePassword: ''
 
 installer:
-  image: docker.io/galacticfog/gestalt-installer:gcp
+  image: gcr.io/galacticfog-public/gestalt-installer:testing
 
 security:
-  image: docker.io/galacticfog/gestalt-security:latest
+  image: gcr.io/galacticfog-public/gestalt-security:latest
   exposedServiceType: NodePort
   hostname: gestalt-security.gestalt-system.svc.cluster.local
   port: 9455
@@ -23,13 +23,13 @@ security:
   databaseName: gestalt-security
 
 rabbit:
-  image: docker.io/galacticfog/rabbit:latest
+  image: gcr.io/galacticfog-public/rabbit:latest
   hostname: gestalt-rabbit.gestalt-system
   port: 5672
   httpPort: 15672
 
 elastic:
-  image: docker.io/galacticfog/elasticsearch-docker:5.3.1
+  image: gcr.io/galacticfog-public/elasticsearch-docker:5.3.1
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
@@ -37,7 +37,7 @@ elastic:
     image: busybox:1.29.3
 
 meta:
-  image: docker.io/galacticfog/gestalt-meta:latest
+  image: gcr.io/galacticfog-public/gestalt-meta:latest
   exposedServiceType: NodePort
   hostname: gestalt-meta.gestalt-system.svc.cluster.local
   port: 10131
@@ -46,11 +46,13 @@ meta:
   nodePort: 31111
 
 logging:
-  image: docker.io/galacticfog/gestalt-log:latest
+  image: gcr.io/galacticfog-public/gestalt-log:latest
   nodePort: 31114
+  ingress:
+    hostname: ''
 
 ui:
-  image: docker.io/galacticfog/gestalt-ui-react:latest
+  image: gcr.io/galacticfog-public/gestalt-ui-react:latest
   exposedServiceType: NodePort
   port: 80
   protocol: http
@@ -67,10 +69,10 @@ db:
   databaseName: postgres
 
 postgresql:
-  image: postgres
+  image: gcr.io/galacticfog-public/postgres
   imageTag: 9.6.2
-  postgresUser: postgres
-  postgresPassword: 'XXXX'
+  postgresUser: ''
+  postgresPassword: ''
   postgresDatabase: postgres
   persistence:
     size: 100Mi
@@ -85,16 +87,16 @@ postgresql:
     type: ClusterIP
 
 redis:
-  image: redis 
-  # image: docker.io/galacticfog/gestalt-redis:latest
+  # image: redis 
+  image: gcr.io/galacticfog-public/gestalt-redis:latest
   hostname: gestalt-redis.gestalt-system
   port: 6379
   
 ubb:
-  image: docker.io/galacticfog/gestalt-ubb-agent:latest
+  image: gcr.io/galacticfog-public/gestalt-ubb-agent:latest
   hostname: gestalt-ubb.gestalt-system
   port: 6380
 
 trackingService:
-  image: docker.io/galacticfog/gestalt-tracking-service:latest
+  image: gcr.io/galacticfog-public/gestalt-tracking-service:latest
 

@@ -2,45 +2,50 @@
 
 # Generic functions are in utilities-bash.sh
 
+  #["gestalt.secrets.adminPassword"]="ADMIN_PASSWORD"
+  #["gestalt.secrets.adminUser"]="ADMIN_USERNAME"
+  #["gestalt.secrets.databasePassword"]="DATABASE_PASSWORD"
+  #["gestalt.secrets.databaseUsername"]="DATABASE_USERNAME"
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 declare -A CONFIG_TO_ENV=(
-  ["gestalt.secrets.adminPassword"]="ADMIN_PASSWORD"
-  ["gestalt.secrets.adminUser"]="ADMIN_USERNAME"
-  ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
-  ["gestalt.secrets.databasePassword"]="DATABASE_PASSWORD"
-  ["gestalt.secrets.databaseUsername"]="DATABASE_USERNAME"
-  ["gestalt.laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
-  ["gestalt.elastic.hostname"]="ELASTICSEARCH_HOST"
-  ["gestalt.elastic.image"]="ELASTICSEARCH_IMAGE"
-  ["gestalt.laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
-  ["gestalt.gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
-  ["gestalt.laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
-  ["gestalt.laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
-  ["gestalt.kong.image"]="KONG_IMAGE"
-  ["gestalt.api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
-  ["gestalt.api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
-  ["gestalt.logging.image"]="LOGGING_IMAGE"
-  ["gestalt.meta.hostname"]="META_HOSTNAME"
-  ["gestalt.meta.image"]="META_IMAGE"
-  ["gestalt.meta.port"]="META_PORT"
-  ["gestalt.meta.protocol"]="META_PROTOCOL"
-  ["gestalt.laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
-  ["gestalt.policy.image"]="POLICY_IMAGE"
-  ["gestalt.laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
-  ["gestalt.rabbit.host"]="RABBIT_HOST"
-  ["gestalt.rabbit.hostname"]="RABBIT_HOSTNAME"
-  ["gestalt.rabbit.httpPort"]="RABBIT_HTTP_PORT"
-  ["gestalt.rabbit.image"]="RABBIT_IMAGE"
-  ["gestalt.rabbit.port"]="RABBIT_PORT"
-  ["gestalt.laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
-  ["gestalt.security.hostname"]="SECURITY_HOSTNAME"
-  ["gestalt.security.image"]="SECURITY_IMAGE"
-  ["gestalt.security.port"]="SECURITY_PORT"
-  ["gestalt.security.protocol"]="SECURITY_PROTOCOL"
-  ["gestalt.ui.image"]="UI_IMAGE"
-  ["gestalt.ui.ingress.host"]="UI_HOSTNAME"
-  ["gestalt.ui.ingress.port"]="UI_PORT"
-  ["getsalt.ui.ingress.protocol"]="UI_PROTOCOL"
+  ["secrets.adminPassword"]="ADMIN_PASSWORD"
+  ["secrets.adminUser"]="ADMIN_USERNAME"
+  ["secrets.databasePassword"]="DATABASE_PASSWORD"
+  ["secrets.databaseUsername"]="DATABASE_USERNAME"
+  ["database.hostname"]="DATABASE_HOSTNAME"
+  ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
+  ["elastic.hostname"]="ELASTICSEARCH_HOST"
+  ["elastic.image"]="ELASTICSEARCH_IMAGE"
+  ["laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
+  ["gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
+  ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
+  ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
+  ["kong.image"]="KONG_IMAGE"
+  ["api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
+  ["logging.image"]="LOGGING_IMAGE"
+  ["logging.ingress.hostname"]="LOGGING_SERVICE_HOST"
+  ["meta.hostname"]="META_HOSTNAME"
+  ["meta.image"]="META_IMAGE"
+  ["meta.port"]="META_PORT"
+  ["meta.protocol"]="META_PROTOCOL"
+  ["laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
+  ["policy.image"]="POLICY_IMAGE"
+  ["laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
+  ["rabbit.host"]="RABBIT_HOST"
+  ["rabbit.hostname"]="RABBIT_HOSTNAME"
+  ["rabbit.httpPort"]="RABBIT_HTTP_PORT"
+  ["rabbit.image"]="RABBIT_IMAGE"
+  ["rabbit.port"]="RABBIT_PORT"
+  ["laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
+  ["security.hostname"]="SECURITY_HOSTNAME"
+  ["security.image"]="SECURITY_IMAGE"
+  ["security.port"]="SECURITY_PORT"
+  ["security.protocol"]="SECURITY_PROTOCOL"
+  ["ui.image"]="UI_IMAGE"
+  ["ui.ingress.host"]="UI_HOSTNAME"
+  ["ui.ingress.port"]="UI_PORT"
+  ["ui.ingress.protocol"]="UI_PROTOCOL"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -83,6 +88,10 @@ map_env_vars_for_configmap() {
   local VAR_VALUE
   echo "ConfigMap JSON Data: $JSON_DATA"
   echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
+  local KEY_NAME
+  for KEY_NAME in ${CONFIG_TO_ENV[@]}; do
+    echo "$KEY_NAME / ${CONFIG_TO_ENV[$KEY_NAME]}"
+  done
   # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
   for KEY in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
     # Get the name of the ENV var to map for the JSON key or the key itself if there is no key to env var map
@@ -606,32 +615,119 @@ servicename_is_unique_or_exit() {
   local found="false"
   for s in $list; do
     # Trying to find a unique service name.  If the service was already found before, it's not a unique name
-    if [ "$found" == "true" ]; then
-      if [ "$s" == "$service_name" ]; then
-        exit_with_error "Found multiple services with name '$service_name', aborting"
-      fi
-    fi
-
     if [ "$s" == "$service_name" ]; then
+      [ "$found" == "true" ] && exit_with_error "Found multiple services with name '$service_name', aborting"
       found="true"
-      echo "Found service with name '$s'"
     fi
   done
 
   if [ "$found" != "true" ]; then 
-    exit_with_error "Did not find a unique '$service_name' service"
+    exit_with_error "Could not find any services with name '$service_name'!"
   fi
-
-  echo "Found uniquely named service '$service_name'"
 }
 
 get_service_namespace() {
-  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
+  local service=$1
+  servicename_is_unique_or_exit $service
+  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$service\") | .namespace"
 }
 
+create_readiness_probe() {
+  local deployment=$1
+  local service=$2
+  local container=$3
+  local endpoint=${4:="/"}
+  local port=${5:=80}
+  local namespace=$6
+
+  [ -z $deployment ] && exit_with_error "deployment name blank or undefined for create_readiness_probe"
+  [ -z $service ] && exit_with_error "service name blank or undefined for create_readiness_probe"
+  [ -z $container ] && exit_with_error "container name blank or undefined for create_readiness_probe"
+
+  [ -z $namespace ] && namespace=$(get_service_namespace $service)
+
+  echo "Creating ${service} readinessProbe in deployment '${namespace}/${deployment}'"
+  echo "Creating ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+
+  local render=<<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: $deployment
+  namespace: $namespace
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: $container
+        readinessProbe:
+          httpGet:
+            path: $endpoint
+            port: $port
+            scheme: HTTP
+EOF
+
+  echo "Rendered Template:"
+  echo $render
+
+  kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: $deployment
+  namespace: $namespace
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: $container
+        readinessProbe:
+          httpGet:
+            path: $endpoint
+            port: $port
+            scheme: HTTP
+EOF
+
+  exit_on_error "Could not create ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+  
+  echo "SUCCESS created readiness probe for '${service}' on endpoint '${endpoint}' port '$port'!"
+}
+
+create_ingress() {
+  local service=$1
+  local port=${2:=80}
+  local namespace=$3
+
+  [ -z $service ] && exit_with_error "service name blank or undefined for create_ingress"
+
+  [ -z $namespace ] && namespace=$(get_service_namespace $service)
+
+  echo "Namespace for service '$service' is '$namespace'"
+
+  echo "Creating Kubernetes Ingress resource for service '${namespace}/${service}' port '${port}'"
+
+  kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: $service
+  namespace: $namespace
+spec:
+  backend:
+    serviceName: $service
+    servicePort: $port
+EOF
+
+  exit_on_error "Could not create ingress to '$namespace/$service' port '$port' (kubectl error code $?), aborting."
+
+  echo "SUCCESS created ingress to '$namespace/$service' port '$port'!"
+}
 
 set_kong_service_namespace() {
-  export KONG_SERVICE_NAMESPACE=$(get_service_namespace kng-ext)
+  local service=$1
+  export KONG_SERVICE_NAMESPACE=$(get_service_namespace $service)
   echo "KONG_SERVICE_NAMESPACE == ${KONG_SERVICE_NAMESPACE}"
 }
 
@@ -643,7 +739,7 @@ if_kong_ingress_service_name_is_set() {
     echo "KONG_INGRESS_SERVICE_NAME not provided!  Skipping '$run_command'"
     return 99
   else
-    set_kong_service_namespace
+    set_kong_service_namespace ${KONG_INGRESS_SERVICE_NAME}
     echo "KONG_INGRESS_SERVICE_NAME was '${KONG_SERVICE_NAMESPACE}/${KONG_INGRESS_SERVICE_NAME}'"
     echo "Running '$run_command'"
     $run_command
@@ -688,59 +784,47 @@ and_health_api_is_working() {
 }
 
 create_kong_readiness_probe() {
-  local namespace=$KONG_SERVICE_NAMESPACE
-
-  echo "Creating readinessProbe for deployment '${namespace}/kng"
-
-  kubectl apply -f - <<EOF
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: kng
-  namespace: $namespace
-spec:
-  replicas: 1
-  template:
-    spec:
-      containers:
-      - name: kng
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-            scheme: HTTP
-EOF
-
-  exit_on_error "Could not create Kong readinessProbe"
-  
-  echo "Kong readiness probe created!"
+  # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
+  create_readiness_probe kng $KONG_INGRESS_SERVICE_NAME kng "/health" 8000 $KONG_SERVICE_NAMESPACE
 }
 
 create_kong_ingress_v2() {
-  local service_name=${KONG_INGRESS_SERVICE_NAME:=kng}
-  local hostname=${KONG_INGRESS_HOSTNAME:=localhost}
-
-  servicename_is_unique_or_exit $service_name
-
-  local service_namespace=$(get_service_namespace $service_name)
-
-  echo "Namespace for Kong service '$service_name' is '$service_namespace'"
-
-  echo "Creating Kubernetes Ingress resource for service $service_name hostname $hostname..."
-
-  kubectl apply -f - <<EOF
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: $service_name
-  namespace: $service_namespace
-spec:
-  backend:
-    serviceName: $service_name
-    servicePort: 8000
-EOF
-
-  exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."
-
-  echo "Kong ingress to '$service_namespace/$service_name' configured for '$hostname'."
+  # create_ingress service [port] [namespace]
+  create_ingress $KONG_INGRESS_SERVICE_NAME 8000 $KONG_SERVICE_NAMESPACE
 }
+
+if_logging_service_host_is_set() {
+  local run_command=$*
+  echo "---------- Checking LOGGING_SERVICE_HOST for '$run_command' ----------"
+
+  if [ -z $LOGGING_SERVICE_HOST ]; then
+    echo "LOGGING_SERVICE_HOST not provided!  Skipping '$run_command'"
+    return 99
+  else
+    echo "LOGGING_SERVICE_HOST was '${LOGGING_SERVICE_HOST}'"
+    echo "Running '$run_command'"
+    $run_command
+  fi
+}
+
+create_logging_service_ingress() {
+  local deployment=${1:-log}
+  local service=${2:-log-ext}
+  local container=${3:-log}
+  local namespace=$4
+
+  echo "---------- START Logging service Ingress $deployment / $service / $container / $namespace ---------"
+
+  [ -z $namespace ] && namespace=$(get_service_namespace $service)
+  echo "---------- LOGGING SERVICE NAMESPACE : $namespace"
+
+  # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
+  echo "---------- CREATING READINESS PROBE"
+  create_readiness_probe $deployment $service $container "/stats" 9000 $namespace
+  # create_ingress service [port] [namespace]
+  echo "---------- CREATING INGRESS"
+  create_ingress $service 9000 $namespace
+
+  echo "---------- END Logging service Ingress $deployment / $service / $container / $namespace ---------"
+}
+

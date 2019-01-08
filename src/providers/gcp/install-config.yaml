@@ -16,7 +16,7 @@ JS_EXECUTOR_MIN_COOL: '1'
 
 # Kong
 KONG_0_EXTERNAL_PROTOCOL: http
-KONG_0_VIRTUAL_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
+KONG_0_VIRTUAL_HOST: api.yourdomain.com # The public URL of the API gateway (e.g. api1.example.com)
 # KONG_INGRESS_HOSTNAME: unused - would be needed to set a hostname for API Ingress
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
@@ -28,9 +28,11 @@ LASER_PROVIDER_CUSTOMIZE: '0'
 LASER_PROVIDER_CUSTOM_EXECUTORS: python-3x6x1-executor:python-3x6x3-executor
 LASER_PROVIDER_DEFINITION: laser-provider
 LASER_SERVICE_VHOST: ''
-LOGGING_NODEPORT: '31114'
-LOGGING_SERVICE_HOST: localhost:31114
+
+# Logging
 LOGGING_SERVICE_PROTOCOL: http
+LOGGING_SERVICE_HOST: logs.yourdomain.com
+LOGGING_NODEPORT: '31114'
 
 # Meta
 META_HOSTNAME: gestalt-meta.gestalt-system.svc.cluster.local
@@ -76,27 +78,27 @@ POSTGRES_IMAGE_TAG: '9.6.2'
 POSTGRES_IMAGE_NAME: postgres
 
 # Images
-DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:latest
-ELASTICSEARCH_IMAGE:   docker.io/galacticfog/elasticsearch-docker:5.3.1
-GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:latest
-GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:latest
-GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:latest
-JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:latest
-JVM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-laser-executor-jvm:latest
-KONG_IMAGE:            docker.io/galacticfog/kong:latest
-LASER_IMAGE:           docker.io/galacticfog/gestalt-laser:latest
-LOGGING_IMAGE:         docker.io/galacticfog/gestalt-log:latest
-META_IMAGE:            docker.io/galacticfog/gestalt-meta:latest
-NODEJS_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-nodejs:latest
-POLICY_IMAGE:          docker.io/galacticfog/gestalt-policy:latest
-PYTHON_3_6_1_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.1
-PYTHON_3_6_3_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.3
-PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python:latest
-RABBIT_IMAGE:                docker.io/galacticfog/rabbit:latest
-RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:latest
-SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:latest
-UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:latest
-REDIS_IMAGE:                 redis # gcr.io/galacticfog/gestalt-redis:latest
+DOTNET_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-dotnet:latest
+ELASTICSEARCH_IMAGE:   gcr.io/galacticfog-public/elasticsearch-docker:5.3.1
+GOLANG_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-golang:latest
+GWM_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt-api-gateway:latest
+GWM_IMAGE:             gcr.io/galacticfog-public/gestalt-api-gateway:latest
+JS_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt-laser-executor-js:latest
+JVM_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt-laser-executor-jvm:latest
+KONG_IMAGE:            gcr.io/galacticfog-public/kong:latest
+LASER_IMAGE:           gcr.io/galacticfog-public/gestalt-laser:latest
+LOGGING_IMAGE:         gcr.io/galacticfog-public/gestalt-log:latest
+META_IMAGE:            gcr.io/galacticfog-public/gestalt-meta:latest
+NODEJS_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-nodejs:latest
+POLICY_IMAGE:          gcr.io/galacticfog-public/gestalt-policy:latest
+PYTHON_3_6_1_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-python:python-3.6.1
+PYTHON_3_6_3_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-python:python-3.6.3
+PYTHON_EXECUTOR_IMAGE:       gcr.io/galacticfog-public/gestalt-laser-executor-python:latest
+RABBIT_IMAGE:                gcr.io/galacticfog-public/rabbit:latest
+RUBY_EXECUTOR_IMAGE:         gcr.io/galacticfog-public/gestalt-laser-executor-ruby:latest
+SECURITY_IMAGE:              gcr.io/galacticfog-public/gestalt-security:latest
+UI_IMAGE:                    gcr.io/galacticfog-public/gestalt-ui-react:latest
+REDIS_IMAGE:                 gcr.io/galacticfog/gestalt-redis:latest
 
 
 # GKE specific

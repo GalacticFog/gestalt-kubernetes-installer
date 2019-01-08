@@ -9,5 +9,4 @@ properties:
     networks: null
   services: []
   locations: []
-  data: '#{Config KUBECONFIG_BASE64}'
   linked_providers: []

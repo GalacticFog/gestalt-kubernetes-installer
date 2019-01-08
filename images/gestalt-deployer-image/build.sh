@@ -2,7 +2,7 @@
 
 PUBLISH=1
 SILENT=0
-VERBOSE=0
+VERBOSE=1
 PRINT_IMAGE_ID=0
 REGISTRY="gcr.io/galacticfog-public"
 LABEL="gestalt-deployer"
@@ -131,7 +131,7 @@ if [ ${#TAGS[@]} -gt 0 ]; then
 else
   debug "Building only the default tag '${DEFAULT_TAG}'"
   #PUBLISH=0
-  TAGS=( "$DEFAULT_TAG" )
+  TAGS=( "$DEFAULT_TAG" "gcp" )
 fi
 
 NOT_STRING="NOT "

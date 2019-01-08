@@ -131,7 +131,7 @@ if [ ${#TAGS[@]} -gt 0 ]; then
 else
   debug "Building only the default tag '${DEFAULT_TAG}'"
   #PUBLISH=0
-  TAGS=( "$DEFAULT_TAG" )
+  TAGS=( "$DEFAULT_TAG" "gcp" )
 fi
 
 NOT_STRING="NOT "
