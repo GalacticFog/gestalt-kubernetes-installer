@@ -1,0 +1,24 @@
+name: default-catalog-provider
+description: The Default Catalog Provider
+resource_type: Gestalt::Configuration::Provider::Catalog
+properties:
+  config:
+    endpoints:
+    - kind: https-external
+      url: '#{Config CATALOG_URL}'
+      actions:
+      - name: catalog.open
+        display_name: Catalog
+        description: Open the Catalog Viewer in a new browser tab.
+        post:
+          body:
+            content_type: application/json
+          responses:
+          - code: 200
+            content_type: text/html
+            gestalt_ui:
+              render: newtab
+              locations:
+              - context.nav
+              icon:
+                svg: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMyA5SDF2MTFjMCAxLjExLjg5IDIgMiAyaDE0YzEuMTEgMCAyLS44OSAyLTJIM1Y5em0xNS00VjNjMC0xLjExLS44OS0yLTItMmgtNGMtMS4xMSAwLTIgLjg5LTIgMnYySDV2MTFjMCAxLjExLjg5IDIgMiAyaDE0YzEuMTEgMCAyLS44OSAyLTJWNWgtNXptLTYtMmg0djJoLTRWM3ptMCAxMlY4bDUuNSAzLTUuNSA0eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48L3N2Zz4=

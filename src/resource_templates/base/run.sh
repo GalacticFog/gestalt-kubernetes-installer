@@ -81,7 +81,7 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
-fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment"--type 'production'
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-system-environment', aborting" && exit 1)
 
 # Create base providers
@@ -142,6 +142,9 @@ fi
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog meta POST /migrate -f meta-migrate.json | jq .
+
+# Catalog provider
+create catalog-provider-inline
 
 create_gke_healthchecks() {
   local healthcheck_environment=gestalt-health-environment

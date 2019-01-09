@@ -74,6 +74,10 @@ fog create workspace --name 'gestalt-system-workspace' --description "Gestalt Sy
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
 [ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
 
+fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment" --type 'production'
+[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-environment', aborting" && exit 1)
+
+
 # Create base providers
 create db-provider
 create security-provider
@@ -109,7 +113,8 @@ create gatewaymanager-provider  # Create the gateway manager provider after
 
 create_healthchecks() {
   local healthcheck_environment=gestalt-health-environment
-  exit_if_fail retry_fails 'fog create environment $healthcheck_environment --org root --workspace gestalt-system-workspace --type production --description "Gestalt HealthCheck Environment"'
+  fog create environment $healthcheck_environment --org root --workspace gestalt-system-workspace --type production --description "Gestalt HealthCheck Environment"
+  [ $? -eq 0 ] || (echo "Error creating '${healthcheck_environment}', aborting" && exit 1)
   sleep 15
   gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
   exit_if_fail retry_fails fog context set $gestalt_healthcheck_context
@@ -131,6 +136,9 @@ create_healthchecks
 
 sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
+
+# Catalog provider
+create catalog-provider-inline
 
 ## LDAP setup
 if [ -f ldap/ldap-config.yaml ]; then

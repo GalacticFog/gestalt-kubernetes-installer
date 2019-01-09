@@ -46,6 +46,7 @@ fog context set --path '/root'
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' -d "Gestalt System Workspace"
 fog create environment -w 'gestalt-system-workspace' -n 'gestalt-laser-environment' -d "Gestalt Laser Environment" -t 'production'
+fog create environment -w 'gestalt-system-workspace' -n 'gestalt-system-environment' -d "Gestalt System Environment" -t 'production'
 
 # Create base providers
 fog create resources --config $config_file \
@@ -83,3 +84,7 @@ create gatewaymanager-provider  # Create the gateway manager provider after
                                 # kong providers, as it uses the kong providers as linked providers
 
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser'
+
+# Create catalog provider
+fog create resources --config $config_file \
+  catalog-catalog-provider-inline.yaml
