@@ -9,8 +9,8 @@ exit_on_error() {
 }
 
 # Source
-gestalt_docker_release_tag="release-2.1.0"
-gestalt_installer_docker_release_tag="3.0.3"
+gestalt_docker_release_tag="2.4.1-RC"
+gestalt_installer_docker_release_tag="5.0.0"
 docker_registry="galacticfog"
 # Target
 target_registry="gcr.io/kube-test-env-208414" #GF gke

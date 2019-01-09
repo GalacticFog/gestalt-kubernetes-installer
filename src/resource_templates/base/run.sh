@@ -144,7 +144,9 @@ sleep 20  # Provide time for Meta to settle before migrating the schema
 fog meta POST /migrate -f meta-migrate.json | jq .
 
 # Catalog provider
-create catalog-provider-inline
+if [ "$configure_catalog" == "Yes" ]; then
+  create catalog-provider-inline
+fi
 
 create_gke_healthchecks() {
   local healthcheck_environment=gestalt-health-environment

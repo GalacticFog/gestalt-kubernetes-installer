@@ -20,6 +20,9 @@ declare -A deployer_config_to_env=(
   ["gestalt.api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
   ["gestalt.api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
   ["gestalt.logging.image"]="LOGGING_IMAGE"
+  ["gestalt.logging.protocol"]="LOGGING_PROTOCOL"
+  ["gestalt.logging.hostname"]="LOGGING_HOSTNAME"
+  ["gestalt.logging.port"]="LOGGING_PORT"
   ["gestalt.meta.hostname"]="META_HOSTNAME"
   ["gestalt.meta.image"]="META_IMAGE"
   ["gestalt.meta.port"]="META_PORT"
@@ -252,6 +255,7 @@ rabbit:
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
+  host: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
 #  initController:
 #    image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -272,8 +276,15 @@ meta:
 # kong:
 #   nodePort: ${KONG_NODEPORT}
 
+kubeconfig:
+  base64: ${KUBECONFIG_BASE64}
+
 logging:
+  image: ${LOGGING_IMAGE}
   nodePort: ${LOGGING_NODEPORT}
+  hostname: ${LOGGING_HOSTNAME}
+  port: ${LOGGING_PORT}
+  protocol: ${LOGGING_PROTOCOL}
 
 ui:
   image: ${UI_IMAGE}
