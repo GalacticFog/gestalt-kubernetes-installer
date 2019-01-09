@@ -649,28 +649,6 @@ create_readiness_probe() {
   echo "Creating ${service} readinessProbe in deployment '${namespace}/${deployment}'"
   echo "Creating ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
 
-  local render=<<EOF
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: $deployment
-  namespace: $namespace
-spec:
-  replicas: 1
-  template:
-    spec:
-      containers:
-      - name: $container
-        readinessProbe:
-          httpGet:
-            path: $endpoint
-            port: $port
-            scheme: HTTP
-EOF
-
-  echo "Rendered Template:"
-  echo $render
-
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -816,13 +794,10 @@ create_logging_service_ingress() {
   echo "---------- START Logging service Ingress $deployment / $service / $container / $namespace ---------"
 
   [ -z $namespace ] && namespace=$(get_service_namespace $service)
-  echo "---------- LOGGING SERVICE NAMESPACE : $namespace"
 
   # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
-  echo "---------- CREATING READINESS PROBE"
   create_readiness_probe $deployment $service $container "/stats" 9000 $namespace
   # create_ingress service [port] [namespace]
-  echo "---------- CREATING INGRESS"
   create_ingress $service 9000 $namespace
 
   echo "---------- END Logging service Ingress $deployment / $service / $container / $namespace ---------"

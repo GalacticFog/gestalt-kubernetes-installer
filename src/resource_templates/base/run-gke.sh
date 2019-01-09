@@ -138,7 +138,7 @@ sleep 20  # Provide time for Meta to settle before migrating the schema
 fog ext meta-schema-V7-migrate -f meta-migrate.json --provider 'default-laser' | jq .
 
 # Catalog provider
-create catalog-provider-inline
+# create catalog-provider-inline
 
 ## LDAP setup
 if [ -f ldap/ldap-config.yaml ]; then
