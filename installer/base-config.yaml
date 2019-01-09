@@ -28,8 +28,13 @@ LASER_PROVIDER_CUSTOMIZE: '0'
 LASER_PROVIDER_CUSTOM_EXECUTORS: python-3x6x1-executor:python-3x6x3-executor
 LASER_PROVIDER_DEFINITION: laser-provider
 LASER_SERVICE_VHOST: ''
+
+# Logging
+LOGGING_HOSTNAME: gestalt-log.gestalt-system.svc.cluster.local
+LOGGING_PORT: '80'
+LOGGING_PROTOCOL: http
 LOGGING_NODEPORT: '31114'
-LOGGING_SERVICE_HOST: localhost:31114
+LOGGING_SERVICE_HOST: localhost:31112/log
 LOGGING_SERVICE_PROTOCOL: http
 
 # Meta
@@ -42,8 +47,8 @@ META_NODEPORT: 31111
 UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
 
 # Catalog
-CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
-
+# CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
+CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'

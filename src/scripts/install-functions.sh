@@ -25,6 +25,9 @@ declare -A CONFIG_TO_ENV=(
   ["api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.ingress.hostname"]="LOGGING_SERVICE_HOST"
+  ["logging.protocol"]="LOGGING_PROTOCOL"
+  ["logging.hostname"]="LOGGING_HOSTNAME"
+  ["logging.port"]="LOGGING_PORT"
   ["meta.hostname"]="META_HOSTNAME"
   ["meta.image"]="META_IMAGE"
   ["meta.port"]="META_PORT"
@@ -280,6 +283,7 @@ rabbit:
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
+  host: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
 #  initController:
 #    image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -300,8 +304,15 @@ meta:
 # kong:
 #   nodePort: ${KONG_NODEPORT}
 
+kubeconfig:
+  base64: ${KUBECONFIG_BASE64}
+
 logging:
+  image: ${LOGGING_IMAGE}
   nodePort: ${LOGGING_NODEPORT}
+  hostname: ${LOGGING_HOSTNAME}
+  port: ${LOGGING_PORT}
+  protocol: ${LOGGING_PROTOCOL}
 
 ui:
   image: ${UI_IMAGE}

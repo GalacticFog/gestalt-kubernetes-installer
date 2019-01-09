@@ -144,7 +144,11 @@ sleep 20  # Provide time for Meta to settle before migrating the schema
 fog meta POST /migrate -f meta-migrate.json | jq .
 
 # Catalog provider
-[ ${K8S_PROVIDER:="default"} == "gke" ] || create catalog-provider-inline
+# TODO - Temporarily disable catalog setup for all GKE installs - Seb 1/9/2019
+[ ${K8S_PROVIDER:="default"} == "gke" ] && configure_catalog="No"
+if [ "$configure_catalog" == "Yes" ]; then
+  create catalog-provider-inline
+fi
 
 create_gke_healthchecks() {
   local healthcheck_environment=gestalt-health-environment

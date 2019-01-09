@@ -16,32 +16,4 @@ properties:
         ES_SERVICE_PORT: '9300'
         ES_SNAPSHOT_REPO: 's3_repository'
   linked_providers: []
-  services:
-  - init:
-      binding: eager
-      singleton: true
-    container_spec:
-      name: log
-      properties:
-        cpus: 0.5
-        memory: 1024
-        env:
-          JAVA_OPTS: -Xmx768m
-        num_instances: 1
-        network: ''
-        container_type: DOCKER
-        image: '#{Config LOGGING_IMAGE}'
-        force_pull: true
-        health_checks: []
-        provider:
-          id: '#{Provider /root/default-kubernetes id}'
-        labels: {}
-        port_mappings:
-        - name: service
-          protocol: tcp
-          expose_endpoint: true
-          container_port: 9000
-          lb_port: 9000
-          service_port: #{Config LOGGING_NODEPORT}
-          virtual_hosts: []
-          type: external
+  services: []
