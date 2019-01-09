@@ -33,3 +33,5 @@ spec:
           value: "{{ .Values.meta.protocol }}://{{ .Values.meta.hostname }}:{{ .Values.meta.port }}"
         - name: SEC_API_URL
           value: "{{ .Values.security.protocol }}://{{ .Values.security.hostname }}:{{ .Values.security.port }}"
+        - name: LOG_API_URL
+          value: "{{ .Values.logging.protocol }}://{{ .Values.logging.hostname }}:{{ .Values.logging.port }}"
