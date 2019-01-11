@@ -47,5 +47,3 @@ spec:
           value: "9300"
         - name: ES_SNAPSHOT_REPO
           value: "s3_repository"
-        - name: SKUBER_CONFIG
-          value: "{{ .Values.kubeconfig.base64 }}"

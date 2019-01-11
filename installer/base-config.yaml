@@ -2,8 +2,8 @@
 FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
 
-K8S_PROVIDER: 'gke'
-# K8S_PROVIDER: 'default' - Must be set for GCP Kubernetes installs
+# K8S_PROVIDER: 'gke' - Must be set for GCP Kubernetes installs
+K8S_PROVIDER: 'default'
 
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
@@ -17,7 +17,6 @@ JS_EXECUTOR_MIN_COOL: '1'
 # Kong
 KONG_0_EXTERNAL_PROTOCOL: http
 KONG_0_VIRTUAL_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
-# KONG_INGRESS_HOSTNAME: unused - would be needed to set a hostname for API Ingress
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
 KONG_NODEPORT: '31113'
@@ -107,14 +106,11 @@ RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC
 RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC
 SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC
 UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC
-TRACKING_SERVICE_IMAGE:      docker.io/galacticfog/gestalt-tracking-service:latest
-UBB_IMAGE:                   docker.io/galacticfog/gestalt-ubb-agent:latest
-REDIS_IMAGE:                 docker.io/galacticfog/gestalt-redis:latest
+REDIS_IMAGE:                 redis:latest # docker.io/galacticfog/gestalt-redis:latest
 
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog/gestalt-tracking-service:latest
 GCP_UBB_IMAGE:               gcr.io/galacticfog/gestalt-ubb-agent:latest
-GCP_REDIS_IMAGE:             gcr.io/galacticfog/gestalt-redis:latest
 
 # DATABASE_IMAGE:        postgres
 # DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:latest
@@ -139,8 +135,8 @@ GCP_REDIS_IMAGE:             gcr.io/galacticfog/gestalt-redis:latest
 # UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:latest
 
 # POSTGRES database settings
-internal_database_pv_storage_class: standard
-# internal_database_pv_storage_class: hostpath - Must set to 'standard' for GCP Kubernetes installs
+# internal_database_pv_storage_class: standard - Must set to 'standard' for GCP Kubernetes installs
+internal_database_pv_storage_class: hostpath
 internal_database_pv_storage_size: 100Mi
 postgres_persistence_subpath: postgres
 postgres_memory_request: 100Mi

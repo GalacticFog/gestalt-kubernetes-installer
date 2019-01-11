@@ -2,10 +2,6 @@
 
 # Generic functions are in utilities-bash.sh
 
-  #["gestalt.secrets.adminPassword"]="ADMIN_PASSWORD"
-  #["gestalt.secrets.adminUser"]="ADMIN_USERNAME"
-  #["gestalt.secrets.databasePassword"]="DATABASE_PASSWORD"
-  #["gestalt.secrets.databaseUsername"]="DATABASE_USERNAME"
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 declare -A CONFIG_TO_ENV=(
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
@@ -22,12 +18,11 @@ declare -A CONFIG_TO_ENV=(
   ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
   ["kong.image"]="KONG_IMAGE"
   ["api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
-  ["api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
   ["logging.image"]="LOGGING_IMAGE"
-  ["logging.ingress.hostname"]="LOGGING_SERVICE_HOST"
   ["logging.protocol"]="LOGGING_PROTOCOL"
   ["logging.hostname"]="LOGGING_HOSTNAME"
   ["logging.port"]="LOGGING_PORT"
+  ["logging.ingress.host"]="LOGGING_SERVICE_HOST"
   ["meta.hostname"]="META_HOSTNAME"
   ["meta.image"]="META_IMAGE"
   ["meta.port"]="META_PORT"
@@ -46,9 +41,11 @@ declare -A CONFIG_TO_ENV=(
   ["security.port"]="SECURITY_PORT"
   ["security.protocol"]="SECURITY_PROTOCOL"
   ["ui.image"]="UI_IMAGE"
-  ["ui.ingress.host"]="UI_HOSTNAME"
-  ["ui.ingress.port"]="UI_PORT"
-  ["ui.ingress.protocol"]="UI_PROTOCOL"
+  ["ui.hostname"]="UI_HOSTNAME"
+  ["ui.nodePort"]="UI_PORT"
+  ["ui.protocol"]="UI_PROTOCOL"
+  ["ui.ingress.host"]="UI_SERVICE_HOST"
+  ["ui.ingress.port"]="UI_SERVICE_PORT"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -63,6 +60,7 @@ getsalt_installer_load_configmap() {
   map_env_vars_for_configyaml
   # GKE specific
   [ ${K8S_PROVIDER:=default} == "gke" ] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
+  check_logging_service_host
 
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
@@ -70,6 +68,21 @@ getsalt_installer_load_configmap() {
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
+}
+
+check_logging_service_host() {
+  local APPEND_LOG_PATH="/log"
+  # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
+  if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
+    # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
+    [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
+    if [ -n "$UI_SERVICE_HOST" ]; then
+      LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
+      [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
+      LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
+    fi
+  fi
+  echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
 }
 
 map_env_vars_for_configyaml() {
@@ -283,7 +296,7 @@ rabbit:
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
-  host: ${ELASTICSEARCH_HOST}
+  hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
 #  initController:
 #    image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -781,36 +794,3 @@ create_kong_ingress_v2() {
   # create_ingress service [port] [namespace]
   create_ingress $KONG_INGRESS_SERVICE_NAME 8000 $KONG_SERVICE_NAMESPACE
 }
-
-if_logging_service_host_is_set() {
-  local run_command=$*
-  echo "---------- Checking LOGGING_SERVICE_HOST for '$run_command' ----------"
-
-  if [ -z $LOGGING_SERVICE_HOST ]; then
-    echo "LOGGING_SERVICE_HOST not provided!  Skipping '$run_command'"
-    return 99
-  else
-    echo "LOGGING_SERVICE_HOST was '${LOGGING_SERVICE_HOST}'"
-    echo "Running '$run_command'"
-    $run_command
-  fi
-}
-
-create_logging_service_ingress() {
-  local deployment=${1:-log}
-  local service=${2:-log-ext}
-  local container=${3:-log}
-  local namespace=$4
-
-  echo "---------- START Logging service Ingress $deployment / $service / $container / $namespace ---------"
-
-  [ -z $namespace ] && namespace=$(get_service_namespace $service)
-
-  # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
-  create_readiness_probe $deployment $service $container "/stats" 9000 $namespace
-  # create_ingress service [port] [namespace]
-  create_ingress $service 9000 $namespace
-
-  echo "---------- END Logging service Ingress $deployment / $service / $container / $namespace ---------"
-}
-

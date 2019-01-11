@@ -48,8 +48,11 @@ meta:
 logging:
   image: gcr.io/galacticfog-public/gestalt-log:latest
   nodePort: 31114
+  hostname: gestalt-log.gestalt-system.svc.cluster.local
+  port: 80
+  protocol: http
   ingress:
-    hostname: ''
+    host: '/log' # will be added to the end of the ui.ingress.host
 
 ui:
   image: gcr.io/galacticfog-public/gestalt-ui-react:latest
@@ -60,6 +63,8 @@ ui:
   hostname: gestalt-ui.gestalt-system.svc.cluster.local
   ingress:
     host: localhost
+    port: 80
+    protocol: http
 
 # Gestalt DB settings
 db:

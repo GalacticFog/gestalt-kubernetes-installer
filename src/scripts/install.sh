@@ -88,7 +88,6 @@ stage_2() {
 
   if [ ${K8S_PROVIDER:=default} == "gke" ]; then
     if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
-    if_logging_service_host_is_set create_logging_service_ingress
   fi
 
   if_kong_ingress_service_name_is_set create_kong_ingress_v2

@@ -72,8 +72,8 @@ properties:
     description: "The in-cluster hostname of the Gestalt UI service host."
   ui.ingress.host:
     type: string
-    # default: no default value
-    description: "Enter the DNS name for the Gestalt UI service"
+    default: 'gestalt.yourdomain.com'
+    description: "Enter the DNS name for your Gestalt admin web interface."
   ui.ingress.port:
     type: integer
     default: 80
@@ -102,18 +102,10 @@ properties:
     type: string
     default: "gestalt-elastic.gestalt-system"
     description: "The in-cluster hostname of the Gestalt Elasticsearch service host."
-  logging.ingress.hostname:
-    type: string
-    default: "logs.yourdomain.com"
-    description: "The DNS name to use for Gestalt's Logging Service."
   api.gateway.hostname:
     type: string
     default: "api.yourdomain.com"
     description: "The DNS name to use for Gestalt's API Gateway."
-  api.admin.hostname:
-    type: string
-    default: "api-admin.yourdomain.com"
-    description: "The DNS name to use for Gestalt's API Gateway Admin interface."
   meta.hostname:
     type: string
     default: "gestalt-meta.gestalt-system.svc.cluster.local"
