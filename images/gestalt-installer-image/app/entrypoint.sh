@@ -38,30 +38,13 @@ if [ "$CMD" == 'install' ]; then
       fi
 
     else
-      echo "--------- MARKETPLACE INSTALL ----------"
       # Marketplace install - copy config files over
       mkdir -p /app/install/config
       [ -z ${K8S_PROVIDER+x} ] || echo "K8S_PROVIDER = ${K8S_PROVIDER}"
       ls -alF 
       if [ -d "/app/install/providers/${K8S_PROVIDER}" ]; then
-        FIND_CMD="find /app/install/providers/${K8S_PROVIDER} -type f"
-        echo $FIND_CMD
-        $FIND_CMD
         echo "Copying /app/install/providers/${K8S_PROVIDER} to /app/install/"
         cp -r /app/install/providers/${K8S_PROVIDER}/* /app/install/
-        FIND_CMD="find /app/install -type f"
-        echo $FIND_CMD
-        $FIND_CMD
-        echo "DONE Copying /app/install/providers/${K8S_PROVIDER} to /app/install/"
-        VIEW_FILE="/app/install/resource_templates/base/logging-provider.yaml"
-        if [ -f ${VIEW_FILE} ]; then
-          echo "---------- CONTENTS OF ${VIEW_FILE} ----------"
-          cat ${VIEW_FILE}
-          echo "---------- END OF ${VIEW_FILE} ----------"
-        else
-          echo "---------- FILE NOT FOUND ${VIEW_FILE} ----------"
-          ls -alhF /app/install/resource_templates/base
-        fi
       else
         echo "No directory found /app/install/providers/${K8S_PROVIDER}"
       fi
