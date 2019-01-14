@@ -17,7 +17,7 @@ echo "PROJECT: ${PROJECT}"
 export REGISTRY=gcr.io/${PROJECT}
 echo "REGISTRY: ${REGISTRY}"
 # export APP_NAME=gestalt
-export DEPLOYER_TAG="$REGISTRY/gestalt-deployer:testing"
+export DEPLOYER_TAG="$REGISTRY/deployer:testing"
 echo "DEPLOYER TAG: ${DEPLOYER_TAG}"
 
 export TEST_NAME="gestalt"
