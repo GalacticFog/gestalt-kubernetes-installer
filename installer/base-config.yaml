@@ -1,5 +1,5 @@
 # Installer debug settings
-FOG_CLI_DEBUG: 'true'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
+FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
 
 configure_ldap: 'No'
