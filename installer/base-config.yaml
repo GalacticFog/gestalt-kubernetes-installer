@@ -1,7 +1,6 @@
 # Installer debug settings
 FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
-GESTALT_IMAGE_DEBUG: 'false' # TODO: Add
 
 configure_ldap: 'No'
 configure_catalog: 'No' # Set to 'Yes' to configure catalog
@@ -51,7 +50,7 @@ UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
 
 # Catalog
 # CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
- CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
+CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
