@@ -1,7 +1,7 @@
 KONG_0_EXTERNAL_PROTOCOL: https
 KONG_0_VIRTUAL_HOST: apigw1.eks-dev.galacticfog.com
 
-LOGGING_SERVICE_HOST: log.eks-dev.galacticfog.com.
+LOGGING_SERVICE_HOST: gestalt.eks-dev.galacticfog.com/log
 LOGGING_SERVICE_PROTOCOL: https
 
 PROVISION_INTERNAL_DATABASE: No
