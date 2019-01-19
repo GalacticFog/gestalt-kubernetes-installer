@@ -4,47 +4,11 @@
 # Utilities: Index
 ############################################
 
-# kube_process_kubeconfig - Obtains kubectl configuration and stores into variable
-#                             '${kubeconfig_data}' with kubeurl properly manipulated for installer
 # kube_check_for_required_namespace - Validates whether specified kubernetes namespace exists
 
 ############################################
 # Utilities: START
 ############################################
-
-kube_process_kubeconfig() {
-
-  os=`uname`
-
-  if [ -z "${kubeconfig_data}" ]; then
-
-    log_debug "[${FUNCNAME[0]}] Obtaining kubeconfig from kubectl context '`kubectl config current-context`'"
-    data=$(kubectl config view --raw --flatten=true --minify=true)
-    exit_on_error "[${FUNCNAME[0]}] Could not process kube config, aborting."
-
-    kubeurl='https://kubernetes.default.svc'
-    log_debug "[${FUNCNAME[0]}] Converting server URL to '${kubeurl}'"
-    # for 'http'
-    data=$(echo "${data}" | sed "s;server: http://.*;server: ${kubeurl};g")
-    # for 'https'
-    data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
-
-    echo "$data" > ./stage/config/kubeconfig
-
-    # if [ "${os}" == "Darwin" ]; then
-    #   kubeconfig_data=`echo "${data}" | base64`
-    # elif [ "${os}" == "Linux" ]; then
-    #   kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
-    # else
-    #   log_info "[${FUNCNAME[0]}] Warning: unknown OS type '${os}', treating as Linux"
-    #   kubeconfig_data=`echo "${data}" | base64 | tr -d '\n'`
-    # fi
-
-    exit_on_error "[${FUNCNAME[0]}] Could not base64 encode kube config, aborting."
-
-    echo "OK - Obtain kubectl configuration and set kubeurl for intaller"
-  fi
-}
 
 kube_check_for_required_namespace() {
 

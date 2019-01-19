@@ -28,7 +28,6 @@ install_prefix=gestalt
 install_namespace="gestalt-system"
 
 # Environment checks
-check_kubeconfig
 check_for_kube
 create_or_check_for_required_namespace
 check_for_prior_install

@@ -52,7 +52,9 @@ UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
 
 # Catalog
 # CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
- CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
+CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
+
+CONTAINER_IMPORT_PACKAGE_URL: https://s3.amazonaws.com/gfi.lambdas/container-import.jar
 
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
