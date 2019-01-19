@@ -29,7 +29,8 @@ kube_process_kubeconfig() {
     # for 'https'
     data=$(echo "${data}" | sed "s;server: https://.*;server: ${kubeurl};g")
 
-    echo "$data" > ./stage/config/kubeconfig
+    ### SPECIAL GKE COMMENT OUT
+    # echo "$data" > ./stage/config/kubeconfig
 
     # if [ "${os}" == "Darwin" ]; then
     #   kubeconfig_data=`echo "${data}" | base64`
