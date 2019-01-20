@@ -1,1 +1,7 @@
 K8S_PROVIDER: gke
+
+KONG_0_EXTERNAL_PROTOCOL: https
+KONG_0_VIRTUAL_HOST: apigw1.yourdomain.com
+
+LOGGING_SERVICE_HOST: portal.yourdomain.com/log
+LOGGING_SERVICE_PROTOCOL: https
