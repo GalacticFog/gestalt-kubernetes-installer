@@ -50,14 +50,6 @@ check_for_required_tools() {
   echo "OK - Required tools found."
 }
 
-check_kubeconfig() {
-  # echo "Checking Kubernetes config..."
-
-  kubectl config view --raw --flatten --minify > /dev/null
-  exit_on_error "'kubectl config view' command didn't succeed, aborting."
-  echo "OK - kubeconfig appears to be valid."
-}
-
 check_for_kube() {
   echo "Checking for Kubernetes..."
   local kubecontext="`kubectl config current-context`"
@@ -575,7 +567,7 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
-      exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
+      exit_with_error "Installation failed.  View './logs/gestalt-installer.log' for more details."
     fi
 
     local podstatus=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
