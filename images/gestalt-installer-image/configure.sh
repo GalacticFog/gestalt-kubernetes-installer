@@ -56,9 +56,6 @@ exit_on_error "Unable determine current context 'kubectl config current-context'
 
 check_for_kube
 
-kube_process_kubeconfig
-exit_on_error "Failed to process kubeconfig, aborting."
-
 log_debug "Generate Installer Configuration '. ${installer_config}'"
 . "${installer_config}" "${conf_install}"
 exit_on_error "Issue during building '${installer_config}'"

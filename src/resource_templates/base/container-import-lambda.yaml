@@ -1,0 +1,24 @@
+name: container-import
+resource_type: 'Gestalt::Resource::Node::Lambda'
+resource_state: 'Gestalt::Resource::State::Active'
+description: 'Container Import Lambda'
+properties:
+  apiendpoints: []
+  provider:
+    id: '#{Provider /root/default-laser}'
+    locations: []
+  secrets: []
+  package_url: '#{Config CONTAINER_IMPORT_PACKAGE_URL}'
+  public: true
+  compressed: false
+  cpus: 0.1
+  code_type: package
+  headers:
+    Content-Type: text/plain
+  periodic_info: {}
+  timeout: 60
+  isolate: true
+  handler: com.galacticfog.gestalt.container.KubeContainerImport;run
+  runtime: java;scala
+  env: {}
+  memory: 512

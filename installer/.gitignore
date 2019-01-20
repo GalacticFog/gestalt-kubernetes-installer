@@ -3,6 +3,5 @@ stage/*
 logs
 .eula_info
 .eula_info_client
-config/kubeconfig
 __*
 profiles/minikube/config.yaml
