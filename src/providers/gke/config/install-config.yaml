@@ -76,9 +76,7 @@ UBB_PORT: 6380
 ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 
 # Postgres image
-POSTGRES_IMAGE: docker.io/postgres:9.6.2    # Set this so the image gets downloaded.
-POSTGRES_IMAGE_TAG: '9.6.2'
-POSTGRES_IMAGE_NAME: postgres
+POSTGRES_IMAGE: docker.io/postgres:9.6.11
 
 # Images
 DOTNET_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt-laser-executor-dotnet:latest

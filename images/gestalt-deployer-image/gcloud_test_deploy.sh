@@ -34,7 +34,7 @@ kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketpl
 # mpdev /scripts/doctor.py
 
 # Run `mpdev install` to kick off your deployer
-mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"ui.ingress.host\": \"gestalt.zwobu.com\", \"api.gateway.hostname\": \"api.zwobu.com\", \"secrets.adminUser\": \"admin\", \"secrets.adminPassword\": \"gestaltpoc!\", \"secrets.databaseUsername\": \"postgres\", \"secrets.databasePassword\": \"abcd1235!\", \"postgresql.image\": \"postgres\", \"postgresql.postgresUser\": \"postgres\", \"postgresql.postgresPassword\": \"abcd1235!\"}"
+mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"ui.ingress.host\": \"gestalt.zwobu.com\", \"api.gateway.hostname\": \"api.zwobu.com\", \"secrets.adminUser\": \"admin\", \"secrets.adminPassword\": \"gestaltpoc!\" , \"secrets.databaseName\": \"postgres\" , \"secrets.databaseUsername\": \"postgres\" , \"secrets.databasePassword\": \"abcd1235!\", \"postgresql.image\": \"postgres:9.6.11\"}"
 
 echo "Project ${PROJECT} install complete..."
 echo "You should see the project has been deployed at https://console.cloud.google.com/kubernetes/application?project=${PROJECT}"

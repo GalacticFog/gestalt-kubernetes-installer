@@ -6,10 +6,11 @@ common:
   releaseVersion: latest
 
 secrets:
-  adminUser: ''
-  adminPassword: ''
-  databaseUsername: ''
-  databasePassword: ''
+  adminUser: 'testadmin'
+  adminPassword: 'gestaltgketest!'
+  databaseName: 'postgres'
+  databaseUsername: 'testadmin'
+  databasePassword: 'gestaltpostgres'
 
 installer:
   image: gcr.io/galacticfog-public/gestalt-installer:testing
@@ -74,11 +75,12 @@ db:
   databaseName: postgres
 
 postgresql:
-  image: gcr.io/galacticfog-public/postgres
-  imageTag: 9.6.2
-  postgresUser: ''
-  postgresPassword: ''
-  postgresDatabase: postgres
+  image: gcr.io/galacticfog-public/postgres:9.6.11
+  existingSecret: 'gestalt-secrets'
+  secretKey:
+    database: 'db-database'
+    username: 'db-username'
+    password: 'db-password'
   persistence:
     size: 100Mi
     storageClass: "standard"
@@ -104,4 +106,3 @@ ubb:
 
 trackingService:
   image: gcr.io/galacticfog-public/gestalt-tracking-service:latest
-

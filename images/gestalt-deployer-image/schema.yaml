@@ -38,6 +38,10 @@ properties:
     type: string
     default: ''
     description: "The password for the Gestalt admin user."
+  secrets.databaseName:
+    type: string
+    default: ''
+    description: "The database name for the Gestalt database."
   secrets.databaseUsername:
     type: string
     default: ''
@@ -86,18 +90,6 @@ properties:
     type: boolean
     detault: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
-  postgresql.postgresDatabase:
-    type: string
-    default: "postgres"
-    description: "The Postgres instance's default database name"
-  postgresql.postgresUser:
-    type: string
-    default: ''
-    description: "The Postgres instance admin user's username"
-  postgresql.postgresPassword:
-    type: string
-    default: ''
-    description: "The Postgres instance admin user's password"
   elastic.hostname:
     type: string
     default: "gestalt-elastic.gestalt-system"
@@ -205,7 +197,7 @@ properties:
       type: IMAGE
   postgresql.image:
     type: string
-    default: "postgres:9.6.2"
+    default: "postgres:9.6.11"
     x-google-marketplace:
       type: IMAGE
   kong.image:

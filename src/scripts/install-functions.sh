@@ -227,8 +227,7 @@ gestalt_installer_generate_helm_config() {
     SECURITY_PROTOCOL \
     ADMIN_USERNAME \
     ADMIN_PASSWORD \
-    POSTGRES_IMAGE_NAME \
-    POSTGRES_IMAGE_TAG \
+    POSTGRES_IMAGE \
     DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
@@ -271,6 +270,7 @@ common:
   imagePullPolicy: Always
 
 secrets:
+  databaseName: "{$DATABASE_NAME}"
   databaseUsername: "${DATABASE_USERNAME}"
   databasePassword: "${DATABASE_PASSWORD}"
   adminUser: "${ADMIN_USERNAME}"
@@ -357,11 +357,12 @@ fi
   cat >> helm-config.yaml <<EOF
 
 postgresql:
-  image: "${POSTGRES_IMAGE_NAME}"
-  imageTag: "${POSTGRES_IMAGE_TAG}"
-  postgresUser: ${DATABASE_USERNAME}
-  postgresPassword: "${DATABASE_PASSWORD}"
-  postgresDatabase: ${DATABASE_NAME}
+  image: "${POSTGRES_IMAGE}"
+  existingSecret: 'gestalt-secrets'
+  secretKey:
+    database: db-database
+    username: db-username
+    password: db-password
   persistence:
     size: ${internal_database_pv_storage_size}
     storageClass: "${internal_database_pv_storage_class}"
