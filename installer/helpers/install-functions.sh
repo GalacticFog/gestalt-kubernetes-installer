@@ -50,14 +50,6 @@ check_for_required_tools() {
   echo "OK - Required tools found."
 }
 
-check_kubeconfig() {
-  # echo "Checking Kubernetes config..."
-
-  kubectl config view --raw --flatten --minify > /dev/null
-  exit_on_error "'kubectl config view' command didn't succeed, aborting."
-  echo "OK - kubeconfig appears to be valid."
-}
-
 check_for_kube() {
   echo "Checking for Kubernetes..."
   local kubecontext="`kubectl config current-context`"
@@ -257,13 +249,47 @@ do_prompt_to_continue() {
 }
 
 
+generate_slack_payload() {
+
+  local eula_data="$1"
+
+  . ${eula_data}_client
+
+  ui_image_version=$(grep '^UI_IMAGE' base-config.yaml | grep -v '^#' | awk '{print $2}' | awk -F':' '{print $2}')
+
+  local payload="{\
+      \"eventName\": \"gestalt-k8s-installer-eula-accepted\",\
+      \"payload\": {\
+      \"name\": \"$name\",\
+      \"company\": \"$company\",\
+      \"email\": \"$email\",\
+      \"message\": \"Gestalt Kubernetes Installer: EULA Accepted\",\
+      \"slackMessage\": \"\
+          \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
+          \n\n          version: $ui_image_version ($(uname))\
+          \n\n          context: $kube_type\
+          \n\n          name: $name\
+          \n\n          company: $company\
+          \n\n          email: $email\"\
+        }\
+  }"
+  echo $payload > ${eula_data}
+
+}
+
 accept_eula() {
 
   eula_data="./.eula_info"
 
   if [ ! -f ${eula_data} ]; then
-      prompt_eula "${eula_data}"
+    prompt_eula "${eula_data}"
+  else
+    if [ ! -f ${eula_data}_client ]; then
+      parse_eula_client_data "${eula_data}"
+    fi
   fi
+
+  generate_slack_payload "${eula_data}"
 
   curl -H "Content-Type: application/json" -X POST -d "$(cat ${eula_data})" https://gtw1.demo.galacticfog.com/gfsales/message > /dev/null 2>&1
 
@@ -276,6 +302,7 @@ accept_eula() {
   echo "Proceeding with Gestalt Platform installation."
   
 }
+
 
 
 prompt_eula() {
@@ -306,22 +333,11 @@ prompt_eula() {
     case $yn in
         [Yy]*)
 
-        local payload="{\
-                \"eventName\": \"gestalt-k8s-installer-eula-accepted\",\
-                \"payload\": {\
-                    \"name\": \"$name\",\
-                    \"company\": \"$company\",\
-                    \"email\": \"$email\",\
-                    \"message\": \"Gestalt Kubernetes Installer: EULA Accepted\",\
-                    \"slackMessage\": \"\
-                        \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
-                        \n\n          version: $UI_IMAGE ($(uname))\
-                        \n\n          name: $name\
-                        \n\n          company: $company\
-                        \n\n          email: $email\"\
-                }\
-            }"
-            echo $payload > ${eula_data}
+            cat > ${eula_data}_client << DATA
+name="$name"
+company="$company"
+email="$email"
+DATA
 
             return 0
             ;;
@@ -334,6 +350,22 @@ prompt_eula() {
     esac
 
   done
+}
+
+parse_eula_client_data () {
+
+local eula_data="$1"
+
+name=$(cat ${eula_data} | awk -F'"name": "' '{print $2}' | awk -F'", "company": "' '{print $1}')
+company=$(cat ${eula_data} | awk -F'"company": "' '{print $2}' | awk -F'", "email": "' '{print $1}')
+email=$(cat ${eula_data} | awk -F'"email": "' '{print $2}' | awk -F'", "message": "' '{print $1}')
+
+cat > ${eula_data}_client < DATA
+name="$name"
+company="$company"
+email="$email"
+DATA
+
 }
 
 prompt_for_executor_config() {
@@ -535,7 +567,7 @@ wait_for_install_completion() {
       kubectl logs -n gestalt-system gestalt-installer --tail 10
       echo "----End Logs------"
       echo
-      exit_with_error "Installation failed.  View './log/gestalt-installer.log' for more details."
+      exit_with_error "Installation failed.  View './logs/gestalt-installer.log' for more details."
     fi
 
     local podstatus=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')

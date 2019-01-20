@@ -18,10 +18,6 @@ exit_on_error "Unable determine current context '${kubectl} config current-conte
 
 # check_for_kube
 
-# TODO - Remove dependency on kubeconfig
-kube_process_kubeconfig
-exit_on_error "Failed to process kubeconfig, aborting."
-
 ## CACERTS file
 echo "Checking for custom cacerts..."
 

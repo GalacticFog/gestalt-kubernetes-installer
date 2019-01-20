@@ -2,6 +2,6 @@ fog
 stage/*
 logs
 .eula_info
-config/kubeconfig
+.eula_info_client
 __*
 profiles/minikube/config.yaml

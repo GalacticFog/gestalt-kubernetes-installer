@@ -1,6 +1,7 @@
 # Installer debug settings
 FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
+GESTALT_IMAGE_DEBUG: 'false' # TODO: Add
 
 configure_ldap: 'No'
 configure_catalog: 'No' # Set to 'Yes' to configure catalog
@@ -52,6 +53,8 @@ UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
 # CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
 CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
+CONTAINER_IMPORT_PACKAGE_URL: https://s3.amazonaws.com/gfi.lambdas/container-import.jar
+
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
 PYTHON_EXECUTOR_MIN_COOL: '1'
@@ -90,6 +93,7 @@ POSTGRES_IMAGE: docker.io/postgres:9.6.11
 DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1-RC
 ELASTICSEARCH_IMAGE:   docker.io/galacticfog/elasticsearch-docker:5.3.1
 GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1-RC
+GRAALVM_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1-01bab844
 GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC
 GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC
 JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:2.4.1-RC
@@ -107,7 +111,9 @@ RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC
 RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC
 SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC
 UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC
-REDIS_IMAGE:                 redis:latest # docker.io/galacticfog/gestalt-redis:latest
+# UPGRADER_IMAGE:              docker.io/galacticfog/galacticfog/gestalt-upgrader:2.4.1-RC
+REDIS_IMAGE:                 redis # gcr.io/galacticfog/gestalt-redis:latest
+
 
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:latest

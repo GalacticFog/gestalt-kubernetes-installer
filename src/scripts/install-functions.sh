@@ -149,12 +149,6 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
-  if [ -f ../config/kubeconfig ]; then
-    export KUBECONFIG_BASE64=`cat ../config/kubeconfig | base64 | tr -d '\n'`
-  else
-    export KUBECONFIG_BASE64=""
-  fi
-
   # Check all variables in one call
   check_for_required_variables \
     ADMIN_PASSWORD \
@@ -316,9 +310,6 @@ meta:
 
 # kong:
 #   nodePort: ${KONG_NODEPORT}
-
-kubeconfig:
-  base64: ${KUBECONFIG_BASE64}
 
 logging:
   image: ${LOGGING_IMAGE}

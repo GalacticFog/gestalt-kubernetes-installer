@@ -42,6 +42,15 @@ exit_if_fail() {
   [ $? -eq 0 ] || (echo "FATAL ERROR - exiting" && exit 1)
 }
 
+exit_with_error() {
+  error "$@"
+  exit 1
+}
+
+exit_on_error() {
+  [ $? -eq 0 ] || exit_with_error "$@"
+}
+
 kube_copy_secret () {
 
   [[ $# -ne 4 ]] && echo && exit_with_error "[${FUNCNAME[0]}] Function expects 4 parameter(-s) ($# provided) [$@], aborting."
@@ -72,17 +81,17 @@ fi
 
 # Set context
 fog context set '/root'
-[ $? -eq 0 ] || (echo "Error setting context, aborting" && exit 1)
+exit_on_error "Error setting context, aborting"
 
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
-[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-workspace', aborting" && exit 1)
+exit_on_error "Error creating 'gestalt-system-workspace', aborting"
 
 fog create environment 'gestalt-laser-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt Laser Environment" --type 'production'
-[ $? -eq 0 ] || (echo "Error creating 'gestalt-laser-environment', aborting" && exit 1)
+exit_on_error "Error creating 'gestalt-laser-environment', aborting"
 
 fog create environment 'gestalt-system-environment' --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt System Environment" --type 'production'
-[ $? -eq 0 ] || (echo "Error creating 'gestalt-system-environment', aborting" && exit 1)
+exit_on_error "Error creating 'gestalt-system-environment', aborting"
 
 # Create base providers
 create db-provider
@@ -180,3 +189,88 @@ if [ "$configure_ldap" == "Yes" ]; then
     fog admin create-account-store -f root-directory-account-store.yaml --directory root-ldap-directory --org root
   fi
 fi
+
+
+### Create import container action
+
+# Create the container import lambda
+fog create resource -f container-import-lambda.yaml --context /root/gestalt-system-workspace/gestalt-system-environment
+
+get_laser_host() {
+  local namespace=$(kubectl get svc --all-namespaces | grep lsr | awk '{print $1}')
+  [ -z "$namespace" ] && exit_with_error "Could not find laser's namespace, aborting"
+  echo "http://lsr.${namespace}.svc.cluster.local:9000"
+}
+
+get_lambda_invoke_url() {
+  local laser_host=$(get_laser_host)
+  local lambda_id=$(fog show lambdas --context /root/gestalt-system-workspace/gestalt-system-environment --name container-import --fields name,id | grep container-import | awk '{print $2}')
+  echo "${laser_host}/lambdas/${lambda_id}/invokeSync"
+}
+
+patch_caas_provider() {
+  local lambda_url=$(get_lambda_invoke_url)
+  exit_on_error "Failed to get lambda_url, aborting"
+
+  cat > /tmp/patch.json <<EOF
+  [{
+    "op": "replace",
+    "path": "/properties/config/endpoints",
+    "value": [{
+        "kind": "",
+        "url": "${lambda_url}",
+        "actions": [
+            {"name": "container.import", "post": {"responses": [{"code": 200}]}},
+            {"name": "secret.import", "post": {"responses": [{"code": 200}]}},
+            {"name": "volume.import", "post": {"responses": [{"code": 200}]}}
+        ]
+    }]
+}]
+EOF
+
+  echo "Patching CaaS provider with container-import info"
+  fog meta PATCH -f /tmp/patch.json /root/providers/${caas_provider_id}
+  exit_on_error "Failed to patch CaaS provider with container-import info, aborting"
+}
+
+caas_provider_id=$(fog show providers / --name default-kubernetes -o json | jq -r '.[].id')
+exit_on_error "Failed to get 'default-kubernetes' provider ID, aborting"
+if [ "$caas_provider_id" == "null" ]; then
+  exit_with_error "caas_provider_id is null, aborting"
+fi
+
+
+# Patch the CaaS provider
+patch_caas_provider
+
+
+### Import containers
+import_container() {
+  local name=$1
+
+  cat > /tmp/${name}.json <<EOF
+{
+    "name":"${name}",
+    "description":"$name imported on `date`",
+    "properties":{
+        "image": "n/a",
+        "container_type": "DOCKER",
+        "provider":{"id":"${caas_provider_id}","locations":[]},
+        "external_id": "/namespaces/gestalt-system/deployments/${name}"
+    }
+}
+EOF
+
+  echo "Importing container $name..."
+  fog meta POST /root/environments/${gestalt_system_env_id}/containers?action=import -f /tmp/${name}.json
+  exit_on_error "Failed to import '${name}' container, aborting"
+}
+
+
+gestalt_system_env_id=$(fog show environments /root/gestalt-system-workspace --fields=name,id | grep gestalt-system-environment | awk '{print $2}')
+exit_on_error "Failed to get gestalt-system-environment ID, aborting"
+
+## Skip for now
+# for c in `kubectl get deploy -n gestalt-system --no-headers | awk '{print $1}'`; do 
+#   import_container $c
+# done
