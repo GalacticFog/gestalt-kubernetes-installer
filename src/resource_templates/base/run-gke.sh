@@ -17,8 +17,7 @@ check_for_required_variables \
     LOGGING_IMAGE \
     POLICY_IMAGE \
     KONG_0_VIRTUAL_HOST \
-    ELASTICSEARCH_HOST \
-    KUBECONFIG_BASE64
+    ELASTICSEARCH_HOST
 
 create() {
 
