@@ -71,11 +71,16 @@ remove_gestalt_platform() {
     return 0
   fi
 
-  # Remove Gestalt Platform
+  # Remove the Gestalt Platform application manifest if the cluster has the Applications API installed.
+  # Send all output to /dev/null and ignore failures in case the Application API isn't installed.
+  kubectl delete applications --timeout=60s --all --namespace $install_namespace 2>&1 1>/dev/null
 
+  # The echo statement resets the value of $? and prints some space to the console...
   echo ""
+
+  # Remove all the Gestalt Platform standard resources and display output.
   echo "Removing Gestalt Platform components from '$install_namespace' namespace..."
-  kubectl delete applications,daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+  kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
     --timeout=30s --all --namespace $install_namespace
 
   if [ $? -ne 0 ]; then
