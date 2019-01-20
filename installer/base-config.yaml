@@ -113,10 +113,6 @@ UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC
 # UPGRADER_IMAGE:              docker.io/galacticfog/galacticfog/gestalt-upgrader:2.4.1-RC
 REDIS_IMAGE:                 redis # gcr.io/galacticfog/gestalt-redis:latest
 
-<<<<<<< HEAD
-
-=======
->>>>>>> gke-testing
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:latest
 GCP_UBB_IMAGE:               gcr.io/galacticfog-public/gestalt-ubb-agent:latest
