@@ -1,0 +1,19 @@
+name: default-logging
+description: The default logging provider
+resource_type: Gestalt::Configuration::Provider::Logging
+properties:
+  config:
+    env:
+      public:
+        SERVICE_VHOST_0: '#{Config LOGGING_SERVICE_HOST}'
+        SERVICE_VHOST_0_PROTOCOL: '#{Config LOGGING_SERVICE_PROTOCOL}'
+      private:
+        ES_CLUSTER_NAME: myesdb
+        DEFAULT_COMPUTE_TYPE: kube
+        ES_COLD_DAYS: '1'
+        ES_HOT_DAYS: '1'
+        ES_SERVICE_HOST: '#{Config ELASTICSEARCH_HOST}'
+        ES_SERVICE_PORT: '9300'
+        ES_SNAPSHOT_REPO: 's3_repository'
+  linked_providers: []
+  services: []

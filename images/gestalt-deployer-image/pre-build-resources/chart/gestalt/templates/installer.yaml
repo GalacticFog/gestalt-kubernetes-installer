@@ -19,11 +19,6 @@ spec:
   - name: "{{ .Release.Name }}-installer"
     image: "{{ .Values.installer.image }}"
     imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
-    command:
-    - bash
-    args: 
-    - -c
-    - ./entrypoint.sh install debug
     env:
     - name: REPORTING_SECRET
       value: "{{ .Values.reportingSecret }}"

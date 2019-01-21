@@ -183,8 +183,7 @@ Open the _gestalt.conf_ file in your favorite text editor and find the _Database
 # -- To provision an internal database, set provision_internal_database=Yes, then
 # -- the other database settings - host, port, credentials - are ignored.
 provision_internal_database=No
-database_image="postgres"
-database_image_tag="9.6.2"
+database_image="postgres:9.6.11"
 database_hostname="gestalt-postgresql.gestalt-system.svc.cluster.local"
 database_name=postgres
 
@@ -205,8 +204,7 @@ The result should look something like this:
 # -- To provision an internal database, set provision_internal_database=Yes, then
 # -- the other database settings - host, port, credentials - are ignored.
 provision_internal_database=Yes
-database_image="postgres"
-database_image_tag="9.6.2"
+database_image="postgres:9.6.11"
 database_hostname="gestalt-postgresql.gestalt-system.svc.cluster.local"
 database_name=postgres
 

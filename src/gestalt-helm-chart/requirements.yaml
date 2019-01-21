@@ -1,4 +1,7 @@
+# We've forked the postgres chart in order to force this version 
+# to pick up the database's admin username and password from the
+# Gestalt secret rather than it's own. -Seb 1/18/2019
 dependencies:
 - name: postgresql
-  version: 0.8.7
+  version: gestalt
   repository:  https://kubernetes-charts.storage.googleapis.com/

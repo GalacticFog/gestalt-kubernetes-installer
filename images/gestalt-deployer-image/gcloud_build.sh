@@ -1,5 +1,7 @@
 # From https://github.com/GoogleCloudPlatform/marketplace-k8s-app-tools/blob/master/docs/building-deployer-helm.md
 #
+# First: git clone git@github.com:GoogleCloudPlatform/marketplace-k8s-app-tools.git
+#
 # Requires the `docker` and the `gcloud` CLI pre-installed.
 # You'll also want to connect to the GCP cluster. https://console.cloud.google.com/kubernetes/list?project=galacticfog-public
 #

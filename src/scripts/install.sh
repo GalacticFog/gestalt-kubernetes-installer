@@ -27,8 +27,6 @@ stage_1() {
   # Stage 1 - Building configuration
   #
 
-  run getsalt_installer_load_configmap
-  run getsalt_installer_setcheck_variables
   run gestalt_installer_generate_helm_config
 
   echo
@@ -88,11 +86,17 @@ stage_2() {
 
   run gestalt_cli_create_resources #Default or Custom as per config
 
-  [ ${K8S_PROVIDER:=default} == "gke" ] && if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
+  if [ ${K8S_PROVIDER:=default} == "gke" ]; then
+    if_kong_ingress_service_name_is_set and_health_api_is_working create_kong_readiness_probe
+  fi
+
   if_kong_ingress_service_name_is_set create_kong_ingress_v2
 }
 
 #### Main ####
+
+run getsalt_installer_load_configmap
+run getsalt_installer_setcheck_variables
 
 if [ -z ${MARKETPLACE_INSTALL+x} ]; then
   stage_0

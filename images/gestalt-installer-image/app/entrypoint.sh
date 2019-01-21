@@ -26,16 +26,31 @@ if [ "$CMD" == 'install' ]; then
     log=/app/install.log
 
     # Get a config map from the current namespace and write contents to local file
-    kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
+    if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+      # NOT a Marketplace install
+      kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
+
+      # If an install-data package was placed, overwrite the install directories on this image with them
+      if [ -f ./install-data.tar.gz ]; then
+          # Untar in place
+          mkdir -p ./install
+          tar xfzv ./install-data.tar.gz -C ./install
+      fi
+
+    else
+      # Marketplace install - copy config files over
+      mkdir -p /app/install/config
+      [ -z ${K8S_PROVIDER+x} ] || echo "K8S_PROVIDER = ${K8S_PROVIDER}"
+      ls -alF 
+      if [ -d "/app/install/providers/${K8S_PROVIDER}" ]; then
+        echo "Copying /app/install/providers/${K8S_PROVIDER} to /app/install/"
+        cp -r /app/install/providers/${K8S_PROVIDER}/* /app/install/
+      else
+        echo "No directory found /app/install/providers/${K8S_PROVIDER}"
+      fi
+    fi
 
     # TODO: Test the file size, or check if the configmap didn't exist
-
-    # If an install-data package was placed, overwrite the install directories on this image with them
-    if [ -f ./install-data.tar.gz ]; then
-        # Untar in place
-        mkdir -p ./install
-        tar xfzv ./install-data.tar.gz -C ./install
-    fi
 
     echo "Initiating Gestalt platform installation at `date`" | tee -a $log
 

@@ -4,7 +4,7 @@ set -e
 # Use this only for local builds !!!!
 
 # TODO: Make as options publish flag and tag(-s)
-publish="false"
+publish="true"
 # publish="true" # true - do docker push, false - don't
 build_log="./buildoutput"
 

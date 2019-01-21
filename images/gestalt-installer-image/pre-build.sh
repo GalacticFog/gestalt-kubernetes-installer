@@ -32,4 +32,8 @@ echo "- resource_templates"
 cp -r ../../src/resource_templates ./app/install/
 echo "- gestalt-helm-chart"
 cp -r ../../src/gestalt-helm-chart ./app/install/
+echo "Next: Create './app/install'"
+[ -d ./app/install/config ] || mkdir ./app/install/config
+echo "Next: Populate './app/install/config' with license and config files:"
+cp -r ../../src/providers ./app/install/
 echo "======================================================"

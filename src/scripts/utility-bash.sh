@@ -216,15 +216,18 @@ validate_json () {
 ### Manipulations
 convert_json_to_env_variables() {
   json_file_to_process=$1
-  log_debug "Will be checking and converting '${json_file_to_process}'"
+  # log_debug "Will be checking and converting '${json_file_to_process}'"
+  echo "Will be checking and converting '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
   
   all_var_array=$(cat ${json_file_to_process} | awk -F'"' '{print $2}' | grep -v '^$')
+  echo "all_var_array ( ${all_var_array} )"
   for curr_variable in ${all_var_array[@]}; do
     # curr_variable_name=`echo ${curr_variable} | tr '[a-z]' '[A-Z]' | sed 's|-|_|g'` #Make all upper-case and change dashes to underscores
     curr_variable_name=${curr_variable}
     curr_variable_value=`jq -r '.["'${curr_variable}'"]' ${json_file_to_process}`
-    log_debug "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
+    # log_debug "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
+    echo "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
     export eval ${curr_variable_name}=${curr_variable_value}
   done
 

@@ -153,23 +153,26 @@ sleep 20  # Provide time for Meta to settle before migrating the schema
 fog meta POST /migrate -f meta-migrate.json | jq .
 
 # Catalog provider
+# TODO - Temporarily disable catalog setup for all GKE installs - Seb 1/9/2019
+[ ${K8S_PROVIDER:="default"} == "gke" ] && configure_catalog="No"
 if [ "$configure_catalog" == "Yes" ]; then
   create catalog-provider-inline
 fi
 
 create_gke_healthchecks() {
   local healthcheck_environment=gestalt-health-environment
-  sleep 15
-  exit_if_fail retry_fails fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --type 'production' --description '"Gestalt HealthCheck Environment"'
-  sleep 15
+  sleep 10
+  fog create environment $healthcheck_environment --org 'root' --workspace 'gestalt-system-workspace' --description "Gestalt HealthCheck Environment" --type 'production'
+  [ $? -eq 0 ] || exit_with_error "Error creating environment '${healthcheck_environment}', aborting"
+  sleep 10
   local gestalt_healthcheck_context="/root/gestalt-system-workspace/$healthcheck_environment"
   exit_if_fail retry_fails fog context set $gestalt_healthcheck_context
   echo "----- Creating the Kong healthcheck lambda -----"
   exit_if_fail retry_fails fog create resource -f healthcheck-lambda.json
-  sleep 15
+  sleep 10
   echo "----- Creating the Kong healthcheck API -----"
   exit_if_fail retry_fails fog create api --name health --description healthcheck-api --provider default-kong
-  sleep 15
+  sleep 10
   echo "----- Creating the Kong healthcheck API endpoint -----"
   exit_if_fail retry_fails fog create api-endpoint -f healthcheck-apiendpoint.json --api health --lambda health-lambda
   echo "----- Done creating healthchecks -----"

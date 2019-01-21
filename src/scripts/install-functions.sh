@@ -3,47 +3,49 @@
 # Generic functions are in utilities-bash.sh
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
-declare -A deployer_config_to_env=(
-  ["gestalt.admin.password"]="ADMIN_PASSWORD"
-  ["gestalt.admin.user"]="ADMIN_USERNAME"
-  ["gestalt.database.hostname"]="DATABASE_HOSTNAME"
-  ["gestalt.postgresql.postgresPassword"]="DATABASE_PASSWORD"
-  ["gestalt.postgresql.postgresUser"]="DATABASE_USERNAME"
-  ["gestalt.laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
-  ["gestalt.elastic.hostname"]="ELASTICSEARCH_HOST"
-  ["gestalt.elastic.image"]="ELASTICSEARCH_IMAGE"
-  ["gestalt.laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
-  ["gestalt.gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
-  ["gestalt.laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
-  ["gestalt.laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
-  ["gestalt.kong.image"]="KONG_IMAGE"
-  ["gestalt.api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
-  ["gestalt.api.admin.hostname"]="KONG_INGRESS_HOSTNAME"
-  ["gestalt.logging.image"]="LOGGING_IMAGE"
-  ["gestalt.logging.protocol"]="LOGGING_PROTOCOL"
-  ["gestalt.logging.hostname"]="LOGGING_HOSTNAME"
-  ["gestalt.logging.port"]="LOGGING_PORT"
-  ["gestalt.meta.hostname"]="META_HOSTNAME"
-  ["gestalt.meta.image"]="META_IMAGE"
-  ["gestalt.meta.port"]="META_PORT"
-  ["gestalt.meta.protocol"]="META_PROTOCOL"
-  ["gestalt.laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
-  ["gestalt.policy.image"]="POLICY_IMAGE"
-  ["gestalt.laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
-  ["gestalt.rabbit.host"]="RABBIT_HOST"
-  ["gestalt.rabbit.hostname"]="RABBIT_HOSTNAME"
-  ["gestalt.rabbit.httpPort"]="RABBIT_HTTP_PORT"
-  ["gestalt.rabbit.image"]="RABBIT_IMAGE"
-  ["gestalt.rabbit.port"]="RABBIT_PORT"
-  ["gestalt.laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
-  ["gestalt.security.hostname"]="SECURITY_HOSTNAME"
-  ["gestalt.security.image"]="SECURITY_IMAGE"
-  ["gestalt.security.port"]="SECURITY_PORT"
-  ["gestalt.security.protocol"]="SECURITY_PROTOCOL"
-  ["gestalt.ui.image"]="UI_IMAGE"
-  ["gestalt.ui.ingress.host"]="UI_HOSTNAME"
-  ["gestalt.ui.ingress.port"]="UI_PORT"
-  ["getsalt.ui.ingress.protocol"]="UI_PROTOCOL"
+declare -A CONFIG_TO_ENV=(
+  ["secrets.adminPassword"]="ADMIN_PASSWORD"
+  ["secrets.adminUser"]="ADMIN_USERNAME"
+  ["secrets.databasePassword"]="DATABASE_PASSWORD"
+  ["secrets.databaseUsername"]="DATABASE_USERNAME"
+  ["database.hostname"]="DATABASE_HOSTNAME"
+  ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
+  ["elastic.hostname"]="ELASTICSEARCH_HOST"
+  ["elastic.image"]="ELASTICSEARCH_IMAGE"
+  ["laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
+  ["gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
+  ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
+  ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
+  ["kong.image"]="KONG_IMAGE"
+  ["api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["logging.image"]="LOGGING_IMAGE"
+  ["logging.protocol"]="LOGGING_PROTOCOL"
+  ["logging.hostname"]="LOGGING_HOSTNAME"
+  ["logging.port"]="LOGGING_PORT"
+  ["logging.ingress.host"]="LOGGING_SERVICE_HOST"
+  ["meta.hostname"]="META_HOSTNAME"
+  ["meta.image"]="META_IMAGE"
+  ["meta.port"]="META_PORT"
+  ["meta.protocol"]="META_PROTOCOL"
+  ["laser.nodejsExecutor.image"]="NODEJS_EXECUTOR_IMAGE"
+  ["policy.image"]="POLICY_IMAGE"
+  ["laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
+  ["rabbit.host"]="RABBIT_HOST"
+  ["rabbit.hostname"]="RABBIT_HOSTNAME"
+  ["rabbit.httpPort"]="RABBIT_HTTP_PORT"
+  ["rabbit.image"]="RABBIT_IMAGE"
+  ["rabbit.port"]="RABBIT_PORT"
+  ["laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
+  ["security.hostname"]="SECURITY_HOSTNAME"
+  ["security.image"]="SECURITY_IMAGE"
+  ["security.port"]="SECURITY_PORT"
+  ["security.protocol"]="SECURITY_PROTOCOL"
+  ["ui.image"]="UI_IMAGE"
+  ["ui.hostname"]="UI_HOSTNAME"
+  ["ui.nodePort"]="UI_PORT"
+  ["ui.protocol"]="UI_PROTOCOL"
+  ["ui.ingress.host"]="UI_SERVICE_HOST"
+  ["ui.ingress.port"]="UI_SERVICE_PORT"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -55,54 +57,91 @@ randompw() {
 
 getsalt_installer_load_configmap() {
 
-  check_for_required_variables gestalt_config
-  # Convert Yaml config to JSON for easier parsing
-  echo "Creating $gestalt_config from $gestalt_config_yaml..."
-  yaml2json ${gestalt_config_yaml} > ${gestalt_config}
-  validate_json ${gestalt_config}
-  convert_json_to_env_variables ${gestalt_config}
+  map_env_vars_for_configyaml
+  # GKE specific
+  [ ${K8S_PROVIDER:=default} == "gke" ] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
+  check_logging_service_host
 
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
-  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL}
-  
-  # GKE specific
-  [ ${K8S_PROVIDER:=default} == "gke"] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config" deployer_config_to_env
+  logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
 
   log_set_logging_lvl
   logging_lvl_validate 
   # print_env_variables #will print only if debug
 }
 
+check_logging_service_host() {
+  local APPEND_LOG_PATH="/log"
+  # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
+  if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
+    # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
+    [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
+    if [ -n "$UI_SERVICE_HOST" ]; then
+      LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
+      [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
+      LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
+    fi
+  fi
+  echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
+}
+
+map_env_vars_for_configyaml() {
+  check_for_required_variables gestalt_config
+  # Convert Yaml config to JSON for easier parsing
+  echo "Creating $gestalt_config from $gestalt_config_yaml..."
+  yaml2json ${gestalt_config_yaml} > ${gestalt_config}
+  validate_json ${gestalt_config}
+  convert_json_to_env_variables ${gestalt_config}
+}
+
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq -c '.data' )
 }
 
 map_env_vars_for_configmap() {
   local JSON_DATA=$1
-  local KEY_TO_ENV_MAP=$2
   local VAR_NAME
   local VAR_VALUE
+  echo "ConfigMap JSON Data: $JSON_DATA"
+  echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
+  local KEY_NAME
+  for KEY_NAME in ${CONFIG_TO_ENV[@]}; do
+    echo "$KEY_NAME / ${CONFIG_TO_ENV[$KEY_NAME]}"
+  done
   # Feed the JSON through jq to get just the keys, strip all quote chars, and loop through each key name
   for KEY in $( echo $JSON_DATA | jq 'keys | @sh' | sed "s/'//g" | xargs echo ); do
     # Get the name of the ENV var to map for the JSON key or the key itself if there is no key to env var map
-    if [ ${#KEY_TO_ENV_MAP[@]} -eq 0 ]; then
-      VAR_NAME="$KEY"
+    if [ ${#CONFIG_TO_ENV[@]} -eq 0 ]; then
+      VAR_NAME=""
     else
-      VAR_NAME="${KEY_TO_ENV_MAP[$KEY]}"
+      VAR_NAME="${CONFIG_TO_ENV[$KEY]}"
     fi
-    VAR_VALUE=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
-    echo "Setting $VAR_NAME to '$VAR_VALUE'"
-    # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
-    export $VAR_NAME=$( echo $JSON_DATA | jq ".$KEY" | sed 's/"//g')
+    if [ -z ${VAR_NAME:+x} ]; then
+      echo "No ENV var mapped for ConfigMap key '${KEY}'"
+    else
+      echo "Mapping ENV var '${VAR_NAME}' for ConfigMap key '${KEY}'"
+      VAR_VALUE=$( echo $JSON_DATA | jq ".[\"$KEY\"]" | sed 's/"//g')
+      echo "Setting ENV var '$VAR_NAME' to '$VAR_VALUE'"
+      # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
+      export $VAR_NAME="${VAR_VALUE}"
+    fi
   done
 }
 
 convert_configmap_to_env_variables() {
   local CONFIGMAP=$1
-  local KEY_TO_ENV_MAP=$2
+  echo "Obtaining ConfigMap data for $CONFIGMAP"
   local JSON_DATA=$( get_configmap_data $CONFIGMAP )
+  local EXIT_CODE=$?
+  echo "Mapping ConfigMap data for $CONFIGMAP"
   # If the ConfigMap was found, map the config values to env vars - ignore if not found
-  [ $? -eq 0 ] && map_env_var_for_configmap $JSON_DATA $KEY_TO_ENV_MAP
+  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap $JSON_DATA
+  local EXIT_CODE2=$?
+  if [ $EXIT_CODE2 -eq 0 ]; then
+    echo "SUCCESS mapping ConfigMap data for $CONFIGMAP"
+  else
+    echo "FAIL mapping ConfigMap data for $CONFIGMAP"
+  fi
 }
 
 getsalt_installer_setcheck_variables() {
@@ -182,8 +221,7 @@ gestalt_installer_generate_helm_config() {
     SECURITY_PROTOCOL \
     ADMIN_USERNAME \
     ADMIN_PASSWORD \
-    POSTGRES_IMAGE_NAME \
-    POSTGRES_IMAGE_TAG \
+    POSTGRES_IMAGE \
     DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
@@ -226,6 +264,7 @@ common:
   imagePullPolicy: Always
 
 secrets:
+  databaseName: "{$DATABASE_NAME}"
   databaseUsername: "${DATABASE_USERNAME}"
   databasePassword: "${DATABASE_PASSWORD}"
   adminUser: "${ADMIN_USERNAME}"
@@ -251,7 +290,7 @@ rabbit:
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
-  host: ${ELASTICSEARCH_HOST}
+  hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
 #  initController:
 #    image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -297,7 +336,7 @@ EOF
     cat >> helm-config.yaml <<EOF
 
 ubb:
-  image: ${UBB_IMAGE}
+  image: ${GCP_UBB_IMAGE}
   hostname: ${UBB_HOSTNAME}
   port: ${UBB_PORT}
 
@@ -309,11 +348,12 @@ fi
   cat >> helm-config.yaml <<EOF
 
 postgresql:
-  image: "${POSTGRES_IMAGE_NAME}"
-  imageTag: "${POSTGRES_IMAGE_TAG}"
-  postgresUser: ${DATABASE_USERNAME}
-  postgresPassword: "${DATABASE_PASSWORD}"
-  postgresDatabase: ${DATABASE_NAME}
+  image: "${POSTGRES_IMAGE}"
+  existingSecret: 'gestalt-secrets'
+  secretKey:
+    database: db-database
+    username: db-username
+    password: db-password
   persistence:
     size: ${internal_database_pv_storage_size}
     storageClass: "${internal_database_pv_storage_class}"
@@ -591,32 +631,97 @@ servicename_is_unique_or_exit() {
   local found="false"
   for s in $list; do
     # Trying to find a unique service name.  If the service was already found before, it's not a unique name
-    if [ "$found" == "true" ]; then
-      if [ "$s" == "$service_name" ]; then
-        exit_with_error "Found multiple services with name '$service_name', aborting"
-      fi
-    fi
-
     if [ "$s" == "$service_name" ]; then
+      [ "$found" == "true" ] && exit_with_error "Found multiple services with name '$service_name', aborting"
       found="true"
-      echo "Found service with name '$s'"
     fi
   done
 
   if [ "$found" != "true" ]; then 
-    exit_with_error "Did not find a unique '$service_name' service"
+    exit_with_error "Could not find any services with name '$service_name'!"
   fi
-
-  echo "Found uniquely named service '$service_name'"
 }
 
 get_service_namespace() {
-  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$1\") | .namespace"
+  local service=$1
+  servicename_is_unique_or_exit $service
+  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$service\") | .namespace"
 }
 
+create_readiness_probe() {
+  local deployment=$1
+  local service=$2
+  local container=$3
+  local endpoint=${4:="/"}
+  local port=${5:=80}
+  local namespace=$6
+
+  [ -z $deployment ] && exit_with_error "deployment name blank or undefined for create_readiness_probe"
+  [ -z $service ] && exit_with_error "service name blank or undefined for create_readiness_probe"
+  [ -z $container ] && exit_with_error "container name blank or undefined for create_readiness_probe"
+
+  [ -z $namespace ] && namespace=$(get_service_namespace $service)
+
+  echo "Creating ${service} readinessProbe in deployment '${namespace}/${deployment}'"
+  echo "Creating ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+
+  kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: $deployment
+  namespace: $namespace
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: $container
+        readinessProbe:
+          httpGet:
+            path: $endpoint
+            port: $port
+            scheme: HTTP
+EOF
+
+  exit_on_error "Could not create ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+  
+  echo "SUCCESS created readiness probe for '${service}' on endpoint '${endpoint}' port '$port'!"
+}
+
+create_ingress() {
+  local service=$1
+  local port=${2:=80}
+  local namespace=$3
+
+  [ -z $service ] && exit_with_error "service name blank or undefined for create_ingress"
+
+  [ -z $namespace ] && namespace=$(get_service_namespace $service)
+
+  echo "Namespace for service '$service' is '$namespace'"
+
+  echo "Creating Kubernetes Ingress resource for service '${namespace}/${service}' port '${port}'"
+
+  kubectl apply -f - <<EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: $service
+  namespace: $namespace
+spec:
+  backend:
+    serviceName: $service
+    servicePort: $port
+EOF
+
+  exit_on_error "Could not create ingress to '$namespace/$service' port '$port' (kubectl error code $?), aborting."
+
+  echo "SUCCESS created ingress to '$namespace/$service' port '$port'!"
+}
 
 set_kong_service_namespace() {
-  export KONG_SERVICE_NAMESPACE=$(get_service_namespace kng-ext)
+  local service=$1
+  export KONG_SERVICE_NAMESPACE=$(get_service_namespace $service)
   echo "KONG_SERVICE_NAMESPACE == ${KONG_SERVICE_NAMESPACE}"
 }
 
@@ -628,7 +733,7 @@ if_kong_ingress_service_name_is_set() {
     echo "KONG_INGRESS_SERVICE_NAME not provided!  Skipping '$run_command'"
     return 99
   else
-    set_kong_service_namespace
+    set_kong_service_namespace ${KONG_INGRESS_SERVICE_NAME}
     echo "KONG_INGRESS_SERVICE_NAME was '${KONG_SERVICE_NAMESPACE}/${KONG_INGRESS_SERVICE_NAME}'"
     echo "Running '$run_command'"
     $run_command
@@ -673,59 +778,11 @@ and_health_api_is_working() {
 }
 
 create_kong_readiness_probe() {
-  local namespace=$KONG_SERVICE_NAMESPACE
-
-  echo "Creating readinessProbe for deployment '${namespace}/kng"
-
-  kubectl apply -f - <<EOF
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: kng
-  namespace: $namespace
-spec:
-  replicas: 1
-  template:
-    spec:
-      containers:
-      - name: kng
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-            scheme: HTTP
-EOF
-
-  exit_on_error "Could not create Kong readinessProbe"
-  
-  echo "Kong readiness probe created!"
+  # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
+  create_readiness_probe kng $KONG_INGRESS_SERVICE_NAME kng "/health" 8000 $KONG_SERVICE_NAMESPACE
 }
 
 create_kong_ingress_v2() {
-  local service_name=${KONG_INGRESS_SERVICE_NAME:=kng}
-  local hostname=${KONG_INGRESS_HOSTNAME:=localhost}
-
-  servicename_is_unique_or_exit $service_name
-
-  local service_namespace=$(get_service_namespace $service_name)
-
-  echo "Namespace for Kong service '$service_name' is '$service_namespace'"
-
-  echo "Creating Kubernetes Ingress resource for service $service_name hostname $hostname..."
-
-  kubectl apply -f - <<EOF
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: $service_name
-  namespace: $service_namespace
-spec:
-  backend:
-    serviceName: $service_name
-    servicePort: 8000
-EOF
-
-  exit_on_error "Could not create ingress to '$service_namespace/$service_name' for ''$host' (kubectl error code $?), aborting."
-
-  echo "Kong ingress to '$service_namespace/$service_name' configured for '$hostname'."
+  # create_ingress service [port] [namespace]
+  create_ingress $KONG_INGRESS_SERVICE_NAME 8000 $KONG_SERVICE_NAMESPACE
 }
