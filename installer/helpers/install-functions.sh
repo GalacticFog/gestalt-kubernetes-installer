@@ -255,6 +255,10 @@ generate_slack_payload() {
 
   . ${eula_data}_client
 
+  if [ -z "$name" ] || [ -z "$company" ] || [ -z "$email" ]; then
+    prompt_eula "${eula_data}"
+  fi
+
   ui_image_version=$(grep '^UI_IMAGE' base-config.yaml | grep -v '^#' | awk '{print $2}' | awk -F':' '{print $2}')
 
   local payload="{\
@@ -302,8 +306,6 @@ accept_eula() {
   echo "Proceeding with Gestalt Platform installation."
   
 }
-
-
 
 prompt_eula() {
 
@@ -360,7 +362,7 @@ name=$(cat ${eula_data} | awk -F'"name": "' '{print $2}' | awk -F'", "company": 
 company=$(cat ${eula_data} | awk -F'"company": "' '{print $2}' | awk -F'", "email": "' '{print $1}')
 email=$(cat ${eula_data} | awk -F'"email": "' '{print $2}' | awk -F'", "message": "' '{print $1}')
 
-cat > ${eula_data}_client < DATA
+cat > ${eula_data}_client << DATA
 name="$name"
 company="$company"
 email="$email"
