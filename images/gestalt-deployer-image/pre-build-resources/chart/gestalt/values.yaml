@@ -6,11 +6,11 @@ common:
   releaseVersion: latest
 
 secrets:
-  adminUser: 'testadmin'
-  adminPassword: 'gestaltgketest!'
+  adminUser: 'admin'
+  adminPassword: 'gestaltgcp!'
   databaseName: 'postgres'
-  databaseUsername: 'testadmin'
-  databasePassword: 'gestaltpostgres'
+  databaseUsername: 'postgres'
+  databasePassword: 'a1b2c3d4!'
 
 installer:
   image: gcr.io/galacticfog-public/gestalt-installer:testing
