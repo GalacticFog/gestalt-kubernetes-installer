@@ -1,7 +1,0 @@
-resource_type: 'Gestalt::Resource::Workspace'
-name: 'demo'
-description: 'Demo Workspace'
-properties:
-  # env:
-  #   test: 123
-contextPath: '/#{Config org}'

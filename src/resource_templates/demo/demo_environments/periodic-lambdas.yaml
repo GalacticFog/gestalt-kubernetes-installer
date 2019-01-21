@@ -1,5 +1,0 @@
-resource_type: 'Gestalt::Resource::Environment'
-name: periodic_lambdas
-description: Periodic Lambdas
-properties:
-  environment_type: development

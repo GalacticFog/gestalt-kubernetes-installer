@@ -64,7 +64,6 @@ stage_2() {
   sleep 10
 
   run wait_for_pod_start "gestalt-rabbit"
-  run wait_for_pod_start "gestalt-rabbit"
 
   run invoke_security_init
   run wait_for_security_init

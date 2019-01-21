@@ -1,9 +1,0 @@
-resource_type: Gestalt::Resource::Api
-name: 'training-#{Config user_lowercase}-local'
-description: Local Environment API
-properties:
-  provider:
-    locations:
-    - '#{Provider #{Config kong_provider}}'
-    id: '#{Provider #{Config gwm_provider}}'
-contextPath: '/#{Config org}/#{Config user_lowercase}/local'

@@ -1,8 +1,0 @@
-resource_type: Gestalt::Resource::Api
-name: lambda-chaining-demo
-description: Lambda chaining demo
-properties:
-  provider:
-    locations:
-    - '#{Provider #{Config kong_provider}}'
-    id: '#{Provider #{Config gwm_provider}}'

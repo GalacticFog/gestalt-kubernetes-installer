@@ -1,8 +1,0 @@
-resource_type: Gestalt::Resource::Api
-name: '#{Config api}'
-description: Local Environment API
-properties:
-  provider:
-    locations:
-    - '#{Provider #{Config kong_provider}}'
-    id: '#{Provider #{Config gwm_provider}}'

@@ -1,5 +1,0 @@
-resource_type: 'Gestalt::Resource::Environment'
-name: async_lambdas
-description: Asynchronous Lambdas
-properties:
-  environment_type: development
