@@ -50,17 +50,37 @@ check_for_required_tools() {
   echo "OK - Required tools found."
 }
 
-check_for_kube() {
-  echo "Checking for Kubernetes..."
+get_profile_from_kubecontext() {
   local kubecontext="`kubectl config current-context`"
+  if [ "$kubecontext" == "docker-for-desktop" ]; then
+    echo $kubecontext
+    return 0
+  elif [ "$kubecontext" == "minikube" ]; then
+    echo $kubecontext
+    return 0
+  fi
 
-  echo "$kubecontext"
-  echo $target_kube_context
+  # Try to detect type
+  echo $kubecontext | grep ^gke_ >/dev/null
+  [ $? -eq 0 ] && echo "gke" && return 0
+
+  echo $kubecontext | grep ^'arn:aws:eks:' >/dev/null
+  [ $? -eq 0 ] && echo "eks" && return 0
+
+  echo $kubecontext | grep ^'arn:aws:' >/dev/null
+  [ $? -eq 0 ] && echo "aws" && return 0
+
+  return 1
+}
+
+check_for_kube() {
+  # echo "Checking for Kubernetes..."
+  local kubecontext="`kubectl config current-context`"
 
   if [ ! -z "$target_kube_context" ]; then
       if [ "$kubecontext" != "$target_kube_context" ]; then
       do_prompt_to_continue \
-        "Warning - The current Kubernetes context name '$kubecontext' does not match the expected value, '$target_kube_context'" \
+        "Warning - Kubernetes context is '$kubecontext' (expected '$target_kube_context')" \
         "Proceed anyway?"
       fi
   fi
@@ -72,7 +92,7 @@ check_for_kube() {
 }
 
 check_cluster_capacity() {
-  echo "Checking cluster capacity..."
+  # echo "Checking cluster capacity..."
   ./helpers/check-cluster-capacity
   local check=$?
   if [ $check -eq 10 ]; then
@@ -225,9 +245,12 @@ check_for_prior_install() {
 }
 
 prompt_to_continue() {
+
+  local kubecontext="`kubectl config current-context`"
+
   do_prompt_to_continue \
-    "Gestalt Platform is ready to be installed to Kubernetes context '`kubectl config current-context`'.\n\nYou must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
-    "Accept EULA and proceed with Gestalt Platform installation?"
+    "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
+    "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
   if [ ! -f __skip_eula ]; then
       accept_eula
   fi
@@ -271,7 +294,7 @@ generate_slack_payload() {
       \"slackMessage\": \"\
           \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
           \n\n          version: $ui_image_version ($(uname))\
-          \n\n          context: $kube_type\
+          \n\n          context: $profile\
           \n\n          name: $name\
           \n\n          company: $company\
           \n\n          email: $email\"\
@@ -489,15 +512,15 @@ run_gestalt_install() {
 }
 
 run_helper() {
-  local script=./profiles/$kube_type/$1.sh
+  local script=./profiles/$profile/$1.sh
 
-  echo "Checking for helper: $script ..."
+  # echo "Checking for helper: $script ..."
   if [ -f "$script" ]; then
     echo ""
     echo "Running $script ..."
-    cd ./profiles/$kube_type/
+    cd ./profiles/$profile/
     . $1.sh
-    cd -
+    cd ~-
     exit_on_error "Pre-install script failed, aborting."
   fi
   echo
@@ -599,9 +622,10 @@ wait_for_install_completion() {
 }
 
 fog_cli_login() {
+  gestalt_url=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.gestalt-url}' | base64 --decode`
   gestalt_admin_username=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-username}' | base64 --decode`
   gestalt_admin_password=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-password}' | base64 --decode`
-  ./fog login $gestalt_ui_service_url -u $gestalt_admin_username -p $gestalt_admin_password
+  ./fog login $gestalt_url -u $gestalt_admin_username -p $gestalt_admin_password
   exit_on_error "Login failed, aborting"
 }
 
@@ -611,13 +635,13 @@ display_summary() {
   echo ""
   echo "  1) Login to Gestalt:"
   echo ""
-  echo "         URL:       $gestalt_ui_service_url"
+  echo "         URL:       $gestalt_url"
   echo "         User:      $gestalt_admin_username"
   echo "         Password:  $gestalt_admin_password"
   echo ""
   echo "  2) Next, navigate to the developer sandbox at:"
   echo ""
-  echo "         $gestalt_ui_service_url -> Sandboxes -> Developer Sandbox -> Development"
+  echo "         $gestalt_url -> Sandboxes -> Developer Sandbox -> Development"
   echo ""
   echo "     Or via URL:"
   echo ""
@@ -687,13 +711,16 @@ download_helm() {
 }
 
 download_fog_cli() {
-    echo "Checking for 'fog' CLI..."
+
+    if [ -z "$gestalt_cli_version" ]; then
+      exit_with_error "gestalt_cli_version not defined, aborting"
+    fi
+
+    # echo "Checking for 'fog' CLI..."
 
     if [ -f './fog' ]; then
         local version=$(./fog --version)
-        if [ "$gestalt_cli_version" == "$version" ]; then
-            echo "OK - fog version $version found."
-        else
+        if [ "$gestalt_cli_version" != "$version" ]; then
             echo "fog version $version does not match required version $gestalt_cli_version, removing."
             rm ./fog
         fi
@@ -743,6 +770,6 @@ cleanup() {
     date > $file
     kubectl logs -n gestalt-system gestalt-installer >> $file
 
-    echo "Deleting 'gestalt-installer' pod..."
+    # TODO Debug: echo "Deleting 'gestalt-installer' pod..."
     kubectl delete pod -n gestalt-system gestalt-installer
 }

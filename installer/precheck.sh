@@ -4,25 +4,22 @@ set -o pipefail
 . helpers/install-functions.sh
 . gestalt.conf
 
-kube_type=$1
+profile=$1
 
-if [ -z "$kube_type" ]; then
-    exit_with_error "Must specify a kubernetes environment type"
-elif [ ! -d ./profiles/$kube_type ]; then
-    exit_with_error "Invalid Kubernetes type: $kube_type" 
+if [ -z "$profile" ]; then
+  exit_with_error "Must specify an installation profile (docker-for-desktop, minikube, gke, eks, aws)"
+elif [ ! -d ./profiles/$profile ]; then
+  exit_with_error "Invalid profile: $profile" 
 fi
 
-envfile=profiles/$kube_type/env.conf
-
-if [ ! -f "$envfile" ]; then
-    exit_with_error "Configuration file '$envfile' not found, aborting."
-fi
-
-. $envfile
-
-echo "Checking for required dependencies..."
+# echo "Checking for required dependencies..."
 
 check_for_required_tools
+
+download_fog_cli
+
+# Run profile-specific pre-check
+run_helper pre-check
 
 install_prefix=gestalt
 install_namespace="gestalt-system"

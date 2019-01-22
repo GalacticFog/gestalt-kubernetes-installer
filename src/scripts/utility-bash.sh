@@ -116,8 +116,8 @@ check_for_required_variables() {
   if [ $retval -ne 0 ]; then
     echo "One or more required variables not defined, aborting."
     exit 1
-  else
-    echo "All required variables: [$@] found."
+  # else
+  #   echo "OK - All required variables: [$@] found."
   fi
 }
 

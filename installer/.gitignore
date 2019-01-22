@@ -5,3 +5,4 @@ logs
 .eula_info_client
 __*
 profiles/minikube/config.yaml
+profiles/**/*.tmp

@@ -9,7 +9,7 @@ else
   exit 1
 fi
 
-# Run the install container with ConfigMaps
+echo "=> Launching install Pod ..."
 cmd="kubectl create -n ${kube_namespace} -f ${kube_install}"
 $cmd
 exit_on_error "Failed install: '$cmd', aborting."

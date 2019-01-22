@@ -17,7 +17,7 @@ declare -A CONFIG_TO_ENV=(
   ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
   ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
   ["kong.image"]="KONG_IMAGE"
-  ["api.gateway.hostname"]="KONG_0_VIRTUAL_HOST"
+  ["api.gateway.hostname"]="KONG_SERVICE_HOST"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
   ["logging.hostname"]="LOGGING_HOSTNAME"
@@ -164,7 +164,7 @@ getsalt_installer_setcheck_variables() {
     JS_EXECUTOR_IMAGE \
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
-    KONG_0_VIRTUAL_HOST \
+    KONG_SERVICE_HOST \
     LOGGING_IMAGE \
     META_HOSTNAME \
     META_IMAGE \
@@ -188,7 +188,8 @@ getsalt_installer_setcheck_variables() {
     UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
-    UI_PROTOCOL
+    UI_PROTOCOL\
+    GESTALT_URL
 
   if [ -z ${MARKETPLACE_INSTALL+x} ]; then
     check_for_required_variables \
@@ -242,6 +243,7 @@ gestalt_installer_generate_helm_config() {
     REDIS_PORT \
     UI_IMAGE \
     UI_NODEPORT \
+    GESTALT_URL \
     internal_database_pv_storage_size \
     internal_database_pv_storage_class \
     postgres_persistence_subpath \
@@ -269,6 +271,7 @@ secrets:
   databasePassword: "${DATABASE_PASSWORD}"
   adminUser: "${ADMIN_USERNAME}"
   adminPassword: "${ADMIN_PASSWORD}"
+  gestaltUrl: "${GESTALT_URL}"
 
 security:
   exposedServiceType: NodePort
@@ -385,7 +388,7 @@ http_post() {
 
 wait_for_database_pod() {
   if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
-    wait_for_pod_start "gestalt-postgresql"
+    wait_for_system_pod "gestalt-postgresql"
   fi
 }
 
@@ -480,14 +483,23 @@ type: Opaque
 EOF
 }
 
-wait_for_pod_start() {
+wait_for_system_pod() {
+  wait_for_pod $1 'gestalt-system'
+}
 
+wait_for_pod() {
   local previous_status=""
   local pod=$1
+  local scope="--all-namespaces"
+  index=4
+  if [ ! -z "$2" ]; then
+    scope="-n $2"
+    index=3
+  fi
 
   echo "Waiting for $pod to launch"
-  for i in `seq 1 30`; do
-    status=$(kubectl get pod -n gestalt-system --no-headers | grep $pod | awk '{print $3}')
+  for i in `seq 1 60`; do
+    status=$(kubectl get pod $scope --no-headers | grep ${pod}- | awk "{print \$$index}")
 
     if [ "$status" != "$previous_status" ]; then
       echo -n " $status "
@@ -514,7 +526,7 @@ wait_for_pod_start() {
 
 wait_for_security_init() {
 
-  wait_for_pod_start "gestalt-security"
+  wait_for_system_pod "gestalt-security"
 
   echo "Waiting for Security to initialize..."
   secs=20
@@ -555,7 +567,7 @@ init_meta() {
 
 do_init_meta() {
 
-  wait_for_pod_start "gestalt-meta"
+  wait_for_system_pod "gestalt-meta"
 
   echo "Polling $META_URL/root..."
   # Check if meta initialized (ready to bootstrap when /root returns 500)
@@ -620,7 +632,7 @@ gestalt_cli_create_resources() {
   else
     echo "Warning - Not running resource templates script, /resource_templates/run.sh not found"
   fi
-  cd -
+  cd ~-
   echo "Gestalt resource(s) created."
 }
 

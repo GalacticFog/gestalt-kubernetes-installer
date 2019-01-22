@@ -4,15 +4,20 @@ Installer repository: [https://github.com/GalacticFog/gestalt-k8s-install](https
 
 ## Prerequisites
 
-A target Kubernetes cluster:
-* Kubernetes 1.7+
-* PV support on the underlying infrastructure
+* Kuberntes System requirements:
+  - CPUs:   1 required, 2 recommended
+  - Memory: 7.5 GiB required, 12 GiB recommended
+  - Storage: Kubernetes Volume support or an external PostgreSQL database
+  - "Cluster-Admin" access required
+* A workstation for running the installer running Mac OS or Linux
 
-A workstation for running the installer:
-* Mac OS or Linux
-* kubectl configured for the target cluster
+## Quick Start
 
-## Installation instructions
+```sh
+./install-gestalt-platform        # Run the installation and follow the on-screen prompts
+```
+
+## Additional installation instructions
 
 Refer to the installation instructions appropriate for your environment:
 

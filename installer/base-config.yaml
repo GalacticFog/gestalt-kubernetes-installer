@@ -18,8 +18,8 @@ CUSTOM_IMAGE_PULL_SECRET: ''
 JS_EXECUTOR_MIN_COOL: '1'
 
 # Kong
-KONG_0_EXTERNAL_PROTOCOL: http
-KONG_0_VIRTUAL_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
+KONG_SERVICE_PROTOCOL: http
+KONG_SERVICE_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
 KONG_NODEPORT: '31113'

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Import functions
+. ../../scripts/install-functions.sh
 . run-functions.sh
 . run-functions-gke.sh
 
@@ -68,8 +69,26 @@ if [ "${CUSTOM_IMAGE_PULL_SECRET}" == "1" ]; then
   apply_image_pull_secrets
 fi
 
-sleep 20  # Provide time for Meta to settle before migrating the schema
-fog meta POST /migrate -f meta-migrate.json | jq .
+# Wait for laser, as Meta migration v7 creates a lambda
+wait_for_pod lsr
+
+#TODO: Implement a laser health check to avoid sleep?
+sleep 20  # Provide time for Laser and Meta to settle before migrating the schema
+
+fog meta POST /migrate -f meta-migrate.json > /tmp/migrate.out
+cat /tmp/migrate.out | jq . | head
+echo ...
+
+# Check for migration any failure
+cat /tmp/migrate.out | jq . | grep -i failure
+if [ $? -eq 0 ]; then 
+  echo "Meta migration did not fully succeed"
+  cat /tmp/migrate.out | jq . | grep -i failure -A20 -B5
+  echo
+  echo "Full log:"
+  cat /tmp/migrate.out
+  exit_with_error "Meta migration did not succeed, aborting"
+fi
 
 # Catalog provider
 if [ "$configure_catalog" == "Yes" ]; then
@@ -103,3 +122,8 @@ patch_caas_provider_with_container_import_action
 
 ## Skip for now, until container import is fully functional
 # import_gestalt_system_containers
+
+# Wait for pods to start before moving on to the next stage, which creates APIs.  API
+# creation will fail if the GWM and/or Kong images haven't started yet (images may still be being pulled down)
+wait_for_pod gwm
+wait_for_pod kng

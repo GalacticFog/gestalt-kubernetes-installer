@@ -63,14 +63,14 @@ stage_2() {
   echo "Waiting a bit..."
   sleep 10
 
-  run wait_for_pod_start "gestalt-rabbit"
+  run wait_for_system_pod "gestalt-rabbit"
 
   run invoke_security_init
   run wait_for_security_init
   run init_meta
 
-  run wait_for_pod_start "gestalt-ui"
-  run wait_for_pod_start "gestalt-elastic"
+  run wait_for_system_pod "gestalt-ui"
+  run wait_for_system_pod "gestalt-elastic"
 
   gestalt_cli_set_opts
   do_get_security_credentials
