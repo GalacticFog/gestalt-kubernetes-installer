@@ -2,7 +2,7 @@
 
 gestalt_install_validate_preconditions() {
 
-    echo "Expectation, that user already successfully ran ./configure.sh"
+    # TODO: Make debug echo "Expectation, that user already successfully ran ./configure.sh"
 
     file_array="${kube_install}"
     log_debug "[${FUNCNAME[0]}] Check for required files: '${file_array[@]}'"
@@ -15,7 +15,7 @@ gestalt_install_validate_preconditions() {
       
     # check_for_kube
 
-    echo "Precondition check succeeded"
+    echo "OK - Precondition check succeeded"
 }
 
 

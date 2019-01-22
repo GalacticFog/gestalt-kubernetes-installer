@@ -23,7 +23,7 @@ if [ `echo $miniStatus | sed 's/[^0-9]*//g'` -lt 262144 ]; then
   do_prompt_to_continue "Please confirm to proceed of setup vm.max_map_count=262144 and minikube restart. Installation will abort if you choose not to."
   #User confirmed ok to proceed
   #Set vm.max_map_count=262144
-  echo "Setting persistant vm.max_map_count=262144"
+  # TODO: debugecho "Setting persistant vm.max_map_count=262144"
   miniStatus=$(minikube ssh 'echo "sysctl -w vm.max_map_count=262144" | sudo tee -a /var/lib/boot2docker/bootlocal.sh && echo "Setting persistant vm.max_map_count=262144"')
   echo "$miniStatus" | grep 'Setting persistant vm.max_map_count=262144' > /dev/null
   if [ $? -ne 0 ]; then
@@ -35,7 +35,7 @@ if [ `echo $miniStatus | sed 's/[^0-9]*//g'` -lt 262144 ]; then
   fi
 
   #Restart minkube: stop + start
-  echo "Restart minikube: stop"
+  echo "=> Stopping Minikube..."
   minikube stop
   if [ $? -ne 0 ]; then
     echo
@@ -43,7 +43,7 @@ if [ `echo $miniStatus | sed 's/[^0-9]*//g'` -lt 262144 ]; then
     exit_with_error "Installation failed, aborting."
   fi
 
-  echo "Restart minikube: start"
+  echo "=> Starting Minikube..."
   minikube start
   if [ $? -ne 0 ]; then
     echo
@@ -52,7 +52,7 @@ if [ `echo $miniStatus | sed 's/[^0-9]*//g'` -lt 262144 ]; then
   fi
 
   #Post-restart vm.max_map_count check
-  echo "Getting current vm.max_map_count minikube node"
+  # TODO: debug echo "Getting current vm.max_map_count minikube node"
   miniStatus=$(minikube ssh 'sysctl vm.max_map_count')
   echo "$miniStatus" | grep 'vm.max_map_count = 262144' > /dev/null
   if [ $? -ne 0 ]; then
@@ -69,7 +69,7 @@ fi
 pvPath='/tmp/gestalt-postgresql-volume'
 
 # First, create a directory for the PV on the minikube node. If already exists remove and re-create.
-echo "Setup $pvPath on minikube node"
+# TODO: debug echo "Setup $pvPath on minikube node"
 
 echo "Creating / Re-creating and permissioning $pvPath on minikube node"
 

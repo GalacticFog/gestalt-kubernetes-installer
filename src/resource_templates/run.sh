@@ -8,7 +8,7 @@ fi
 
 cd base
 ./run.sh
-cd -
+cd ~-
 
 fog apply -d hierarchy
 

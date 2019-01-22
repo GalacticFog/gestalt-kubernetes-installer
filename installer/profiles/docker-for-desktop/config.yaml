@@ -1,5 +1,7 @@
-KONG_0_VIRTUAL_HOST: localhost:31113
-KONG_0_EXTERNAL_PROTOCOL: http
+GESTALT_URL:                 http://localhost:31112  # (Gestalt Login URL)
+KONG_SERVICE_HOST:           localhost:31113         # (host used to access the UI Portal)
+KONG_SERVICE_PROTOCOL:       http                    # ('http' or 'https')
+LOGGING_SERVICE_HOST:        localhost:31112/log     # (host used to access the Log service)
+LOGGING_SERVICE_PROTOCOL:    http                    # ('http' or 'https')
 
-LOGGING_SERVICE_HOST: localhost:31112/log
-LOGGING_SERVICE_PROTOCOL: http
+#(Remember to set credentials in credentials.yaml)

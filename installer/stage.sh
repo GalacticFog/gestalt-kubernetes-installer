@@ -19,7 +19,7 @@ exit_on_error "Unable determine current context '${kubectl} config current-conte
 # check_for_kube
 
 ## CACERTS file
-echo "Checking for custom cacerts..."
+# TODO: Make debug: echo "Checking for custom cacerts..."
 
 # First, delete the original file so it won't be staged
 [ -f ./stage/cacerts ] && \
@@ -30,12 +30,10 @@ if [ ! -z "$gestalt_security_cacerts_file" ]; then
   echo "Copying $gestalt_security_cacerts_file to ./stage/cacerts ..."
   cp $gestalt_security_cacerts_file ./stage/cacerts
   exit_on_error "Failed to copy $gestalt_security_cacerts_file"
-else
-  echo "No cacerts file"
 fi
 
-echo
-echo "Installer configuration succeeded."
+# echo
+# echo "Installer configuration succeeded."
 
 # Validate that all pre-conditions are met
 gestalt_install_validate_preconditions
@@ -49,7 +47,8 @@ kube_check_for_required_namespace ${kube_namespace}
 
 # Make the gestalt-system/default service account a cluster-admin with the ability
 # to create namespaces and resources in other namespaces.
-echo "Creating ClusterRoleBinding for cluster-admin role for service account '${kube_namespace}/default'..."
+
+echo "Creating ClusterRoleBinding for cluster-admin role for service account '${kube_namespace}/default'"
 kubectl apply -f - <<EOF
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -70,27 +69,19 @@ EOF
 [ -d ../src/resource_templates ] && cp -r ../src/resource_templates ./stage/
 [ -d ../src/scripts ] && cp -r ../src/scripts ./stage/
 
-# Create ConfigMap resources the installer pod depends on
-# tmp=""
-# [ -d ../src/gestalt-helm-chart ] && tmp="$tmp gestalt-helm-chart"
-# [ -d ../src/resource_templates ] && tmp="$tmp resource_templates"
-# [ -d ../src/scripts ] && tmp="$tmp scripts"
-# [ ! -z "$tmp" ] && tmp="-C ../src $tmp"
-
-echo "Creating ConfigMaps resources for installer..."
+# TODO: Make debug:echo "Creating ConfigMaps resources for installer..."
 
 cd stage
 if [ -e b64data ]; then rm b64data; fi
-tar cfzv - * | base64 > b64data
+tar cfzv - * 2>/dev/null | base64 > b64data
 cd ~-
 
 cmd="kubectl create configmap -n ${kube_namespace} install-data --from-file ./stage/b64data"
-echo $cmd
 $cmd
 exit_on_error "Failed create configmap from resource_templates directory, aborting."
 
 # for CACERTS file
-echo "TODO: Ensure cacerts is handled properly"
+# echo "TODO: Ensure cacerts is handled properly"
 if [ -f stage/cacerts ]; then
   echo "Creating 'gestalt-security-cacerts' configmap from $gestalt_security_cacerts_file..."
   kubectl create configmap -n ${kube_namespace} gestalt-security-cacerts --from-file=stage/cacerts

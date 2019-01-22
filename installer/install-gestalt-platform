@@ -2,8 +2,6 @@
 
 set -o pipefail
 
-gestalt_cli_version=0.11.0
-
 finish() {
   code=$1
   if [ $code -ne 0 ]; then
@@ -23,27 +21,23 @@ do_install() {
   . helpers/install-functions.sh
   . gestalt.conf
 
-  kube_type=$1
+  # Get profile from 1st argument, otherwise get profile from kubecontext
+  local profile=$1
 
-  if [ -z "$kube_type" ]; then
-    exit_with_error "Must specify a kubernetes environment type"
-  elif [ ! -d ./profiles/$kube_type ]; then
-    exit_with_error "Invalid Kubernetes type: $kube_type" 
+  if [ -z "$profile" ]; then
+    profile=$(get_profile_from_kubecontext)
   fi
 
-  envfile=profiles/$kube_type/env.conf
+  echo "Will use Kubernetes current context '`kubectl config current-context`'."
 
-  if [ ! -f "$envfile" ]; then
-    exit_with_error "Configuration file '$envfile' not found, aborting."
+  if [ -z "$profile" ]; then
+    echo
+    exit_with_error "Could not find a suitable profile for context '`kubectl config current-context`'. Please specify an installation profile (docker-for-desktop, minikube, gke, eks, aws)."
+  elif [ ! -d ./profiles/$profile ]; then
+    exit_with_error "Invalid profile: $profile" 
   fi
 
-  . $envfile
-
-  echo "Checking for required dependencies..."
-
-  download_fog_cli
-
-  ./precheck.sh $kube_type
+  ./precheck.sh $profile
   exit_on_error "Precheck failed, aborting"
 
   prompt_or_wait_to_continue
@@ -59,7 +53,7 @@ do_install() {
     cat > ./stage/config/install-config.yaml <<EOF
 `cat base-config.yaml`
 `cat credentials.yaml`
-`cat ./profiles/$kube_type/config.yaml`
+`cat ./profiles/$profile/config.yaml`
 EOF
     
   exit_on_error "Failed to generate config, aborting"
@@ -92,6 +86,11 @@ EOF
   display_summary
 }
 
+
+## -- Main --
+
+## Make the install script run itself with a parameter in order to capture all the output from
+## and write to a log file
 if [ "$1" != "do_install" ]; then 
   mkdir -p ./logs
   rm ./logs/*
