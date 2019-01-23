@@ -1,0 +1,21 @@
+name: graalvm-nodejs-executor
+description: The nodejs runtime executor
+resource_type: Gestalt::Configuration::Provider::Lambda::Executor::NodeJS
+properties:
+  config:
+    env:
+      public:
+        CMD: bin/gestalt-laser-executor-graalvm
+        IMAGE: '#{Config GRAALVM_EXECUTOR_IMAGE}'
+        MIN_COOL: '0'
+        NAME: graalvm-nodejs
+        RUNTIME: polyglot-node
+        SIZES_0_CPU: '1'
+        SIZES_0_MEM: '1024'
+        SIZES_0_MIN_COOL: '#{Config GRAALVM_EXECUTOR_NODEJS_0_MIN_COOL}'
+        SIZES_1_CPU: '2'
+        SIZES_1_MEM: '2048'
+        SIZES_2_CPU: '4'
+        SIZES_2_MEM: '4096'
+      private: {}
+  services: []
