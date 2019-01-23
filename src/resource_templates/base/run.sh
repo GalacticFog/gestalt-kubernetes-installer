@@ -42,6 +42,9 @@ create golang-executor
 create nodejs-executor
 create python-executor
 create ruby-executor
+create graalvm-jvm-scala-executor
+create graalvm-nodejs-executor
+create graalvm-lvm-executor
 
 # Laser - create custom executors if applicable
 if [ "${LASER_PROVIDER_CUSTOMIZE}" == "1" ]; then
@@ -114,6 +117,10 @@ fi
 
 # Create the container import lambda
 fog create resource -f container-import-lambda.yaml --context /root/gestalt-system-workspace/gestalt-system-environment
+
+# Create Gestalt System Environment Resources
+#   Migrate Lambda
+fog apply -d ../gestalt-system-environment --context /root/gestalt-system-workspace/gestalt-system-environment
 
 # Patch the CaaS provider with Container import action
 patch_caas_provider_with_container_import_action

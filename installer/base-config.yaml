@@ -15,7 +15,12 @@ DATABASE_NAME: postgres
 DATABASE_PORT: '5432'
 
 CUSTOM_IMAGE_PULL_SECRET: ''
-JS_EXECUTOR_MIN_COOL: '1'
+
+GRAALVM_EXECUTOR_JVM_0_MIN_COOL: '1'
+GRAALVM_EXECUTOR_NODEJS_0_MIN_COOL: '0'
+JS_EXECUTOR_0_MIN_COOL: '0'
+JS_EXECUTOR_3_MIN_COOL: '1' # Nashorn used for Migrate Lambdas
+JVM_EXECUTOR_0_MIN_COOL: '0'
 
 # Kong
 KONG_SERVICE_PROTOCOL: http
@@ -54,9 +59,9 @@ CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 CONTAINER_IMPORT_PACKAGE_URL: https://s3.amazonaws.com/gfi.lambdas/container-import.jar
 
-PYTHON_3_6_1_EXECUTOR_MIN_COOL: '1'
-PYTHON_3_6_3_EXECUTOR_MIN_COOL: '1'
-PYTHON_EXECUTOR_MIN_COOL: '1'
+PYTHON_3_6_1_EXECUTOR_MIN_COOL: '0'
+PYTHON_3_6_3_EXECUTOR_MIN_COOL: '0'
+PYTHON_EXECUTOR_MIN_COOL: '0'
 
 # RABBIT
 RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
@@ -89,29 +94,30 @@ ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 POSTGRES_IMAGE: docker.io/postgres:9.6.11
 
 # Images
-DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1-RC
+DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1-RC3
 ELASTICSEARCH_IMAGE:   docker.io/galacticfog/elasticsearch-docker:5.3.1
-GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1-RC
-GRAALVM_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1-01bab844
-GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC
-GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC
-JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:2.4.1-RC
-JVM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-laser-executor-jvm:2.4.1-RC
-KONG_IMAGE:            docker.io/galacticfog/kong:2.4.1-RC
-LASER_IMAGE:           docker.io/galacticfog/gestalt-laser:2.4.1-RC
-LOGGING_IMAGE:         docker.io/galacticfog/gestalt-log:2.4.1-RC
-META_IMAGE:            docker.io/galacticfog/gestalt-meta:2.4.1-RC
-NODEJS_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-nodejs:2.4.1-RC
-POLICY_IMAGE:          docker.io/galacticfog/gestalt-policy:2.4.1-RC
+GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1-RC3
+GRAALVM_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1-RC3
+GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC3
+GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC3
+JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:2.4.1-RC3
+JVM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-laser-executor-jvm:2.4.1-RC3
+KONG_IMAGE:            docker.io/galacticfog/kong:2.4.1-RC3
+LASER_IMAGE:           docker.io/galacticfog/gestalt-laser:2.4.1-RC3
+LOGGING_IMAGE:         docker.io/galacticfog/gestalt-log:2.4.1-RC3
+META_IMAGE:            docker.io/galacticfog/gestalt-meta:2.4.1-RC3
+NODEJS_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-nodejs:2.4.1-RC3
+POLICY_IMAGE:          docker.io/galacticfog/gestalt-policy:2.4.1-RC3
 PYTHON_3_6_1_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.1
 PYTHON_3_6_3_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.3
-PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python:2.4.1-RC
-RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC
-RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC
-SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC
+PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python:2.4.1-RC3
+RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC3
+RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC3
+SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC3
+# UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC3
 UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC
-# UPGRADER_IMAGE:              docker.io/galacticfog/galacticfog/gestalt-upgrader:2.4.1-RC
-REDIS_IMAGE:                 redis # gcr.io/galacticfog/gestalt-redis:latest
+UPGRADER_IMAGE:              docker.io/galacticfog/gestalt-upgrader:2.4.1-RC3
+REDIS_IMAGE:                 docker.io/galacticfog/redis:2.4.1-RC3
 
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:latest
