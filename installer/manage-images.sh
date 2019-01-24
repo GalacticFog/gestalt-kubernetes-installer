@@ -40,7 +40,7 @@ gestalt-laser-executor-python:2.4.1-RC3
 rabbit:2.4.1-RC3
 gestalt-laser-executor-ruby:2.4.1-RC3
 gestalt-security:2.4.1-RC3
-gestalt-ui-react:2.4.1-RC
+gestalt-ui-react:2.4.1-RC3
 gestalt-upgrader:2.4.1-RC3
 redis:2.4.1-RC3
 )
