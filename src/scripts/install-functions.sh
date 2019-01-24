@@ -328,6 +328,9 @@ meta:
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
   nodePort: ${META_NODEPORT}
+  upgradeCheckEnabled: ${META_UPGRADE_CHECK_ENABLED}
+  upgradeUrl: ${META_UPGRADE_URL}
+  upgradeCheckHours: ${META_UPGRADE_CHECK_HOURS}
 
 # kong:
 #   nodePort: ${KONG_NODEPORT}

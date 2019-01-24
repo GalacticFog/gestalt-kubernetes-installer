@@ -12,7 +12,7 @@ properties:
         RUNTIME: csharp;dotnet
         SIZES_0_CPU: '0.1'
         SIZES_0_MEM: '512'
-        SIZES_0_MIN_COOL: '0'
+        SIZES_0_MIN_COOL: '#{Config DOTNET_EXECUTOR_0_MIN_COOL}'
         SIZES_1_CPU: '0.2'
         SIZES_1_MEM: '512'
         SIZES_2_CPU: '0.4'

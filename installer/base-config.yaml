@@ -16,11 +16,22 @@ DATABASE_PORT: '5432'
 
 CUSTOM_IMAGE_PULL_SECRET: ''
 
-GRAALVM_EXECUTOR_JVM_0_MIN_COOL: '1'
-GRAALVM_EXECUTOR_NODEJS_0_MIN_COOL: '0'
+# Executer cool
+BASH_EXECUTOR_0_MIN_COOL: '0'
+DOTNET_EXECUTOR_0_MIN_COOL: '0'
+GOLANG_EXECUTOR_0_MIN_COOL: '0'
+GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '1'
+GRAALVM_LVM_EXECUTOR_0_MIN_COOL: '0'
+GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '0'
 JS_EXECUTOR_0_MIN_COOL: '0'
 JS_EXECUTOR_3_MIN_COOL: '1' # Nashorn used for Migrate Lambdas
-JVM_EXECUTOR_0_MIN_COOL: '0'
+JVM_EXECUTOR_0_MIN_COOL: '1' # Import Lamda
+NODEJS_EXECUTOR_0_MIN_COOL: '0'
+PYTHON_EXECUTOR_0_MIN_COOL: '0'
+# Custom executors
+PYTHON_3_6_1_EXECUTOR_MIN_COOL: '0'
+PYTHON_3_6_3_EXECUTOR_MIN_COOL: '0'
+
 
 # Kong
 KONG_INGRESS_SERVICE_NAME: kng-ext
@@ -45,19 +56,15 @@ META_HOSTNAME: gestalt-meta.gestalt-system.svc.cluster.local
 META_PORT: '10131'
 META_PROTOCOL: http
 META_NODEPORT: 31111
-
-# Upgrader
-UPGRADE_URL: http://github.com/galacticfog/getaltplatform/upgrades
+META_UPGRADE_CHECK_ENABLED: 'true' # 'false' to disable
+META_UPGRADE_URL: 'https://github.com/GalacticFog/gestalt-platform/tree/master/upgrades'
+META_UPGRADE_CHECK_HOURS: '24' # Change how frequently check: '1'
 
 # Catalog
-# CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
-CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
+CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
+# CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 CONTAINER_IMPORT_PACKAGE_URL: https://s3.amazonaws.com/gfi.lambdas/container-import.jar
-
-PYTHON_3_6_1_EXECUTOR_MIN_COOL: '0'
-PYTHON_3_6_3_EXECUTOR_MIN_COOL: '0'
-PYTHON_EXECUTOR_MIN_COOL: '0'
 
 # RABBIT
 RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
@@ -110,8 +117,7 @@ PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python
 RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC3
 RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC3
 SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC3
-# UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC3
-UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC
+UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC3
 UPGRADER_IMAGE:              docker.io/galacticfog/gestalt-upgrader:2.4.1-RC3
 REDIS_IMAGE:                 docker.io/galacticfog/redis:2.4.1-RC3
 

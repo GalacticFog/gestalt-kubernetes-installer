@@ -70,3 +70,9 @@ spec:
           value: "policy"
         - name: META_AUDIT_ENABLED
           value: "false"
+        - name: META_UPGRADE_CHECK_ENABLED
+          value: "{{ .Values.meta.upgradeCheckEnabled }}"
+        - name: META_UPGRADE_URL
+          value: "{{ .Values.meta.upgradeUrl }}"
+        - name: META_UPGRADE_CHECK_HOURS
+          value: "{{ .Values.meta.upgradeCheckHours }}"

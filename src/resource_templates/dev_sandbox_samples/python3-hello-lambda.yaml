@@ -2,7 +2,7 @@ resource_type: Gestalt::Resource::Node::Lambda
 name: python3-hello
 description: Python v3 Hello Lambda
 properties:
-  package_url: https://s3.amazonaws.com/gfi.lambdas/hello3.py
+  package_url: https://raw.githubusercontent.com/GalacticFog/lambda-examples/master/python_lambda/hello3.py
   public: true
   compressed: false
   cpus: 0.1
