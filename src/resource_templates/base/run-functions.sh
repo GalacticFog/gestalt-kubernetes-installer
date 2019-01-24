@@ -88,7 +88,13 @@ EOF
   exit_on_error "Failed to patch CaaS provider with container-import info, aborting"
 }
 
-import_gestalt_system_containers() {
+import_gestalt_system_k8s_resources() {
+
+  # First, import dependencies
+  import_secret gestalt-system gestalt-secrets
+  import_volume gestalt-system gestalt-postgresql
+
+  # Next, import containers
   for c in `kubectl get deploy -n gestalt-system --no-headers | awk '{print $1}'`; do 
     import_container "gestalt-system" $c
   done
@@ -103,7 +109,9 @@ import_container() {
     exit_on_error "Failed to get gestalt-system-environment ID, aborting"
   fi
 
-  cat > /tmp/${name}.json <<EOF
+  local file=/tmp/${name}-container.json
+
+  cat > $file <<EOF
 {
     "name":"${name}",
     "description":"Deployment ${name} imported from namespace '${namespace}' on `date`",
@@ -117,6 +125,66 @@ import_container() {
 EOF
 
   echo "Importing container $name..."
-  fog meta POST /root/environments/${gestalt_system_env_id}/containers?action=import -f /tmp/${name}.json
+  fog meta POST /root/environments/${gestalt_system_env_id}/containers?action=import -f $file
   exit_on_error "Failed to import '${name}' container, aborting"
+}
+
+import_volume() {
+  local namespace=$1
+  local name=$2
+
+  if [ -z "$gestalt_system_env_id" ]; then
+    gestalt_system_env_id=$(fog show environments /root/gestalt-system-workspace --fields=name,id | grep gestalt-system-environment | awk '{print $2}')
+    exit_on_error "Failed to get gestalt-system-environment ID, aborting"
+  fi
+
+  local file=/tmp/${name}-volume.json
+
+  cat > $file <<EOF
+{
+    "name":"${name}",
+    "description":"Voume ${name} imported from namespace '${namespace}' on `date`",
+    "properties":{
+        "provider":{"id":"${caas_provider_id}","locations":[]},
+        "external_id": "/namespaces/${namespace}/persistentvolumeclaims/${name}",
+        "size": 0,
+        "config": "{}",
+        "access_mode": "n/a",
+        "type": "persistent"
+    }
+}
+EOF
+
+  echo "Importing volume $name..."
+  fog meta POST /root/environments/${gestalt_system_env_id}/volumes?action=import -f $file
+  exit_on_error "Failed to import volume '${name}', aborting"
+}
+
+import_secret() {
+  local namespace=$1
+  local name=$2
+
+  if [ -z "$gestalt_system_env_id" ]; then
+    gestalt_system_env_id=$(fog show environments /root/gestalt-system-workspace --fields=name,id | grep gestalt-system-environment | awk '{print $2}')
+    exit_on_error "Failed to get gestalt-system-environment ID, aborting"
+  fi
+
+  [ -z "$caas_provider_id" ] && get_caas_provider_id
+
+  local file=/tmp/${name}-secret.json
+
+  cat > $file <<EOF
+{
+    "name":"${name}",
+    "description":"Secret ${name} imported from namespace '${namespace}' on `date`",
+    "properties":{
+        "provider":{"id":"${caas_provider_id}","locations":[]},
+        "external_id": "/namespaces/${namespace}/secrets/${name}"
+    }
+}
+EOF
+
+  echo "Importing secret $name..."
+  fog meta POST /root/environments/${gestalt_system_env_id}/secrets?action=import -f $file
+  exit_on_error "Failed to import secret '${name}', aborting"
 }
