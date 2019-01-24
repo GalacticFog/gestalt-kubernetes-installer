@@ -5,12 +5,6 @@
 . run-functions.sh
 . run-functions-gke.sh
 
-# # Derive logging variables from GESTALT_URL
-# if [ -z $LOGGING_SERVICE_HOST ]; then
-#   export LOGGING_SERVICE_HOST=$(echo $GESTALT_URL | awk -F/ '{print $3}')/log
-#   export LOGGING_SERVICE_PROTOCOL=$(echo $GESTALT_URL | awk -F: '{print $1}')
-# fi
-
 # Enable Debug for CLI
 if [ "${FOG_CLI_DEBUG}" == "true" ]; then
   fog config set debug=true

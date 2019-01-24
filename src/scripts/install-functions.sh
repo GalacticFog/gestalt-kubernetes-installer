@@ -149,6 +149,22 @@ getsalt_installer_setcheck_variables() {
   export EXTERNAL_GATEWAY_HOST=localhost
   export EXTERNAL_GATEWAY_PROTOCOL=http
 
+  check_for_required_variables \
+    GESTALT_URL \
+    KONG_URL
+
+  # Derive logging variables from GESTALT_URL
+  if [ -z $LOGGING_SERVICE_HOST ]; then
+    export LOGGING_SERVICE_HOST=$(echo $GESTALT_URL | awk -F/ '{print $3}')/log
+    export LOGGING_SERVICE_PROTOCOL=$(echo $GESTALT_URL | awk -F: '{print $1}')
+  fi
+
+  # Derive logging variables from GESTALT_URL
+  if [ -z $KONG_SERVICE_HOST ]; then
+    export KONG_SERVICE_HOST=$(echo $KONG_URL | awk -F/ '{print $3}')
+    export KONG_SERVICE_PROTOCOL=$(echo $KONG_URL | awk -F: '{print $1}')
+  fi
+
   # Check all variables in one call
   check_for_required_variables \
     ADMIN_PASSWORD \
@@ -165,7 +181,10 @@ getsalt_installer_setcheck_variables() {
     JVM_EXECUTOR_IMAGE \
     KONG_IMAGE \
     KONG_SERVICE_HOST \
+    KONG_SERVICE_PROTOCOL \
     LOGGING_IMAGE \
+    LOGGING_SERVICE_HOST \
+    LOGGING_SERVICE_PROTOCOL \
     META_HOSTNAME \
     META_IMAGE \
     META_PORT \
@@ -188,8 +207,7 @@ getsalt_installer_setcheck_variables() {
     UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
-    UI_PROTOCOL\
-    GESTALT_URL
+    UI_PROTOCOL
 
   if [ -z ${MARKETPLACE_INSTALL+x} ]; then
     check_for_required_variables \
