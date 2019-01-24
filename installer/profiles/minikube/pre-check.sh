@@ -7,10 +7,7 @@ target_kube_context='minikube'
 
     cat > config.yaml <<EOF
 GESTALT_URL:                 http://$minikube_host:31112  # (Gestalt Login URL)
-KONG_SERVICE_HOST:           $minikube_host:31113         # (host used to access the UI Portal)
-KONG_SERVICE_PROTOCOL:       http                    # ('http' or 'https')
-LOGGING_SERVICE_HOST:        $minikube_host:31112/log     # (host used to access the Log service)
-LOGGING_SERVICE_PROTOCOL:    http                    # ('http' or 'https')
+KONG_URL:                    http://$minikube_host:31113  # (Endpoint for API Gateway)
 EOF
 
 # fi
