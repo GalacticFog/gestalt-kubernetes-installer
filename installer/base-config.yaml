@@ -23,8 +23,6 @@ JS_EXECUTOR_3_MIN_COOL: '1' # Nashorn used for Migrate Lambdas
 JVM_EXECUTOR_0_MIN_COOL: '0'
 
 # Kong
-KONG_SERVICE_PROTOCOL: http
-KONG_SERVICE_HOST: localhost:31113        # The public URL of the API gateway (e.g. api1.example.com)
 KONG_INGRESS_SERVICE_NAME: kng-ext
 KONG_MANAGEMENT_NODEPORT: ''
 KONG_NODEPORT: '31113'
@@ -41,8 +39,6 @@ LOGGING_HOSTNAME: gestalt-log.gestalt-system.svc.cluster.local
 LOGGING_PORT: '80'
 LOGGING_PROTOCOL: http
 LOGGING_NODEPORT: '31114'
-LOGGING_SERVICE_HOST: localhost:31112/log
-LOGGING_SERVICE_PROTOCOL: http
 
 # Meta
 META_HOSTNAME: gestalt-meta.gestalt-system.svc.cluster.local

@@ -1,9 +1,7 @@
-GESTALT_URL:                 http://localhost:31112                 # (Gestalt Login URL)
-KONG_SERVICE_HOST:           apigw1.eks-dev.galacticfog.com         # (host used to access the UI Portal)
-KONG_SERVICE_PROTOCOL:       https                                  # ('http' or 'https')
-LOGGING_SERVICE_HOST:        gestalt.eks-dev.galacticfog.com/log    # (host used to access the Log service)
-LOGGING_SERVICE_PROTOCOL:    https                                  # ('http' or 'https')
-PROVISION_INTERNAL_DATABASE: No                                     # (Skips database creation and uses external database)
+GESTALT_URL:    http://portal.yourdomain.com       # (Gestalt Login URL)
+KONG_URL:       http://api1.yourdomain.com         # (Endpoint for API Gateway)
+
+PROVISION_INTERNAL_DATABASE: No  # (Skips database creation and uses external database)
 DATABASE_HOSTNAME:           gestalt-eks-dev.crqimf2biim3.us-east-1.rds.amazonaws.com # (External database to use)
 
 #(Remember to set credentials in credentials.yaml)

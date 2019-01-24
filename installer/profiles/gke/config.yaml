@@ -1,8 +1,5 @@
-K8S_PROVIDER:                gke                            # ('gke')
-GESTALT_URL:                 https://portal.yourdomain.com  # (Gestalt Login URL)
-KONG_SERVICE_HOST:           apigw1.yourdomain.com          # (host used to access the UI Portal)
-KONG_SERVICE_PROTOCOL:       https                          # ('http' or 'https')
-LOGGING_SERVICE_HOST:        portal.yourdomain.com/log      # (host used to access the Log service)
-LOGGING_SERVICE_PROTOCOL:    https                          # ('http' or 'https')
+K8S_PROVIDER:  gke                            # ('gke')
+GESTALT_URL:   https://portal.yourdomain.com  # (Gestalt Login URL)
+KONG_URL:      https://apigw1.yourdomain.com  # (Endpoint for API Gateway)
 
 #(Remember to set credentials in credentials.yaml)
