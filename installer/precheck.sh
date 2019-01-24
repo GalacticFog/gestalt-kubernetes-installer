@@ -7,7 +7,7 @@ set -o pipefail
 profile=$1
 
 if [ -z "$profile" ]; then
-  exit_with_error "Must specify an installation profile (docker-for-desktop, minikube, gke, eks, aws)"
+  exit_with_error "Must specify an installation profile (docker-desktop, minikube, gke, eks, aws)"
 elif [ ! -d ./profiles/$profile ]; then
   exit_with_error "Invalid profile: $profile" 
 fi

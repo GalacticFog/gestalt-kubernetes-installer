@@ -1,4 +1,4 @@
-target_kube_context='minikube'
+# target_kube_context='minikube'
 
 # Generate a configuration if not already present
 # if [ ! -f config.yaml ]; then

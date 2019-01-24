@@ -32,7 +32,7 @@ do_install() {
 
   if [ -z "$profile" ]; then
     echo
-    exit_with_error "Could not find a suitable profile for context '`kubectl config current-context`'. Please specify an installation profile (docker-for-desktop, minikube, gke, eks, aws)."
+    exit_with_error "Could not find a suitable profile for context '`kubectl config current-context`'. Please specify an installation profile (docker-desktop, minikube, gke, eks, aws)."
   elif [ ! -d ./profiles/$profile ]; then
     exit_with_error "Invalid profile: $profile" 
   fi

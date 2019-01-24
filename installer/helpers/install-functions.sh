@@ -53,7 +53,10 @@ check_for_required_tools() {
 get_profile_from_kubecontext() {
   local kubecontext="`kubectl config current-context`"
   if [ "$kubecontext" == "docker-for-desktop" ]; then
-    echo $kubecontext
+    echo "docker-desktop"
+    return 0
+  elif [ "$kubecontext" == "docker-desktop" ]; then
+    echo "docker-desktop"
     return 0
   elif [ "$kubecontext" == "minikube" ]; then
     echo $kubecontext
@@ -77,13 +80,13 @@ check_for_kube() {
   # echo "Checking for Kubernetes..."
   local kubecontext="`kubectl config current-context`"
 
-  if [ ! -z "$target_kube_context" ]; then
-      if [ "$kubecontext" != "$target_kube_context" ]; then
-      do_prompt_to_continue \
-        "Warning - Kubernetes context is '$kubecontext' (expected '$target_kube_context')" \
-        "Proceed anyway?"
-      fi
-  fi
+  # if [ ! -z "$target_kube_context" ]; then
+  #     if [ "$kubecontext" != "$target_kube_context" ]; then
+  #     do_prompt_to_continue \
+  #       "Warning - Kubernetes context is '$kubecontext' (expected '$target_kube_context')" \
+  #       "Proceed anyway?"
+  #     fi
+  # fi
 
   kube_cluster_info=$(kubectl cluster-info)
   exit_on_error "Kubernetes cluster not accessible, aborting."
@@ -514,7 +517,7 @@ run_gestalt_install() {
 run_helper() {
   local script=./profiles/$profile/$1.sh
 
-  # echo "Checking for helper: $script ..."
+  echo "Checking for helper: $script ..."
   if [ -f "$script" ]; then
     echo ""
     echo "Running $script ..."

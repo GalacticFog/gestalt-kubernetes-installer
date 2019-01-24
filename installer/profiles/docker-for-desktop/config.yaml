@@ -1,4 +1,0 @@
-GESTALT_URL:   http://127.0.0.1:31112   # (Gestalt Login URL)
-KONG_URL:      http://127.0.0.1:31113   # (Endpoint for API Gateway)
-
-#(Remember to set credentials in credentials.yaml)

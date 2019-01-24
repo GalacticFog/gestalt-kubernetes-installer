@@ -1,4 +1,4 @@
-target_kube_context='docker-for-desktop'
+# target_kube_context='docker-for-desktop'
 
 # echo "Please review your settings (`pwd`/config.yaml):"
 echo "The following Docker for Desktop specific settings will be used:"
