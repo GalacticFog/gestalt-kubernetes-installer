@@ -48,7 +48,7 @@ get_laser_host() {
 
 get_lambda_invoke_url() {
   local laser_host=$(get_laser_host)
-  local lambda_id=$(fog show lambdas --context /root/gestalt-system-workspace/gestalt-system-environment --name container-import --fields name,id | grep container-import | awk '{print $2}')
+  local lambda_id=$(fog show lambdas /root/gestalt-system-workspace/gestalt-system-environment --name container-import --fields name,id | grep container-import | awk '{print $2}')
   if [ -z "$lambda_id" ]; then
     exit_with_error "Could not find ID for container-import, aborting"
   fi

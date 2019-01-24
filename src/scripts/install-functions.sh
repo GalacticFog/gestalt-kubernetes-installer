@@ -622,6 +622,7 @@ gestalt_cli_set_opts() {
 }
 
 gestalt_cli_login() {
+  md5sum `which fog`
   cmd="fog login $UI_URL -u $ADMIN_USERNAME -p $ADMIN_PASSWORD"
   echo "Running 'fog login'..."
   $cmd
