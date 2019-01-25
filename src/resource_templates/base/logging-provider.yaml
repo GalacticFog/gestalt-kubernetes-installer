@@ -4,9 +4,9 @@ resource_type: Gestalt::Configuration::Provider::Logging
 properties:
   config:
     env:
-      public:
-        SERVICE_VHOST_0: '#{Config LOGGING_SERVICE_HOST}'
-        SERVICE_VHOST_0_PROTOCOL: '#{Config LOGGING_SERVICE_PROTOCOL}'
+      public: {}
+        # SERVICE_VHOST_0: '# {Config LOGGING_SERVICE_HOST}'
+        # SERVICE_VHOST_0_PROTOCOL: '# {Config LOGGING_SERVICE_PROTOCOL}'
       private:
         ES_CLUSTER_NAME: myesdb
         DEFAULT_COMPUTE_TYPE: kube
