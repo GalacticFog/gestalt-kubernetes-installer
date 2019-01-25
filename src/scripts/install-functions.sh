@@ -4,6 +4,9 @@
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 declare -A CONFIG_TO_ENV=(
+  ["common.name"]="EULA_NAME"
+  ["common.email"]="EULA_EMAIL"
+  ["common.companyName"]="EULA_COMPANY"
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
   ["secrets.adminUser"]="ADMIN_USERNAME"
   ["secrets.databasePassword"]="DATABASE_PASSWORD"
@@ -134,7 +137,7 @@ convert_configmap_to_env_variables() {
   local EXIT_CODE=$?
   echo "Mapping ConfigMap data for $CONFIGMAP"
   # If the ConfigMap was found, map the config values to env vars - ignore if not found
-  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap $JSON_DATA
+  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap "$JSON_DATA"
   local EXIT_CODE2=$?
   if [ $EXIT_CODE2 -eq 0 ]; then
     echo "SUCCESS mapping ConfigMap data for $CONFIGMAP"
@@ -406,6 +409,22 @@ http_post() {
   HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
   unset HTTP_RESPONSE
+}
+
+send_marketplace_eula_slack_message() {
+
+  check_for_required_variables \
+      UI_IMAGE \
+      EULA_NAME \
+      EULA_EMAIL \
+      EULA_COMPANY
+
+  local PROVIDER="MARKETPLACE ${K8S_PROVIDER:=default}"
+
+  local UI_VERSION=$(echo $UI_IMAGE | awk -F':' '{print $2}')
+
+  local payload=$(create_slack_payload "$PROVIDER" "$UI_VERSION" "$EULA_NAME" "$EULA_COMPANY" "$EULA_EMAIL")
+  send_slack_message "$payload"
 }
 
 wait_for_database_pod() {
