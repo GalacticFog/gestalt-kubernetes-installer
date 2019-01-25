@@ -29,10 +29,11 @@ create_slack_payload() {
 send_slack_message() {
   local payload=$1
 
-  curl -H "Content-Type: application/json" -X POST -d "${payload}" https://gtw1.demo.galacticfog.com/gfsales/message > /dev/null 2>&1
+  curl -H "Content-Type: application/json" -d "${payload}" https://gtw1.demo.galacticfog.com/gfsales/message
 
+  echo
   if [ $? -ne 0 ]; then
-    echo "[Warning] Failed to send EULA acceptance message..."
+    echo "[Warning] Failed to transmit EULA acceptance..."
   else
     echo "EULA Accepted"
   fi

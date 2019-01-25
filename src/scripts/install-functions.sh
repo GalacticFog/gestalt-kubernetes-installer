@@ -423,7 +423,8 @@ send_marketplace_eula_slack_message() {
 
   local UI_VERSION=$(echo $UI_IMAGE | awk -F':' '{print $2}')
 
-  send_slack_message $(create_slack_payload "$PROVIDER" "$UI_VERSION" "$EULA_NAME" "$EULA_EMAIL" "$EULA_COMPANY")
+  local payload=$(create_slack_payload "$PROVIDER" "$UI_VERSION" "$EULA_NAME" "$EULA_COMPANY" "$EULA_EMAIL")
+  send_slack_message "$payload"
 }
 
 wait_for_database_pod() {
