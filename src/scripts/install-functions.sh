@@ -137,7 +137,7 @@ convert_configmap_to_env_variables() {
   local EXIT_CODE=$?
   echo "Mapping ConfigMap data for $CONFIGMAP"
   # If the ConfigMap was found, map the config values to env vars - ignore if not found
-  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap $JSON_DATA
+  [ $EXIT_CODE -eq 0 ] && map_env_vars_for_configmap "$JSON_DATA"
   local EXIT_CODE2=$?
   if [ $EXIT_CODE2 -eq 0 ]; then
     echo "SUCCESS mapping ConfigMap data for $CONFIGMAP"

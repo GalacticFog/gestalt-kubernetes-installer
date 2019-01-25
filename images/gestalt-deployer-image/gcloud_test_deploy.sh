@@ -34,7 +34,7 @@ kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketpl
 # mpdev /scripts/doctor.py
 
 # Run `mpdev install` to kick off your deployer
-mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"ui.ingress.host\": \"gestalt.zwobu.com\", \"api.gateway.hostname\": \"api.zwobu.com\", \"secrets.adminUser\": \"gcptest\", \"secrets.adminPassword\": \"gcpG35t@lt1n5t@ll\" , \"secrets.databaseName\": \"postgres\" , \"secrets.databaseUsername\": \"postgres\" , \"secrets.databasePassword\": \"abcd1236!\"}"
+mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"common.name\": \"Sebastian Bernheim\", \"common.email\": \"sebastian@galacticfog.com\", \"common.companyName\": \"Galactic Fog, LLC Inc. Worldwide Intl.\", \"ui.ingress.host\": \"gestalt.zwobu.com\", \"api.gateway.hostname\": \"api.zwobu.com\", \"secrets.adminUser\": \"gcptest\", \"secrets.adminPassword\": \"gcpG35t@lt1n5t@ll\" , \"secrets.databaseName\": \"postgres\" , \"secrets.databaseUsername\": \"postgres\" , \"secrets.databasePassword\": \"@th3Sp0t!\"}"
 
 echo "Project ${PROJECT} install complete..."
 echo "You should see the project has been deployed at https://console.cloud.google.com/kubernetes/application?project=${PROJECT}"
