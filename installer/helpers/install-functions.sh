@@ -287,7 +287,7 @@ generate_slack_payload() {
   ui_image_version=$(grep '^UI_IMAGE' base-config.yaml | grep -v '^#' | awk '{print $2}' | awk -F':' '{print $2}')
 
   # The create_slack_payload function is in ../src/scripts/eula-functions.sh
-  local payload=$(create_slack_payload $profile $ui_image_version $name $company $email)
+  local payload=$(create_slack_payload "$profile" "$ui_image_version" "$name" "$company" "$email")
   echo $payload > ${eula_data}
 
 }
@@ -312,7 +312,7 @@ accept_eula() {
   generate_slack_payload "${eula_data}"
   
   # The send_slack_message function is in ../src/scripts/eula-functions.sh
-  send_slack_message $(read_file_data "${eula_data}")
+  send_slack_message "$(read_file_data "${eula_data}")"
 
   echo "Proceeding with Gestalt Platform installation."
   
