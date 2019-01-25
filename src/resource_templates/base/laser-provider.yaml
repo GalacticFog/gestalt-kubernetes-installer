@@ -4,11 +4,14 @@ resource_type: Gestalt::Configuration::Provider::Lambda
 properties:
   config:
     endpoints:
-    - actions:
-      - provider.viewmetrics
-      http:
-        method: GET
-        url: http://<resource.properties.config.env.public.SERVICE_HOST>:<resource.properties.config.env.public.SERVICE_PORT>/status
+      kind: http
+      url: http://<resource.properties.config.env.public.SERVICE_HOST>:<resource.properties.config.env.public.SERVICE_PORT>/status
+      actions:
+      - name: provider.viewmetrics
+        get:
+          responses:
+          - code: 200
+            content_type: application/json
     env:
       public: {}
       private:
