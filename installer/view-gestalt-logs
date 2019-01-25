@@ -1,0 +1,4 @@
+#!/bin/bash
+pod=`kubectl get pod -n gestalt-system  | grep gestalt-${1}- | awk '{print $1}'`
+shift
+kubectl logs -n gestalt-system $pod $@

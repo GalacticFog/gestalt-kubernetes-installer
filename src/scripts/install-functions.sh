@@ -60,7 +60,6 @@ getsalt_installer_load_configmap() {
   map_env_vars_for_configyaml
   # GKE specific
   [ ${K8S_PROVIDER:=default} == "gke" ] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
-  check_logging_service_host
 
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
@@ -70,20 +69,20 @@ getsalt_installer_load_configmap() {
   # print_env_variables #will print only if debug
 }
 
-check_logging_service_host() {
-  local APPEND_LOG_PATH="/log"
-  # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
-  if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
-    # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
-    [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
-    if [ -n "$UI_SERVICE_HOST" ]; then
-      LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
-      [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
-      LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
-    fi
-  fi
-  echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
-}
+# check_logging_service_host() {
+#   local APPEND_LOG_PATH="/log"
+#   # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
+#   if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
+#     # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
+#     [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
+#     if [ -n "$UI_SERVICE_HOST" ]; then
+#       LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
+#       [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
+#       LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
+#     fi
+#   fi
+#   echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
+# }
 
 map_env_vars_for_configyaml() {
   check_for_required_variables gestalt_config
@@ -146,24 +145,28 @@ convert_configmap_to_env_variables() {
 
 getsalt_installer_setcheck_variables() {
 
-  export EXTERNAL_GATEWAY_HOST=localhost
-  export EXTERNAL_GATEWAY_PROTOCOL=http
+  if [ -z ${MARKETPLACE_INSTALL} ]; then
 
-  check_for_required_variables \
-    GESTALT_URL \
-    KONG_URL
+    # Non-marketplace installs
 
-  # Derive logging variables from GESTALT_URL
-  if [ -z $LOGGING_SERVICE_HOST ]; then
-    export LOGGING_SERVICE_HOST=$(echo $GESTALT_URL | awk -F/ '{print $3}')/log
-    export LOGGING_SERVICE_PROTOCOL=$(echo $GESTALT_URL | awk -F: '{print $1}')
+    if [ -z $LOGGING_SERVICE_HOST ]; then
+      check_for_required_variables \
+        GESTALT_URL
+
+      export LOGGING_SERVICE_HOST=$(echo $GESTALT_URL | awk -F/ '{print $3}')/log
+      export LOGGING_SERVICE_PROTOCOL=$(echo $GESTALT_URL | awk -F: '{print $1}')
+    fi
+
+    if [ -z $KONG_SERVICE_HOST ]; then
+      check_for_required_variables \
+        KONG_URL
+
+      export KONG_SERVICE_HOST=$(echo $KONG_URL | awk -F/ '{print $3}')
+      export KONG_SERVICE_PROTOCOL=$(echo $KONG_URL | awk -F: '{print $1}')
+    fi
   fi
 
-  # Derive logging variables from GESTALT_URL
-  if [ -z $KONG_SERVICE_HOST ]; then
-    export KONG_SERVICE_HOST=$(echo $KONG_URL | awk -F/ '{print $3}')
-    export KONG_SERVICE_PROTOCOL=$(echo $KONG_URL | awk -F: '{print $1}')
-  fi
+  # check_logging_service_host
 
   # Check all variables in one call
   check_for_required_variables \
@@ -183,8 +186,6 @@ getsalt_installer_setcheck_variables() {
     KONG_SERVICE_HOST \
     KONG_SERVICE_PROTOCOL \
     LOGGING_IMAGE \
-    LOGGING_SERVICE_HOST \
-    LOGGING_SERVICE_PROTOCOL \
     META_HOSTNAME \
     META_IMAGE \
     META_PORT \
