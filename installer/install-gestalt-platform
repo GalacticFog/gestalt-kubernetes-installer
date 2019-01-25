@@ -19,6 +19,7 @@ do_install() {
   date
 
   . helpers/install-functions.sh
+  . ../src/scripts/eula-functions.sh
   . gestalt.conf
 
   # Get profile from 1st argument, otherwise get profile from kubecontext

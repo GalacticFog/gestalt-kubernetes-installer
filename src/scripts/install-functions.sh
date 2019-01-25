@@ -4,6 +4,9 @@
 
 echo "BASH VERSION: $BASH_VERSION $POSIXLY_CORRECT"
 declare -A CONFIG_TO_ENV=(
+  ["common.name"]="EULA_NAME"
+  ["common.email"]="EULA_EMAIL"
+  ["common.companyName"]="EULA_COMPANY"
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
   ["secrets.adminUser"]="ADMIN_USERNAME"
   ["secrets.databasePassword"]="DATABASE_PASSWORD"
@@ -406,6 +409,21 @@ http_post() {
   HTTP_STATUS=$(echo $HTTP_RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
   unset HTTP_RESPONSE
+}
+
+send_marketplace_eula_slack_message() {
+
+  check_for_required_variables \
+      UI_IMAGE \
+      EULA_NAME \
+      EULA_EMAIL \
+      EULA_COMPANY
+
+  local PROVIDER="MARKETPLACE ${K8S_PROVIDER:=default}"
+
+  local UI_VERSION=$(echo $UI_IMAGE | awk -F':' '{print $2}')
+
+  send_slack_message $(create_slack_payload "$PROVIDER" "$UI_VERSION" "$EULA_NAME" "$EULA_EMAIL" "$EULA_COMPANY")
 }
 
 wait_for_database_pod() {
