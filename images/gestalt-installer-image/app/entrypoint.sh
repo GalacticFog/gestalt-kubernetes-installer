@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-set -o pipefail
+set -e           # Exit on any error
+set -o pipefail  # fail during the first error in a pipe of commands
 
 function sleep_forever() {
     while [ 1 ]; do
@@ -13,6 +13,7 @@ function handle_error() {
     echo "[INSTALLATION_FAILURE] line=$1 code=$2 script=$0"
 }
 
+# 'install' command by default
 CMD=${1:-install}
 
 trap 'handle_error ${LINENO} $?' ERR
@@ -26,21 +27,22 @@ if [ "$CMD" == 'install' ]; then
     log=/app/install.log
 
     # Get a config map from the current namespace and write contents to local file
-    if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    if [ -z ${MARKETPLACE_INSTALL} ]; then
       # NOT a Marketplace install
       kubectl get configmap install-data -ojsonpath='{.data.b64data}' | base64 -d > ./install-data.tar.gz
 
       # If an install-data package was placed, overwrite the install directories on this image with them
       if [ -f ./install-data.tar.gz ]; then
-          # Untar in place
           mkdir -p ./install
+          
+          # Clear out original files and extract install data
+          rm -rf ./install/*
           tar xfzv ./install-data.tar.gz -C ./install
       fi
-
     else
       # Marketplace install - copy config files over
       mkdir -p /app/install/config
-      [ -z ${K8S_PROVIDER+x} ] || echo "K8S_PROVIDER = ${K8S_PROVIDER}"
+      echo "K8S_PROVIDER = ${K8S_PROVIDER}"
       ls -alF 
       if [ -d "/app/install/providers/${K8S_PROVIDER}" ]; then
         echo "Copying /app/install/providers/${K8S_PROVIDER} to /app/install/"
