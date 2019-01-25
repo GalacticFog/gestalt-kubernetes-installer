@@ -1,0 +1,22 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: factorial-graalvm
+description: 'This lambda shows an example of displaying a UI and calling multiple
+  functions from a single lambda.  Code is available at: https://github.com/GalacticFog/lambda-examples/blob/master/graalvm-nodejs_lambda/lambda-factorial.js'
+properties:
+  public: true
+  code: '#{LambdaSource src/factorial-graalvm.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/html
+    Content-Type: text/html
+  periodic_info: {}
+  timeout: 60
+  handler: handler
+  runtime: polyglot-node
+  env: {}
+  memory: 128
+  pre_warm: 0
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []

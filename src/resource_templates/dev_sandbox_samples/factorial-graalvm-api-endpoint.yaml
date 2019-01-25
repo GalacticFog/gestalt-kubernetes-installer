@@ -1,13 +1,11 @@
 resource_type: Gestalt::Resource::ApiEndpoint
-name: /hello-lodash
-description: Lodash Hello Endpoint
+name: /factorial-graalvm-example
+description: Factorial Example Endpoint
 properties:
-  resource: /hello-lodash
+  resource: /factorial-graalvm-example
   methods:
   - GET
-  - PUT
   - POST
-  - DELETE
   plugins:
     rateLimit:
       enabled: false
@@ -17,8 +15,10 @@ properties:
       users: []
       groups: []
   synchronous: true
+  # is_http_aware: false
   implementation_type: lambda
-  implementation_id: '#{Lambda hello-lodash}'
+  implementation_id: '#{Lambda factorial-graalvm}'
+  hosts: []
 context:
   api:
     id: '#{Api #{Config api}}'

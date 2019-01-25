@@ -1,0 +1,21 @@
+resource_type: Gestalt::Resource::Node::Lambda
+name: fizzbuzz-graalvm-nodejs
+description: 'Graalvm NodeJS Sample Lambda'
+properties:
+  public: true
+  code: '#{LambdaSource src/fizzbuzz.js}'
+  cpus: 0.1
+  code_type: code
+  headers:
+    Accept: text/html
+    Content-Type: text/html
+  periodic_info: {}
+  timeout: 60
+  handler: handler
+  runtime: polyglot-node
+  env: {}
+  memory: 128
+  pre_warm: 0
+  provider:
+    id: '#{Provider #{Config laser_provider}}'
+    locations: []
