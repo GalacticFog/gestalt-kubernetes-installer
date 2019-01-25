@@ -7,6 +7,7 @@ gestalt_license="../config/gestalt-license.json"
 
 . ./utility-bash.sh
 . ./install-functions.sh
+. ./eula-functions.sh
 
 check_for_required_files \
   ${gestalt_config_yaml} \
@@ -100,6 +101,8 @@ run getsalt_installer_setcheck_variables
 if [ -z ${MARKETPLACE_INSTALL+x} ]; then
   stage_0
   stage_1
+else
+  send_marketplace_eula_slack_message
 fi
 stage_2
 

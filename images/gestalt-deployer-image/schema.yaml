@@ -14,14 +14,18 @@ properties:
     type: string
     x-google-marketplace:
       type: REPORTING_SECRET
-  admin.user:
+  common.name:
     type: string
-    default: "admin"
-    description: "The username of the Gestalt admin user."
-  admin.password:
+    default: 'Firstname Lastname'
+    description: 'Your name.'
+  common.email:
     type: string
-    default: "gestaltgcp!"
-    description: "The password for the Gestalt admin user."
+    default: 'you@yourdomain.com'
+    description: 'Your email address.'
+  common.companyName:
+    type: string
+    default: 'n/a'
+    description: 'The name of your company (if applicable).'
   common.imagePullPolicy:
     type: string
     default: "Always"
@@ -33,23 +37,23 @@ properties:
   secrets.adminUser:
     type: string
     default: 'admin'
-    description: 'The username of the Gestalt admin user.'
+    description: 'A username for the Gestalt admin user.'
   secrets.adminPassword:
     type: string
     default: ''
-    description: "The password for the Gestalt admin user."
+    description: "A password for the Gestalt admin user."
   secrets.databaseName:
     type: string
     default: ''
-    description: "The database name for the Gestalt database."
+    description: "A database name for the Gestalt database."
   secrets.databaseUsername:
     type: string
     default: ''
-    description: "The admin username for the Gestalt database."
+    description: "An admin username for the Gestalt database."
   secrets.databasePassword:
     type: string
     default: ''
-    description: "The admin password for the Gestalt database."
+    description: "An admin password for the Gestalt database."
   database.hostname:
     type: string
     default: "gestalt-postgresql.gestalt-system.svc.cluster.local"

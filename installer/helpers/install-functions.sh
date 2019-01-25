@@ -274,7 +274,6 @@ do_prompt_to_continue() {
   done
 }
 
-
 generate_slack_payload() {
 
   local eula_data="$1"
@@ -287,24 +286,15 @@ generate_slack_payload() {
 
   ui_image_version=$(grep '^UI_IMAGE' base-config.yaml | grep -v '^#' | awk '{print $2}' | awk -F':' '{print $2}')
 
-  local payload="{\
-      \"eventName\": \"gestalt-k8s-installer-eula-accepted\",\
-      \"payload\": {\
-      \"name\": \"$name\",\
-      \"company\": \"$company\",\
-      \"email\": \"$email\",\
-      \"message\": \"Gestalt Kubernetes Installer: EULA Accepted\",\
-      \"slackMessage\": \"\
-          \n        EULA Accepted during Gestalt Platform install on Kubernetes. \
-          \n\n          version: $ui_image_version ($(uname))\
-          \n\n          context: $profile\
-          \n\n          name: $name\
-          \n\n          company: $company\
-          \n\n          email: $email\"\
-        }\
-  }"
+  # The create_slack_payload function is in ../src/scripts/eula-functions.sh
+  local payload=$(create_slack_payload "$profile" "$ui_image_version" "$name" "$company" "$email")
   echo $payload > ${eula_data}
 
+}
+
+read_file_data() {
+  # Reads a local file echoes the contents
+  echo $(<${1})
 }
 
 accept_eula() {
@@ -320,14 +310,9 @@ accept_eula() {
   fi
 
   generate_slack_payload "${eula_data}"
-
-  curl -H "Content-Type: application/json" -X POST -d "$(cat ${eula_data})" https://gtw1.demo.galacticfog.com/gfsales/message > /dev/null 2>&1
-
-  if [ $? -ne 0 ]; then
-    echo ":)"
-  else
-    echo "EULA Accepted"
-  fi
+  
+  # The send_slack_message function is in ../src/scripts/eula-functions.sh
+  send_slack_message "$(read_file_data "${eula_data}")"
 
   echo "Proceeding with Gestalt Platform installation."
   
