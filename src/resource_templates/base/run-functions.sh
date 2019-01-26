@@ -26,7 +26,7 @@ exit_on_error() {
 }
 
 warn_on_error() {
-  [ $? -eq 0 ] && >&2 echo "[Warning] $@"
+  [ $? -eq 0 ] || >&2 echo "[Warning] $@"
 }
 
 apply_image_pull_secrets() {
@@ -133,7 +133,7 @@ EOF
 
   echo "Importing container $name..."
   fog meta POST /root/environments/${gestalt_system_env_id}/containers?action=import -f $file
-  warn_on_error "Failed to import '${name}' container, aborting"
+  warn_on_error "Import '${name}' container returned a non-zero exit code"
 }
 
 import_volume() {
@@ -164,7 +164,7 @@ EOF
 
   echo "Importing volume $name..."
   fog meta POST /root/environments/${gestalt_system_env_id}/volumes?action=import -f $file
-  warn_on_error "Failed to import volume '${name}', aborting"
+  warn_on_error "Import volume '${name}' returned a non-zero exit code"
 }
 
 import_secret() {
@@ -193,5 +193,5 @@ EOF
 
   echo "Importing secret $name..."
   fog meta POST /root/environments/${gestalt_system_env_id}/secrets?action=import -f $file
-  warn_on_error "Failed to import secret '${name}', aborting"
+  warn_on_error "Import secret '${name}' returned a non-zero exit code"
 }
