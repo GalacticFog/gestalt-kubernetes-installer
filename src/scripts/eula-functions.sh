@@ -30,7 +30,8 @@ send_slack_message() {
   local payload=$1
 
   # The -d option sets the request to a POST implicitly so no need to set -X POST
-  curl -H "Content-Type: application/json" -d "${payload}" https://gtw1.demo.galacticfog.com/gfsales/message
+  curl -H "Content-Type: application/json" -d "${payload}" \
+    https://gtw1.demo.galacticfog.com/gfsales/message 2> /dev/null
 
   if [ $? -ne 0 ]; then
     echo "[Warning] Failed to transmit EULA acceptance..."
@@ -38,4 +39,3 @@ send_slack_message() {
     echo "EULA Accepted"
   fi
 }
-

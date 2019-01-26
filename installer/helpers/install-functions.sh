@@ -29,7 +29,6 @@ check_for_required_environment_variables() {
   fi
 }
 
-
 check_for_required_tools() {
   # echo "Checking for required tools..."
   which base64    >/dev/null 2>&1 ; exit_on_error "'base64' command not found, aborting."
@@ -41,7 +40,6 @@ check_for_required_tools() {
   # 'read' may be implemented as a shell function rather than a separate function
   # which read      >/dev/null 2>&1 ; exit_on_error "'read' command not found, aborting."
   which bc        >/dev/null 2>&1 ; exit_on_error "'bc' command not found, aborting."
-  # which helm      >/dev/null 2>&1 ; exit_on_error "'helm' not found, aborting."
   which kubectl   >/dev/null 2>&1 ; exit_on_error "'kubectl' command not found, aborting."
   which curl      >/dev/null 2>&1 ; exit_on_error "'curl' command not found, aborting."
   which unzip     >/dev/null 2>&1 ; exit_on_error "'unzip' command not found, aborting."
@@ -154,7 +152,6 @@ do_wait_for_helm() {
   exit_with_error "Helm did not initialize within expected timeframe."
 }
 
-
 create_or_check_for_required_namespace() {
   # echo "Checking for existing Kubernetes namespace '$install_namespace'..."
   kubectl get namespace $install_namespace > /dev/null 2>&1
@@ -196,7 +193,6 @@ check_for_required_namespace() {
   fi
   echo "OK - Kubernetes namespace '$install_namespace' is present."
 }
-
 
 # check_for_existing_namespace_ask() {
 #   echo "Checking for existing Kubernetes namespace '$install_namespace'..."
@@ -289,7 +285,6 @@ generate_slack_payload() {
   # The create_slack_payload function is in ../src/scripts/eula-functions.sh
   local payload=$(create_slack_payload "$profile" "$ui_image_version" "$name" "$company" "$email")
   echo $payload > ${eula_data}
-
 }
 
 read_file_data() {
@@ -315,7 +310,6 @@ accept_eula() {
   send_slack_message "$(read_file_data "${eula_data}")"
 
   echo "Proceeding with Gestalt Platform installation."
-  
 }
 
 prompt_eula() {
@@ -366,66 +360,17 @@ DATA
 }
 
 parse_eula_client_data () {
+  local eula_data="$1"
 
-local eula_data="$1"
+  name=$(cat ${eula_data} | awk -F'"name": "' '{print $2}' | awk -F'", "company": "' '{print $1}')
+  company=$(cat ${eula_data} | awk -F'"company": "' '{print $2}' | awk -F'", "email": "' '{print $1}')
+  email=$(cat ${eula_data} | awk -F'"email": "' '{print $2}' | awk -F'", "message": "' '{print $1}')
 
-name=$(cat ${eula_data} | awk -F'"name": "' '{print $2}' | awk -F'", "company": "' '{print $1}')
-company=$(cat ${eula_data} | awk -F'"company": "' '{print $2}' | awk -F'", "email": "' '{print $1}')
-email=$(cat ${eula_data} | awk -F'"email": "' '{print $2}' | awk -F'", "message": "' '{print $1}')
-
-cat > ${eula_data}_client << DATA
+  cat > ${eula_data}_client << DATA
 name="$name"
 company="$company"
 email="$email"
 DATA
-
-}
-
-prompt_for_executor_config() {
-
-    echo
-    echo "Gestalt Platform's FaaS engine (Gestalt Laser) provides a number of out-of-box language runtimes for executing lambda functions.  The 'js' runtime is enabled by default."
-    echo
-
-    if do_prompt_to_enable_all_executors; then
-        echo
-    else
-        do_prompt_for_executor_config 'nodejs'
-        do_prompt_for_executor_config 'dotnet'
-        do_prompt_for_executor_config 'golang'
-        do_prompt_for_executor_config 'jvm'
-        do_prompt_for_executor_config 'python'
-        do_prompt_for_executor_config 'ruby'
-    fi
-
-    echo
-}
-
-do_prompt_to_enable_all_executors() {
-    while true; do
-        read -p "  Do you want to enable all lambda runtimes (nodejs, dotnet, golang, jvm, python, ruby)? [y/n]: " yn
-        case $yn in
-            [Yy]*) return 0 ;;
-            [Nn]*) return 1 ;;
-        esac
-    done
-}
-
-do_prompt_for_executor_config() {
-
-  # If executor image variable is already unset, don't prompt for additional variables
-  local ee="gestalt_laser_executor_${1}_image"
-  if [ -z "${!ee}" ]; then
-      return 0
-  fi
-
-  while true; do
-      read -p "  Enable the '$1' runtime? [y/n]: " yn
-      case $yn in
-          [Yy]*) return 0 ;;
-          [Nn]*) unset gestalt_laser_executor_${1}_image ; return 0 ;;
-      esac
-  done
 }
 
 summarize_config() {
