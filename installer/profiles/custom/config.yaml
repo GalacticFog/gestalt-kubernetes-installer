@@ -1,0 +1,7 @@
+GESTALT_URL:    http://portal.yourdomain.com       # (Gestalt Login URL)
+KONG_URL:       http://api1.yourdomain.com         # (Endpoint for API Gateway)
+
+# K8S_PROVIDER:  gke                               # (Uncomment if target environment is GKE)
+
+#(Remember to set credentials in credentials.yaml)
+

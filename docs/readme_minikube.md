@@ -70,7 +70,8 @@ rest of the Gestalt install procedure for you.
 
 ```sh
 # Run the Gestalt Platform installer
-./install-gestalt-platform minikube
+cd installer
+./install-gestalt-platform
 
 ```
 
