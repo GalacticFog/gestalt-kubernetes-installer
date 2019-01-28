@@ -6,9 +6,11 @@ exit_with_error() {
 }
 
 exit_on_error() {
-  if [ $? -ne 0 ]; then
-    exit_with_error $1
-  fi
+  [ $? -eq 0 ] || exit_with_error $@
+}
+
+warn_on_error() {
+  [ $? -eq 0 ] || echo "[Warning] $@"
 }
 
 check_for_required_environment_variables() {
@@ -558,8 +560,15 @@ fog_cli_login() {
   gestalt_url=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.gestalt-url}' | base64 --decode`
   gestalt_admin_username=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-username}' | base64 --decode`
   gestalt_admin_password=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-password}' | base64 --decode`
-  ./fog login $gestalt_url -u $gestalt_admin_username -p $gestalt_admin_password
-  exit_on_error "Login failed, aborting"
+  ./fog login ${gestalt_url} -u $gestalt_admin_username -p $gestalt_admin_password
+  if [ $? -ne 0 ]; then
+    echo ""
+    echo "  Warning: Failed to log in to '$gestalt_url' using user '$gestalt_admin_username'."
+    echo "  If Gestalt is behind a load balancer that requires DNS, the Gestalt service may not yet be live.  To attempt to log in manually, run the following:"
+    echo ""
+    echo "    ./fog login $gestalt_url"
+    echo ""
+  fi
 }
 
 display_summary() {
