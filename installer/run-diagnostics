@@ -20,8 +20,6 @@ run_diagnostics() {
 
   run kubectl config current-context
 
-  run kubectl config get-contexts
-
   run kubectl get deploy --all-namespaces
 
   run kubectl get pods --all-namespaces
@@ -37,14 +35,6 @@ run_diagnostics() {
   run kubectl describe nodes
 
   run ./helpers/check-cluster-capacity
-
-  helm=helm
-  which helm
-  if [ $? -ne 0 ]; then
-    helm=./helm
-  fi
-
-  run $helm version --tiller-connection-timeout 10
 
   run ./fog --version
 
