@@ -213,7 +213,7 @@ getsalt_installer_setcheck_variables() {
     UI_PORT \
     UI_PROTOCOL
 
-  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+  if [ ! -z ${MARKETPLACE_INSTALL} ]; then
     check_for_required_variables \
         GCP_TRACKING_SERVICE_IMAGE \
         GCP_UBB_IMAGE \
@@ -271,14 +271,6 @@ gestalt_installer_generate_helm_config() {
     postgres_persistence_subpath \
     postgres_memory_request \
     postgres_cpu_request
-
-  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
-    check_for_required_variables \
-        GCP_TRACKING_SERVICE_IMAGE \
-        GCP_UBB_IMAGE \
-        UBB_HOSTNAME \
-        UBB_PORT
-  fi
 
   [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 

@@ -99,15 +99,29 @@ EOF
   exit_on_error "Failed to patch CaaS provider with container-import info, aborting"
 }
 
+is_excluded() {
+  local match=$1
+  shift
+  for element; do [[ "$match" == "$element" ]] && return; done
+  false
+}
+
 import_gestalt_system_k8s_resources() {
 
-  # First, import dependencies
-  import_secret gestalt-system gestalt-secrets
-  import_volume gestalt-system gestalt-postgresql
+  # We must import all container dependencies before the containers themselves.
 
-  # Next, import containers
+  # First, import the Gestalt Secrets
+  import_secret "gestalt-system" "gestalt-secrets"
+
+  # Next, import all Gestalt Volumes
+  for v in `kubectl get pvc -n gestalt-system --no-headers | awk '{print $1}'`; do
+    import_volume "gestalt-system" $v
+  done
+
+  # And finally, import all Gestalt Containers unless they're explicitly excluded
+  local excluded_containers=( "gestalt-tracking-service" "gestalt-ubb" )
   for c in `kubectl get deploy -n gestalt-system --no-headers | awk '{print $1}'`; do 
-    import_container "gestalt-system" $c
+    is_excluded $c ${excluded_containers[@]} || import_container "gestalt-system" $c
   done
 }
 
