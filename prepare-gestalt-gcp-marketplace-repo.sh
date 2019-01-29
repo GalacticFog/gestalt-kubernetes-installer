@@ -1,24 +1,17 @@
+set -e
 
 echo "Cleaning up..."
 [ -d gestalt-gcp-marketplace ] && rm -rf gestalt-gcp-marketplace
 
-echo "Cloning repo..."
-git clone https://github.com/GalacticFog/gestalt-gcp-marketplace
-
-echo "Clearning out repo contents..."
-rm -rf gestalt-gcp-marketplace/*
+echo "Initializing Repo"
+git init gestalt-gcp-marketplace
 
 echo "Populating repo"
-cp -r GCP-Install-Guide.md LICENSE.txt images src functional_tests gestalt-gcp-marketplace/
+cp -r GCP-Install-Guide.md LICENSE.txt images src functional_tests .gitignore gestalt-gcp-marketplace/
 
-echo "Done."
+echo "Committing ..."
+cd gestalt-gcp-marketplace
+git add .
+git commit -m "Updated `date`"
 
-echo "To review changes and publish:"
-echo
-echo "  cd gestalt-gcp-marketplace"
-echo "  git status"
-echo "  git diff"
-echo "  git add ."
-echo "  git commit -m \"Update on \`date\`\""
-echo "  git push"
-echo
+echo "Next, run ./push-gestalt-gcp-marketplace-mirror.sh"
