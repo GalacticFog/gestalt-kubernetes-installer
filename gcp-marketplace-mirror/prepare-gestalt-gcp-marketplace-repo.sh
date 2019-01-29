@@ -7,7 +7,7 @@ echo "Initializing Repo"
 git init gestalt-gcp-marketplace
 
 echo "Populating repo"
-cp -r GCP-Install-Guide.md LICENSE.txt images src functional_tests .gitignore gestalt-gcp-marketplace/
+cp -r README.md ../LICENSE.txt ../images ../src ../functional_tests ../.gitignore gestalt-gcp-marketplace/
 
 echo "Committing ..."
 cd gestalt-gcp-marketplace
