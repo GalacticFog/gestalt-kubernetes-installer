@@ -20,17 +20,22 @@ CUSTOM_IMAGE_PULL_SECRET: ''
 BASH_EXECUTOR_0_MIN_COOL: '0'
 DOTNET_EXECUTOR_0_MIN_COOL: '0'
 GOLANG_EXECUTOR_0_MIN_COOL: '0'
-GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '1'
+GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '2'
 GRAALVM_LVM_EXECUTOR_0_MIN_COOL: '0'
 GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '0'
-JS_EXECUTOR_0_MIN_COOL: '0'
-JS_EXECUTOR_3_MIN_COOL: '1' # Nashorn used for Migrate Lambdas
-JVM_EXECUTOR_0_MIN_COOL: '0'
-NODEJS_EXECUTOR_0_MIN_COOL: '0'
+JS_EXECUTOR_0_MIN_COOL: '2'
+JVM_EXECUTOR_0_MIN_COOL: '2'
+NODEJS_EXECUTOR_0_MIN_COOL: '2'
 PYTHON_EXECUTOR_0_MIN_COOL: '0'
 # Custom executors
 PYTHON_3_6_1_EXECUTOR_MIN_COOL: '0'
 PYTHON_3_6_3_EXECUTOR_MIN_COOL: '0'
+# Default executor size bins
+EXECUTOR_SIZE_0_DEFAULT_CPU: 1.0
+EXECUTOR_SIZE_0_DEFAULT_MEM: 1024
+
+EXECUTOR_SIZE_1_DEFAULT_CPU: 4.0
+EXECUTOR_SIZE_1_DEFAULT_MEM: 2048
 
 
 # Kong
@@ -64,8 +69,6 @@ META_UPGRADE_CHECK_HOURS: '24' # Change how frequently check: '1'
 # Catalog
 CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
 # CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
-
-CONTAINER_IMPORT_PACKAGE_URL: https://s3.amazonaws.com/gfi.lambdas/container-import.jar
 
 # RABBIT
 RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
@@ -104,6 +107,7 @@ GOLANG_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor
 GRAALVM_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-graalvm:2.4.1
 GWM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1
 GWM_IMAGE:              gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1
+HYPER_EXECUTOR_IMAGE:   gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-hyper:2.4.1
 JS_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-js:2.4.1
 JVM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-jvm:2.4.1
 KONG_IMAGE:             gcr.io/galacticfog-public/gestalt/kong:2.4.1
