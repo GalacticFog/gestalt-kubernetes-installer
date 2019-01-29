@@ -16,8 +16,8 @@ properties:
   handler: com.galacticfog.Producer;produce
   runtime: java;scala
   env:
-    KAFKA_TOPIC: avro-input
-    KAFKA_BROKERS: REPLACE ME:9092
+    KAFKA_TOPIC: input
+    KAFKA_BROKERS: REPLACE_ME_PROTOCOL_HOST_PORT
   memory: 256
   provider:
     id: '#{Provider #{Config laser_provider}}'

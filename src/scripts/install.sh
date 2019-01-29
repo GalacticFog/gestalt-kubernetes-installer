@@ -84,6 +84,10 @@ stage_2() {
   gestalt_cli_license_set
   gestalt_cli_context_set
 
+  echo
+  env | sort | tee install.env
+  echo
+
   run gestalt_cli_create_resources #Default or Custom as per config
 
   if [ ${K8S_PROVIDER:=default} == "gke" ]; then

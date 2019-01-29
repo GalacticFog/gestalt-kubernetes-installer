@@ -3,14 +3,15 @@ name: migrate-lambda
 description: https://raw.githubusercontent.com/GalacticFog/lambda-examples/master/js_lambda/default-migrate.js
 properties:
   public: true
-  code: '#{LambdaSource src/migrate-lambda.js}'
+  package_url: 'http://gestalt-meta.gestalt-system.svc.cluster.local:10131/assets/system/lambdas/default-migrate.js'
   cpus: 0.1
-  code_type: code
+  code_type: package
+  compressed: false
   headers:
     Accept: text/plain
   periodic_info: {}
   timeout: 30
-  handler: migrate
+  handler: default-migrate;migrate
   runtime: nashorn
   env: {}
   provider:

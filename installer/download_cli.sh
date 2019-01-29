@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gestalt_cli_version=0.11.0
+gestalt_cli_version=`curl -o - https://raw.githubusercontent.com/GalacticFog/gestalt-fog-cli/master/LATEST`
 
 exit_with_error() {
   echo "[Error] $@"

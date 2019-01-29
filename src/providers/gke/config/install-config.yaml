@@ -117,7 +117,6 @@ RABBIT_IMAGE:           gcr.io/galacticfog-public/gestalt/rabbit:2.4.1
 RUBY_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-ruby:2.4.1
 SECURITY_IMAGE:         gcr.io/galacticfog-public/gestalt/gestalt-security:2.4.1
 UI_IMAGE:               gcr.io/galacticfog-public/gestalt:2.4.1
-UPGRADER_IMAGE:         gcr.io/galacticfog-public/gestalt/gestalt-upgrader:2.4.1
 REDIS_IMAGE:            gcr.io/galacticfog-public/gestalt/redis:2.4.1
 
 # GKE specific

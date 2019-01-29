@@ -21,10 +21,10 @@ properties:
         EXECUTOR_HEARTBEAT_MILLIS: '5000'
         EXECUTOR_HEARTBEAT_TIMEOUT: '5000'
         GESTALT_SCHEDULER: 'true'
-        HYPER_EXECUTOR_IMG: galacticfog/gestalt-laser-executor-hyper:release-2.3.2
+        HYPER_EXECUTOR_IMG: '#{Config HYPER_EXECUTOR_IMAGE}'
         LAMBDA_DATABASE_NAME: laser-db
         MANAGEMENT_PROTOCOL: ws
-        MAX_COOL_CONNECTION_TIME: '60'
+        MAX_COOL_CONNECTION_TIME: '1200'
         MAX_EXECUTOR_CPU: '4.0'
         MAX_EXECUTOR_MEM: '8192'
         META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/containers

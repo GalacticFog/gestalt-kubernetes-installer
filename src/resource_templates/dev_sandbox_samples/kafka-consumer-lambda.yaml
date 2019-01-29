@@ -15,8 +15,8 @@ properties:
   handler: com.galacticfog.LambdaConsumer;consume
   runtime: java;scala
   env:
-    KAFKA_BROKERS: REPLACE ME
-    KAFKA_TOPIC: avro-output
+    KAFKA_BROKERS: REPLACE_ME_PROTOCOL_HOST_PORT
+    KAFKA_TOPIC: output
     MAX_TIME_SECONDS: '30'
   memory: 512
   provider:

@@ -15,7 +15,7 @@ spec:
   - name: imagepullsecret-5
   containers:
   - name: gestalt-installer
-    image: "docker.io/galacticfog/gestalt-installer:2.4.1-RC3"
+    image: "docker.io/galacticfog/gestalt-installer:2.4.1"
     imagePullPolicy: Always
     # imagePullPolicy: IfNotPresent
     args: 

@@ -653,6 +653,7 @@ download_helm() {
 }
 
 download_fog_cli() {
+    gestalt_cli_version=`curl -o - https://raw.githubusercontent.com/GalacticFog/gestalt-fog-cli/master/LATEST`
 
     if [ -z "$gestalt_cli_version" ]; then
       exit_with_error "gestalt_cli_version not defined, aborting"
