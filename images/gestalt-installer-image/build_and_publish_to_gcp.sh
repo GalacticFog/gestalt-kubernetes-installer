@@ -44,10 +44,10 @@ echo "------------------------------------------------------"
 echo "Build: Step 4: Tag and Push(Optional)"
 for curr_tag in $@; do
   echo "Tagging ${curr_tag}"
-  docker tag $imageid gcr.io/galacticfog-public/gestalt-installer:${curr_tag}
+  docker tag $imageid gcr.io/galacticfog-public/gestalt/gestalt-installer:${curr_tag}
   exit_on_error "image tag '${curr_tag}' failed, aborting."
   if [ ${publish} == "true" ]; then
-    docker push gcr.io/galacticfog-public/gestalt-installer:${curr_tag}
+    docker push gcr.io/galacticfog-public/gestalt/gestalt-installer:${curr_tag}
     exit_on_error "docker push failed, aborting."
   else
     echo "Skipping push due publish=${publish}"
