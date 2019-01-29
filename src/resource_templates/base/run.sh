@@ -79,7 +79,7 @@ wait_for_pod lsr
 sleep 20  # Provide time for Laser and Meta to settle before migrating the schema
 
 fog meta POST /migrate -f meta-migrate.json > /tmp/migrate.out
-cat /tmp/migrate.out | jq . | head
+cat /tmp/migrate.out | jq .
 echo ...
 
 # Check for migration any failure

@@ -11,8 +11,8 @@ exit_on_error() {
 # Before runnign do: docker login
 
 # Source
-gestalt_docker_release_tag="2.4.1-RC3"
-gestalt_installer_docker_release_tag="2.4.1-RC3"
+gestalt_docker_release_tag="2.4.1"
+gestalt_installer_docker_release_tag="2.4.1"
 docker_registry="galacticfog"
 # Target
 target_registry="gcr.io/kube-test-env-208414" #GF gke
@@ -20,29 +20,33 @@ target_registry="gcr.io/kube-test-env-208414" #GF gke
 # Manually grap all applicable images for installer
 # grep -v ^# base-config.yaml | grep 'docker.io/galacticfog/' | awk '{print $2}' | awk -F'/' '{print $2"/"$3}'
 ALL_IMAGES=(
-gestalt-laser-executor-dotnet:2.4.1-RC3
+gestalt-laser-executor-dotnet:2.4.1
 elasticsearch-docker:5.3.1
-gestalt-laser-executor-golang:2.4.1-RC3
-gestalt-laser-executor-graalvm:2.4.1-RC3
-gestalt-api-gateway:2.4.1-RC3
-gestalt-api-gateway:2.4.1-RC3
-gestalt-laser-executor-js:2.4.1-RC3
-gestalt-laser-executor-jvm:2.4.1-RC3
-kong:2.4.1-RC3
-gestalt-laser:2.4.1-RC3
-gestalt-log:2.4.1-RC3
-gestalt-meta:2.4.1-RC3
-gestalt-laser-executor-nodejs:2.4.1-RC3
-gestalt-policy:2.4.1-RC3
+gestalt-laser-executor-golang:2.4.1
+gestalt-laser-executor-graalvm:2.4.1
+gestalt-api-gateway:2.4.1
+gestalt-api-gateway:2.4.1
+gestalt-laser-executor-js:2.4.1
+gestalt-laser-executor-jvm:2.4.1
+kong:2.4.1
+gestalt-laser:2.4.1
+gestalt-log:2.4.1
+gestalt-meta:2.4.1
+gestalt-laser-executor-nodejs:2.4.1
+gestalt-policy:2.4.1
 gestalt-laser-executor-python:python-3.6.1
 gestalt-laser-executor-python:python-3.6.3
-gestalt-laser-executor-python:2.4.1-RC3
-rabbit:2.4.1-RC3
-gestalt-laser-executor-ruby:2.4.1-RC3
-gestalt-security:2.4.1-RC3
-gestalt-ui-react:2.4.1-RC3
-gestalt-upgrader:2.4.1-RC3
-redis:2.4.1-RC3
+gestalt-laser-executor-python:2.4.1
+rabbit:2.4.1
+gestalt-laser-executor-ruby:2.4.1
+gestalt-security:2.4.1
+gestalt-ui-react:2.4.1
+gestalt-upgrader:2.4.1
+redis:2.4.1
+gestalt-tracking-service:2.4.1
+gestalt-ubb-agent:2.4.1
+postgres:2.4.1
+gestalt-laser-executor-hyper:2.4.1
 )
 # grep '${docker_registry}' ./client/scripts/build-installer-spec.sh | awk -F'"' '{print $2}' | awk -F'/' '{print $2}'
 ALL_IMAGES="${ALL_IMAGES} gestalt-installer:${gestalt_installer_docker_release_tag}"
