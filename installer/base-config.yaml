@@ -94,36 +94,32 @@ UBB_PORT: 6380
 ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 
 # Postgres image
-POSTGRES_IMAGE: docker.io/postgres:9.6.11
+POSTGRES_IMAGE: docker.io/galacticfog/postgres:9.6.11
 
 # Images
-DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1-RC3
+DOTNET_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1
 ELASTICSEARCH_IMAGE:   docker.io/galacticfog/elasticsearch-docker:5.3.1
-GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1-RC3
-GRAALVM_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1-RC3
-GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC3
-GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:2.4.1-RC3
-JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:2.4.1-RC3
-JVM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-laser-executor-jvm:2.4.1-RC3
-KONG_IMAGE:            docker.io/galacticfog/kong:2.4.1-RC3
-LASER_IMAGE:           docker.io/galacticfog/gestalt-laser:2.4.1-RC3
-LOGGING_IMAGE:         docker.io/galacticfog/gestalt-log:2.4.1-RC3
-META_IMAGE:            docker.io/galacticfog/gestalt-meta:2.4.1-RC3
-NODEJS_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-nodejs:2.4.1-RC3
-POLICY_IMAGE:          docker.io/galacticfog/gestalt-policy:2.4.1-RC3
+GOLANG_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1
+GRAALVM_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1
+GWM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-api-gateway:2.4.1
+GWM_IMAGE:             docker.io/galacticfog/gestalt-api-gateway:2.4.1
+JS_EXECUTOR_IMAGE:     docker.io/galacticfog/gestalt-laser-executor-js:2.4.1
+JVM_EXECUTOR_IMAGE:    docker.io/galacticfog/gestalt-laser-executor-jvm:2.4.1
+KONG_IMAGE:            docker.io/galacticfog/kong:2.4.1
+LASER_IMAGE:           docker.io/galacticfog/gestalt-laser:2.4.1
+LOGGING_IMAGE:         docker.io/galacticfog/gestalt-log:2.4.1
+META_IMAGE:            docker.io/galacticfog/gestalt-meta:2.4.1
+NODEJS_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-nodejs:2.4.1
+POLICY_IMAGE:          docker.io/galacticfog/gestalt-policy:2.4.1
 PYTHON_3_6_1_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.1
 PYTHON_3_6_3_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.3
-PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python:2.4.1-RC3
-RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1-RC3
-RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1-RC3
-SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1-RC3
-UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1-RC3
-UPGRADER_IMAGE:              docker.io/galacticfog/gestalt-upgrader:2.4.1-RC3
-REDIS_IMAGE:                 docker.io/galacticfog/redis:2.4.1-RC3
-
-# GKE specific
-GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:latest
-GCP_UBB_IMAGE:               gcr.io/galacticfog-public/gestalt-ubb-agent:latest
+PYTHON_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-python:2.4.1
+RABBIT_IMAGE:                docker.io/galacticfog/rabbit:2.4.1
+RUBY_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-ruby:2.4.1
+SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1
+UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.1
+UPGRADER_IMAGE:              docker.io/galacticfog/gestalt-upgrader:2.4.1
+REDIS_IMAGE:                 docker.io/galacticfog/redis:2.4.1
 
 # POSTGRES database settings
 # internal_database_pv_storage_class: standard - Must set to 'standard' for GCP Kubernetes installs

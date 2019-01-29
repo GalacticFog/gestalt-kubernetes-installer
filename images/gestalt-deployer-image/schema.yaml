@@ -32,7 +32,7 @@ properties:
     description: "Pull new container images? (Valid values are Always, IfNotPresent or Never)"
   common.releaseVersion:
     type: string
-    default: "latest"
+    default: "2.4.1"
     description: "The release version you want to install for this Gestalt instance."
   secrets.adminUser:
     type: string
@@ -146,117 +146,117 @@ properties:
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   installer.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-installer:gcp"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4.1"
     x-google-marketplace:
       type: IMAGE
   security.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-security:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-security:2.4.1"
     x-google-marketplace:
       type: IMAGE
   rabbit.image:
     type: string
-    default: "gcr.io/galacticfog-public/rabbit:latest"
+    default: "gcr.io/galacticfog-public/gestalt/rabbit:2.4.1"
     x-google-marketplace:
       type: IMAGE
   elastic.image:
     type: string
-    default: "gcr.io/galacticfog-public/elasticsearch-docker:5.3.1"
+    default: "gcr.io/galacticfog-public/gestalt/elasticsearch-docker:5.3.1"
     x-google-marketplace:
       type: IMAGE
   elastic.initContainer.image:
     type: string
-    default: "gcr.io/galacticfog-public/busybox:1.29.3"
+    default: "gcr.io/galacticfog-public/gestalt/busybox:1.29.3"
     x-google-marketplace:
       type: IMAGE
   meta.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-meta:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4.1"
     x-google-marketplace:
       type: IMAGE
   logging.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-log:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-log:2.4.1"
     x-google-marketplace:
       type: IMAGE
   ui.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-ui-react:latest"
+    default: "gcr.io/galacticfog-public/gestalt:2.4.1"
     x-google-marketplace:
       type: IMAGE
   trackingService.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-tracking-service:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-tracking-service:2.4.1"
     x-google-marketplace:
       type: IMAGE
   ubb.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-ubb-agent:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-ubb-agent:2.4.1"
     x-google-marketplace:
       type: IMAGE
   redis.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-redis:latest"
+    default: "gcr.io/galacticfog-public/gestalt/redis:2.4.1"
     x-google-marketplace:
       type: IMAGE
   postgresql.image:
     type: string
-    default: "postgres:9.6.11"
+    default: "gcr.io/galacticfog-public/gestalt/postgres:9.6.11"
     x-google-marketplace:
       type: IMAGE
   kong.image:
     type: string
-    default: "gcr.io/galacticfog-public/kong:latest"
+    default: "gcr.io/galacticfog-public/gestalt/kong:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.dotnetExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-dotnet:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.golangExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-golang:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-golang:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.jsExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-js:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-js:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.nodejsExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-nodejs:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-nodejs:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.jvmExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-jvm:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-jvm:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.pythonExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-python:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-python:2.4.1"
     x-google-marketplace:
       type: IMAGE
   laser.rubyExecutor.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-laser-executor-ruby:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-ruby:2.4.1"
     x-google-marketplace:
       type: IMAGE
   policy.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-policy:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-policy:2.4.1"
     x-google-marketplace:
       type: IMAGE
   gatewayManager.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt-api-gateway:latest"
+    default: "gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1"
     x-google-marketplace:
       type: IMAGE
 required:

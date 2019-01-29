@@ -16,8 +16,8 @@ echo "PROJECT: ${PROJECT}"
 # Set the registry to your project GCR repo.
 export REGISTRY=gcr.io/${PROJECT}
 echo "REGISTRY: ${REGISTRY}"
-# export APP_NAME=gestalt
-export DEPLOYER_TAG="$REGISTRY/deployer:testing"
+export APP_NAME=gestalt
+export DEPLOYER_TAG="$REGISTRY/$APP_NAME/deployer:latest"
 echo "DEPLOYER TAG: ${DEPLOYER_TAG}"
 
 export TEST_NAME="gestalt"
