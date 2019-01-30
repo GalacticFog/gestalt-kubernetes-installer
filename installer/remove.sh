@@ -101,11 +101,15 @@ remove_gestalt_platform() {
     kubectl delete daemonsets,replicasets,statefulsets,services,deployments,pods,rc,secrets,configmaps,pvc,ingresses \
       --grace-period=0 --force --all --namespace $install_namespace
   fi
+}
 
+remove_gestalt_cluster_role_bindings() {
+  echo "Removing gestalt cluster role bindings..."
+  kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
 }
 
 remove_gestalt_namespaces() {
-  local namespaces=$( kubectl get namespaces | grep -E '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}' | awk '{print $1}')
+  local namespaces=$(kubectl get namespace -l meta/fqon -o name)
   if [ $? -eq 0 ] && [ ! -z "$namespaces" ]; then
     echo ""
     echo "Warning: There are existing namespaces that appear to be from a prior install:"
@@ -124,13 +128,8 @@ remove_gestalt_namespaces() {
   fi
 }
 
-remove_gestalt_cluster_role_bindings() {
-  echo "Removing gestalt cluster role bindings..."
-  kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
-}
-
 do_delete_namespaces() {
-  kubectl delete namespace $@
+  kubectl delete $@
   echo "Done deleting namespaces."
 }
 

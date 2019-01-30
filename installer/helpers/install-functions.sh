@@ -225,8 +225,8 @@ check_for_prior_install() {
   fi
 
   # Note: using the local keyword in 'local existing_namespaces=$( ... ) returns zero, unexpectedly.. so not using it.
-  existing_namespaces=$( kubectl get namespaces | grep -E '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}' )
-  if [ $? -eq 0 ]; then
+  existing_namespaces=$(kubectl get namespace -l meta/fqon -o name)
+  if [ $? -eq 0 ] && [ ! -z $existing_namespaces ]; then
     echo ""
     echo "Warning: There are existing namespaces that appear to be from a prior install:"
     echo "$existing_namespaces"
