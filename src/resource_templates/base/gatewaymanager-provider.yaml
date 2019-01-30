@@ -28,7 +28,7 @@ properties:
     container_spec:
       name: gwm
       properties:
-        cpus: 0.25
+        cpus: 0.1
         memory: 768
         accepted_resource_roles:
         - production

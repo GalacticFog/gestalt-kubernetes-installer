@@ -11,7 +11,7 @@ properties:
   volumes: []
   container_type: DOCKER
   labels: {}
-  cpus: 1
+  cpus: 0.1
   port_mappings:
   - protocol: tcp
     container_port: 9092

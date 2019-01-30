@@ -6,6 +6,12 @@
 # delete namespaces in UUID format, assuming those namespaces were created as part of the
 # Gestalt Platform installation.
 
+DEBUG=0
+
+debug() {
+  [[ $DEBUG -ne 0 ]] && echo "$@"
+}
+
 exit_with_error() {
   echo "[Error] $@"
   exit 1
@@ -95,6 +101,7 @@ remove_gestalt_platform() {
     kubectl delete daemonsets,replicasets,statefulsets,services,deployments,pods,rc,secrets,configmaps,pvc,ingresses \
       --grace-period=0 --force --all --namespace $install_namespace
   fi
+
 }
 
 remove_gestalt_namespaces() {
@@ -115,6 +122,11 @@ remove_gestalt_namespaces() {
   else
     echo "No gestalt namespaces found"
   fi
+}
+
+remove_gestalt_cluster_role_bindings() {
+  local CMD_OUT=$(kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete)
+  debug "$CMD_OUT"
 }
 
 do_delete_namespaces() {
@@ -143,5 +155,7 @@ prompt_to_continue
 remove_gestalt_platform
 
 remove_gestalt_namespaces
+
+remove_gestalt_cluster_role_bindings
 
 echo "Done."
