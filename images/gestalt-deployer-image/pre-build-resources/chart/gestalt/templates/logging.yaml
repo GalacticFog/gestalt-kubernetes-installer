@@ -15,6 +15,8 @@ spec:
         app.kubernetes.io/name: "{{ .Release.Name }}"
         app.kubernetes.io/component: gestalt-log
     spec:
+      serviceAccountName: "{{ .Values.common.serviceAccountName }}"
+      serviceAccount: "{{ .Values.common.serviceAccount }}"
       imagePullSecrets:
       - name: imagepullsecret-1
       - name: imagepullsecret-2

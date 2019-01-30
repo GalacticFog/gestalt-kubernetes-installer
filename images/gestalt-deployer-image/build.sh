@@ -129,9 +129,8 @@ shift $((OPTIND -1))
 if [ ${#TAGS[@]} -gt 0 ]; then
   debug "${#TAGS[@]} tags defined '${TAGS[*]}'"
 else
-  debug "Building only the default tag '${DEFAULT_TAG}'"
-  #PUBLISH=0
-  TAGS=( "$DEFAULT_TAG" "gcp" )
+  TAGS=( "$DEFAULT_TAG" "gcp" "release" "2.4.1" "2.4" "2" )
+  debug "${#TAGS[@]} pushing default tags defined '${TAGS[*]}'"
 fi
 
 NOT_STRING="NOT "

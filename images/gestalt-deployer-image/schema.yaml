@@ -1,5 +1,26 @@
 application_api_version: v1beta1
 properties:
+  #operatorServiceAccount:
+  #  type: string
+  #  x-google-marketplace:
+  #    type: SERVICE_ACCOUNT
+  #    serviceAccount:
+  #      roles:
+  #      - type: ClusterRole        # This is a cluster-wide ClusterRole
+  #        rulesType: PREDEFINED
+  #        rulesFromRoleName: edit  # Use predefined role named "edit"
+  #      - type: Role               # This is a namespaced Role
+  #        rulesType: CUSTOM        # We specify our own custom RBAC rules
+  #        rules:
+  #        - apiGroups: ['apps.kubernetes.io/v1alpha1']
+  #          resources: ['Application']
+  #          verbs: ['*']
+  #      - type: ClusterRole
+  #        rulesType: CUSTOM
+  #        rules:
+  #        - apiGroups: ['etcd.database.coreos.com/v1beta2']
+  #          resources: ['EtcdCluster']
+  #          verbs: ['*']
   name:
     type: string
     default: "gestalt"
@@ -34,6 +55,15 @@ properties:
     type: string
     default: "2.4.1"
     description: "The release version you want to install for this Gestalt instance."
+  common.serviceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        roles:
+        - type: ClusterRole
+          rulesType: PREDEFINED
+          rulesFromRoleName: 'cluster-admin'
   secrets.adminUser:
     type: string
     default: 'admin'
