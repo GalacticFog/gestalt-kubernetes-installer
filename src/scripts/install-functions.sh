@@ -61,8 +61,10 @@ randompw() {
 getsalt_installer_load_configmap() {
 
   map_env_vars_for_configyaml
-  # GKE specific
-  [ ${K8S_PROVIDER:=default} == "gke" ] && convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
+  # The deployer ConfigMap will only exist for a GCP Marketplace install
+  if [ -z $MARKETPLACE_IMSTALL ] && [ ${K8S_PROVIDER:=default} == "gke" ]; then
+    convert_configmap_to_env_variables "${RELEASE_NAME:=gestalt}-deployer-config"
+  fi
 
   check_for_required_variables GESTALT_INSTALL_LOGGING_LVL
   logging_lvl=${GESTALT_INSTALL_LOGGING_LVL:=debug}
