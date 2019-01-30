@@ -125,8 +125,8 @@ remove_gestalt_namespaces() {
 }
 
 remove_gestalt_cluster_role_bindings() {
-  local CMD_OUT=$(kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete)
-  debug "$CMD_OUT"
+  echo "Removing gestalt cluster role bindings..."
+  kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
 }
 
 do_delete_namespaces() {
@@ -154,8 +154,8 @@ prompt_to_continue
 
 remove_gestalt_platform
 
-remove_gestalt_namespaces
-
 remove_gestalt_cluster_role_bindings
+
+remove_gestalt_namespaces
 
 echo "Done."
