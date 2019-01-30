@@ -85,7 +85,7 @@ properties:
     container_spec:
       name: lsr
       properties:
-        cpus: 1.0
+        cpus: 0.2
         memory: 2048
         accepted_resource_roles:
         - production

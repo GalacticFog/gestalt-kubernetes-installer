@@ -74,11 +74,11 @@ properties:
     description: "A password for the Gestalt admin user."
   secrets.databaseName:
     type: string
-    default: ''
+    default: 'postgres'
     description: "A database name for the Gestalt database."
   secrets.databaseUsername:
     type: string
-    default: ''
+    default: 'postgres'
     description: "An admin username for the Gestalt database."
   secrets.databasePassword:
     type: string
@@ -289,7 +289,18 @@ properties:
     default: "gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1"
     x-google-marketplace:
       type: IMAGE
+
 required:
 - name
 - namespace
 - reportingSecret
+- secrets.adminPassword
+- secrets.databasePassword
+
+#x-google-marketplace:
+#  clusterConstraints:
+#    resources:
+#    - replicas: 1
+#      requests:
+#        cpu: 5000m
+#        memory: 2000Gi
