@@ -35,7 +35,7 @@ elastic:
   restPort: 9200
   transportPort: 9300
   initContainer:
-    image: busybox:1.29.3
+    image: gcr.io/galacticfog-public/gestalt/busybox:2.4
 
 meta:
   image: gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
@@ -75,7 +75,7 @@ db:
   databaseName: postgres
 
 postgresql:
-  image: gcr.io/galacticfog-public/gestalt/postgres:9.6.11
+  image: gcr.io/galacticfog-public/gestalt/postgres:2.4
   existingSecret: 'gestalt-secrets'
   secretKey:
     database: 'db-database'

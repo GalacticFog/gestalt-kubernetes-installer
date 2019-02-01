@@ -196,7 +196,7 @@ properties:
       type: IMAGE
   elastic.initContainer.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt/busybox:1.29.3"
+    default: "gcr.io/galacticfog-public/gestalt/busybox:2.4"
     x-google-marketplace:
       type: IMAGE
   meta.image:
@@ -231,7 +231,7 @@ properties:
       type: IMAGE
   postgresql.image:
     type: string
-    default: "gcr.io/galacticfog-public/gestalt/postgres:9.6.11"
+    default: "gcr.io/galacticfog-public/gestalt/postgres:2.4"
     x-google-marketplace:
       type: IMAGE
   kong.image:

@@ -15,6 +15,7 @@ declare -A CONFIG_TO_ENV=(
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
   ["elastic.hostname"]="ELASTICSEARCH_HOST"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
+  ["elastic.initContainer.image"]="ELASTICSEARCH_INIT_IMAGE"
   ["laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
   ["gatewayManager.image"]="GWM_EXECUTOR_IMAGE"
   ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
@@ -183,6 +184,7 @@ getsalt_installer_setcheck_variables() {
     DOTNET_EXECUTOR_IMAGE \
     ELASTICSEARCH_HOST \
     ELASTICSEARCH_IMAGE \
+    ELASTICSEARCH_INIT_IMAGE \
     GOLANG_EXECUTOR_IMAGE \
     GWM_EXECUTOR_IMAGE \
     JS_EXECUTOR_IMAGE \
@@ -255,6 +257,7 @@ gestalt_installer_generate_helm_config() {
     RABBIT_PORT \
     RABBIT_HTTP_PORT \
     ELASTICSEARCH_IMAGE \
+    ELASTICSEARCH_INIT_IMAGE \
     META_IMAGE \
     META_HOSTNAME \
     META_PORT \
@@ -311,12 +314,10 @@ rabbit:
 elastic:
   hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
-#  initController:
-#    image: ${ELASTICSEARCH_INIT_IMAGE}
+  initController:
+    image: ${ELASTICSEARCH_INIT_IMAGE}
   restPort: 9200
   transportPort: 9300
-  initContainer:
-    image: busybox:1.27.2
 
 meta:
   image: ${META_IMAGE}
