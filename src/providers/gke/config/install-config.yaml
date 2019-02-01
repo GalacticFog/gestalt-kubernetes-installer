@@ -103,7 +103,7 @@ POSTGRES_IMAGE: gcr.io/galacticfog-public/gestalt/postgres:9.6.11
 
 # Images
 DOTNET_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4
-ELASTICSEARCH_IMAGE:    gcr.io/galacticfog-public/gestalt/elasticsearch-docker:5.3.1
+ELASTICSEARCH_IMAGE:    gcr.io/galacticfog-public/gestalt/elasticsearch-docker:2.4
 GOLANG_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-golang:2.4
 GRAALVM_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-graalvm:2.4
 GWM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4
