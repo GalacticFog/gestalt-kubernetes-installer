@@ -104,6 +104,7 @@ POSTGRES_IMAGE: docker.io/galacticfog/postgres:2.4.1
 # Images
 DOTNET_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-dotnet:2.4.1
 ELASTICSEARCH_IMAGE:         docker.io/galacticfog/elasticsearch-docker:5.3.1
+ELASTICSEARCH_INIT_IMAGE:    busybox:1.29.3
 GOLANG_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-golang:2.4.1
 GRAALVM_EXECUTOR_IMAGE:      docker.io/galacticfog/gestalt-laser-executor-graalvm:2.4.1
 GWM_EXECUTOR_IMAGE:          docker.io/galacticfog/gestalt-api-gateway:2.4.1
