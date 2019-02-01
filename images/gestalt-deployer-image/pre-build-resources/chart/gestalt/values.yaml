@@ -3,7 +3,7 @@ namespace: gestalt-system
 
 common:
   imagePullPolicy: Always
-  releaseVersion: 2.4.1
+  releaseVersion: 2.4
 
 secrets:
   adminUser: 'admin'
@@ -13,10 +13,10 @@ secrets:
   databasePassword: 'a1b2c3d4!'
 
 installer:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
 
 security:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-security:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-security:2.4
   exposedServiceType: NodePort
   hostname: gestalt-security.gestalt-system.svc.cluster.local
   port: 9455
@@ -24,13 +24,13 @@ security:
   databaseName: gestalt-security
 
 rabbit:
-  image: gcr.io/galacticfog-public/gestalt/rabbit:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/rabbit:2.4
   hostname: gestalt-rabbit.gestalt-system
   port: 5672
   httpPort: 15672
 
 elastic:
-  image: gcr.io/galacticfog-public/gestalt/elasticsearch-docker:5.3.1
+  image: gcr.io/galacticfog-public/gestalt/elasticsearch-docker:2.4
   hostname: gestalt-elastic.gestalt-system
   restPort: 9200
   transportPort: 9300
@@ -38,7 +38,7 @@ elastic:
     image: busybox:1.29.3
 
 meta:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
   exposedServiceType: NodePort
   hostname: gestalt-meta.gestalt-system.svc.cluster.local
   port: 10131
@@ -47,7 +47,7 @@ meta:
   nodePort: 31111
 
 logging:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-log:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-log:2.4
   nodePort: 31114
   hostname: gestalt-log.gestalt-system.svc.cluster.local
   port: 80
@@ -56,7 +56,7 @@ logging:
     host: '/log' # will be added to the end of the ui.ingress.host
 
 ui:
-  image: gcr.io/galacticfog-public/gestalt:2.4.1
+  image: gcr.io/galacticfog-public/gestalt:2.4
   exposedServiceType: NodePort
   port: 80
   protocol: http
@@ -94,15 +94,14 @@ postgresql:
     type: ClusterIP
 
 redis:
-  # image: redis 
-  image: gcr.io/galacticfog-public/gestalt/redis:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/redis:2.4
   hostname: gestalt-redis.gestalt-system
   port: 6379
   
 ubb:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-ubb-agent:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-ubb-agent:2.4
   hostname: gestalt-ubb.gestalt-system
   port: 6380
 
 trackingService:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-tracking-service:2.4.1
+  image: gcr.io/galacticfog-public/gestalt/gestalt-tracking-service:2.4

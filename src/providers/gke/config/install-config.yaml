@@ -102,31 +102,31 @@ ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 POSTGRES_IMAGE: gcr.io/galacticfog-public/gestalt/postgres:9.6.11
 
 # Images
-DOTNET_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4.1
+DOTNET_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4
 ELASTICSEARCH_IMAGE:    gcr.io/galacticfog-public/gestalt/elasticsearch-docker:5.3.1
-GOLANG_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-golang:2.4.1
-GRAALVM_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-graalvm:2.4.1
-GWM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1
-GWM_IMAGE:              gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4.1
-HYPER_EXECUTOR_IMAGE:   gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-hyper:2.4.1
-JS_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-js:2.4.1
-JVM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-jvm:2.4.1
-KONG_IMAGE:             gcr.io/galacticfog-public/gestalt/kong:2.4.1
-LASER_IMAGE:            gcr.io/galacticfog-public/gestalt/gestalt-laser:2.4.1
-LOGGING_IMAGE:          gcr.io/galacticfog-public/gestalt/gestalt-log:2.4.1
-META_IMAGE:             gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4.1
-NODEJS_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-nodejs:2.4.1
-POLICY_IMAGE:           gcr.io/galacticfog-public/gestalt/gestalt-policy:2.4.1
-PYTHON_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-python:2.4.1
-RABBIT_IMAGE:           gcr.io/galacticfog-public/gestalt/rabbit:2.4.1
-RUBY_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-ruby:2.4.1
-SECURITY_IMAGE:         gcr.io/galacticfog-public/gestalt/gestalt-security:2.4.1
-UI_IMAGE:               gcr.io/galacticfog-public/gestalt:2.4.1
-REDIS_IMAGE:            gcr.io/galacticfog-public/gestalt/redis:2.4.1
+GOLANG_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-golang:2.4
+GRAALVM_EXECUTOR_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-graalvm:2.4
+GWM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4
+GWM_IMAGE:              gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4
+HYPER_EXECUTOR_IMAGE:   gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-hyper:2.4
+JS_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-js:2.4
+JVM_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-jvm:2.4
+KONG_IMAGE:             gcr.io/galacticfog-public/gestalt/kong:2.4
+LASER_IMAGE:            gcr.io/galacticfog-public/gestalt/gestalt-laser:2.4
+LOGGING_IMAGE:          gcr.io/galacticfog-public/gestalt/gestalt-log:2.4
+META_IMAGE:             gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
+NODEJS_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-nodejs:2.4
+POLICY_IMAGE:           gcr.io/galacticfog-public/gestalt/gestalt-policy:2.4
+PYTHON_EXECUTOR_IMAGE:  gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-python:2.4
+RABBIT_IMAGE:           gcr.io/galacticfog-public/gestalt/rabbit:2.4
+RUBY_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-ruby:2.4
+SECURITY_IMAGE:         gcr.io/galacticfog-public/gestalt/gestalt-security:2.4
+UI_IMAGE:               gcr.io/galacticfog-public/gestalt:2.4
+REDIS_IMAGE:            gcr.io/galacticfog-public/gestalt/redis:2.4
 
 # GKE specific
-GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:2.4.1
-GCP_UBB_IMAGE:               gcr.io/galacticfog-public/gestalt-ubb-agent:2.4.1
+GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:2.4
+GCP_UBB_IMAGE:               gcr.io/galacticfog-public/gestalt-ubb-agent:2.4
 
 # POSTGRES database settings
 internal_database_pv_storage_class: standard   # Must set to 'standard' for GCP Kubernetes installs
