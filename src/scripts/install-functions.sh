@@ -314,7 +314,7 @@ rabbit:
 elastic:
   hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
-  initController:
+  initContainer:
     image: ${ELASTICSEARCH_INIT_IMAGE}
   restPort: 9200
   transportPort: 9300
