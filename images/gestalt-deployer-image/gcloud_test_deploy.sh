@@ -34,7 +34,20 @@ kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketpl
 # mpdev /scripts/doctor.py
 
 # Run `mpdev install` to kick off your deployer
-mpdev /scripts/install --deployer="${DEPLOYER_TAG}" --parameters="{\"name\": \"${TEST_NAME}\", \"namespace\": \"${TEST_NAMESPACE}\", \"reportingSecret\": \"iweuniweubniewubn\", \"common.name\": \"Sebastian Bernheim\", \"common.email\": \"sebastian@galacticfog.com\", \"common.companyName\": \"Galactic Fog, LLC\", \"ui.ingress.host\": \"portal.zwobu.com\", \"api.gateway.hostname\": \"exec.zwobu.com\", \"secrets.adminUser\": \"gcptest\", \"secrets.adminPassword\": \"gcpG35t@lt1n5t@ll\" , \"secrets.databaseName\": \"postgres\" , \"secrets.databaseUsername\": \"postgres\" , \"secrets.databasePassword\": \"@th3Sp0t!\"}"
+mpdev /scripts/install --deployer="${DEPLOYER_TAG}" \
+--parameters="{\"name\": \"${TEST_NAME}\", \
+ \"namespace\": \"${TEST_NAMESPACE}\", \
+ \"reportingSecret\": \"iweuniweubniewubn\", \
+ \"common.name\": \"Galactic Fog\", \
+ \"common.email\": \"sample@galacticfog.com\", \
+ \"common.companyName\": \"Galactic Fog, LLC\", \
+ \"ui.ingress.host\": \"portal.yourdomain.com\", \
+ \"api.gateway.hostname\": \"apigw1.yourdomain.com\", \
+ \"secrets.adminUser\": \"gcptest\", \
+ \"secrets.adminPassword\": \"gcpG35t@lt1n5t@ll\", \
+ \"secrets.databaseName\": \"postgres\", \
+ \"secrets.databaseUsername\": \"postgres\", \
+ \"secrets.databasePassword\": \"@th3Sp0t!\"}"
 
 echo "Project ${PROJECT} install complete..."
 echo "You should see the project has been deployed at https://console.cloud.google.com/kubernetes/application?project=${PROJECT}"
