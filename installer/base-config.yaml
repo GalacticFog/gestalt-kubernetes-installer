@@ -114,7 +114,7 @@ JVM_EXECUTOR_IMAGE:          docker.io/galacticfog/gestalt-laser-executor-jvm:2.
 KONG_IMAGE:                  docker.io/galacticfog/kong:2.4.1
 LASER_IMAGE:                 docker.io/galacticfog/gestalt-laser:2.4.1
 LOGGING_IMAGE:               docker.io/galacticfog/gestalt-log:2.4.1
-META_IMAGE:                  docker.io/galacticfog/gestalt-meta:2.4.1
+META_IMAGE:                  docker.io/galacticfog/gestalt-meta:2.4.2
 NODEJS_EXECUTOR_IMAGE:       docker.io/galacticfog/gestalt-laser-executor-nodejs:2.4.1
 POLICY_IMAGE:                docker.io/galacticfog/gestalt-policy:2.4.1
 PYTHON_3_6_1_EXECUTOR_IMAGE: docker.io/galacticfog/gestalt-laser-executor-python:python-3.6.1
