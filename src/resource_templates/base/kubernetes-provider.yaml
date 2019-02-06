@@ -7,6 +7,9 @@ properties:
       public: {}
       private: {}
     networks: null
-  services: []
-  locations: []
+    storage_classes: []
+    auth: {}
+    external_protocol: https
   linked_providers: []
+  environment_types: []
+  # provider_subtype: Default  # Not present in schema prior to migrate
