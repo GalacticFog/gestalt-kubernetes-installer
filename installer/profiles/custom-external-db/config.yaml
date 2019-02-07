@@ -1,5 +1,5 @@
 GESTALT_URL:    https://getsalt.yourdomain.com     # (Gestalt Login URL)
-KONG_URL:       https://api1.yourdomain.com        # (Endpoint for API Gateway)
+KONG_URL:       https://apigw1.yourdomain.com        # (Endpoint for API Gateway)
 
 PROVISION_INTERNAL_DATABASE: No  # (Skips database creation and uses external database)
 DATABASE_HOSTNAME:           gestalt-eks-dev.crqimf2biim3.us-east-1.rds.amazonaws.com # (External database to use)
