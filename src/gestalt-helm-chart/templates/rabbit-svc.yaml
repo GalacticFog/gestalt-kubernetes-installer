@@ -1,18 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gestalt-rabbit
+  name: {{ template "gestalt.rabbitName" . }}
   labels:
-    gestalt-app: rabbit
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-rabbit
+    gestalt-app: 'rabbit'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.rabbitName" . }}
 spec:
   selector:
-    gestalt-app: rabbit
+    gestalt-app: 'rabbit'
   ports:
-    - name: service-api
-      port: {{.Values.rabbit.port}}
-      targetPort: service-api
-    - name: http-api
-      port: {{.Values.rabbit.httpPort}}
-      targetPort: http-api
+    - name: 'service-api'
+      port: {{ .Values.rabbit.port }}
+      targetPort: 'service-api'
+    - name: 'http-api'
+      port: {{ .Values.rabbit.httpPort }}
+      targetPort: 'http-api'

@@ -84,14 +84,6 @@ properties:
     type: string
     default: ''
     description: "An admin password for the Gestalt database."
-  database.hostname:
-    type: string
-    default: "gestalt-postgresql.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt database server."
-  security.hostname:
-    type: string
-    default: "gestalt-security.gestalt-system"
-    description: "The in-cloud hostname of the Gestalt Security service"
   security.port:
     type: integer
     default: 9455
@@ -104,10 +96,6 @@ properties:
     type: string
     default: "gestalt-security"
     description: "The name of the database in which Gestalt Security service stores its data"
-  ui.hostname:
-    type: string
-    default: "gestalt-ui.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt UI service host."
   ui.ingress.host:
     type: string
     default: 'gestalt.yourdomain.com'
@@ -124,31 +112,15 @@ properties:
     type: boolean
     detault: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
-  elastic.hostname:
-    type: string
-    default: "gestalt-elastic.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Elasticsearch service host."
   api.gateway.hostname:
     type: string
     default: "api.yourdomain.com"
     description: "The DNS name to use for Gestalt's API Gateway."
-  meta.hostname:
-    type: string
-    default: "gestalt-meta.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt Meta service host."
   meta.port:
     type: integer
     default: 10131
     description: "The in-cluster port number that components will use to access the Gestalt Meta service."
   # TODO - Why are there two of these?
-  rabbit.host:
-    type: string
-    default: "gestalt-rabbit.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
-  rabbit.hostname:
-    type: string
-    default: "gestalt-rabbit.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
   rabbit.port:
     type: integer
     default: 5672
@@ -157,18 +129,10 @@ properties:
     type: integer
     default: 15672
     description: "The port number components will use to access the Gestalt Rabbit MQ service via HTTP."
-  redis.hostname:
-    type: string
-    default: "gestalt-redis.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Redis service host."
   redis.port:
     type: integer
     default: 6379
     description: "The in-cluster port number components will use to access the Gestalt Redis service."
-  ubb.hostname:
-    type: string
-    default: "gestalt-ubb.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Billing service host."
   ubb.port:
     type: integer
     default: 6380

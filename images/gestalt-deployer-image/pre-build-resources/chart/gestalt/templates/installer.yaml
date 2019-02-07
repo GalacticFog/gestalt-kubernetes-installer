@@ -1,34 +1,37 @@
-# This is a pod w/ restartPolicy=Never so that the installer only runs once.
+# This is a pod w/ restartPolicy=Never so that the 'installer' only runs once.
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ .Release.Name }}-installer"
+  name: {{ template "gestalt.installerName" . }}
   labels:
-    gestalt-app: installer
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: "{{ .Release.Name }}-installer"
+    gestalt-app: 'installer'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.installerName" . }}
 spec:
-  restartPolicy: Never
+  restartPolicy: 'Never'
   imagePullSecrets:
   - name: imagepullsecret-1
   - name: imagepullsecret-2
   - name: imagepullsecret-3
   - name: imagepullsecret-4
   - name: imagepullsecret-5
-  serviceAccountName: "{{ .Values.common.serviceAccountName }}"
-  serviceAccount: "{{ .Values.common.serviceAccount }}"
+  serviceAccountName: {{ .Values.common.serviceAccountName | quote }}
+  serviceAccount: {{ .Values.common.serviceAccount | quote }}
   containers:
-  - name: "{{ .Release.Name }}-installer"
-    image: "{{ .Values.installer.image }}"
-    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+  - name: {{ template "gestalt.installerName" . }}
+    image: {{ .Values.installer.image | quote }}
+    imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
     env:
-    - name: REPORTING_SECRET
-      value: "{{ .Values.reportingSecret }}"
-    - name: RELEASE_NAME
-      value: "{{ .Release.Name }}"
-    - name: RELEASE_NAMESPACE
-      value: "{{ .Release.Namespace }}"
-    - name: K8S_PROVIDER
-      value: "gke"
-    - name: MARKETPLACE_INSTALL
-      value: "true"
+{{- if .Values.reportingSecret }}
+    - name: 'REPORTING_SECRET'
+      value: {{ .Values.reportingSecret | quote }}
+{{- end }}
+    - name: 'RELEASE_NAME'
+      value: {{ .Release.Name | quote }}
+    - name: 'RELEASE_NAMESPACE'
+      value: {{ .Release.Namespace | quote }}
+    - name: 'K8S_PROVIDER'
+      value: 'gke'
+    - name: 'MARKETPLACE_INSTALL'
+      value: 'yes'

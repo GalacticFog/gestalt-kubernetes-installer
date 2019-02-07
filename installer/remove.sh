@@ -98,7 +98,7 @@ remove_gestalt_platform() {
     echo ""
     
     # The --force flag helps clean up pods stuck in the 'Terminating' state
-    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,pods,rc,secrets,configmaps,pvc,ingresses \
+    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
       --grace-period=0 --force --all --namespace $install_namespace
   fi
 }

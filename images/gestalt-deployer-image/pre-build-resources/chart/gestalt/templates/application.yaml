@@ -1,27 +1,59 @@
 apiVersion: app.k8s.io/v1beta1
 kind: Application
 metadata:
-  name: "{{ .Release.Name }}"
-  namespace: "{{ .Release.Namespace }}"
+  name: {{ .Release.Name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
   annotations:
     marketplace.cloud.google.com/deploy-info: '{partner_id: "galacticfog", product_id: "gestalt", partner_name: "Galactic Fog"}'
   labels:
-    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
 spec:
   descriptor:
-    type: gestalt
-    versions: "{{ .Values.common.releaseVersion }}"
+    type: 'gestalt'
+    versions: {{ .Values.common.releaseVersion | quote }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: "{{ .Release.Name }}"
+      app.kubernetes.io/name: {{ .Release.Name | quote }}
+      app.kubernetes.io/app: 'gestalt'
   componentKinds:
   - group: v1
     kind: Service
   - group: v1
+    kind: ServiceAccount
+  - group: v1
     kind: Secret
   - group: v1
+    kind: ConfigMap
+  - group: v1
     kind: Pod
-  - group: extensions/v1beta1
+  - group: v1
+    kind: Namespace
+  - group: v1
+    kind: PersistentVolume
+  - group: v1
+    kind: PersistentVolumeClaim
+  - group: v1
+    kind: ReplicationController
+  - group: apps/v1
     kind: Deployment
+  - group: apps/v1
+    kind: DaemonSet
+  - group: apps/v1
+    kind: ReplicaSet
+  - group: apps/v1beta1
+    kind: StatefulSet
+  - group: batch/v1
+    kind: Job
+  - group: batch/v1
+    kind: CronJob
+  - group: rbac.authorization.k8s.io/v1beta1
+    kind: Role
+  - group: rbac.authorization.k8s.io/v1beta1
+    kind: RoleBinding
+  - group: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRole
+  - group: rbac.authorization.k8s.io/v1beta1
+    kind: ClusterRoleBinding
   - group: extensions/v1beta1
     kind: Ingress

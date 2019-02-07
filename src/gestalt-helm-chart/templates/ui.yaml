@@ -1,19 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-ui
+  name: {{ template "gestalt.uiName" . }}
   labels:
-    gestalt-app: ui
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-ui
+    gestalt-app: 'ui'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.uiName" . }}
 spec:
   replicas: 1
   template: # create pods using pod definition in this template
     metadata:
       labels:
-        gestalt-app: ui
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-ui
+        gestalt-app: 'ui'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.uiName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -22,16 +24,16 @@ spec:
       - name: imagepullsecret-4
       - name: imagepullsecret-5
       containers:
-      - name: gestalt-ui
-        image: "{{ .Values.ui.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.uiName" . }}
+        image: {{ .Values.ui.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
         - containerPort: 80
-          name: http
+          name: 'http'
         env:
-        - name: META_API_URL
-          value: "{{ .Values.meta.protocol }}://{{ .Values.meta.hostname }}:{{ .Values.meta.port }}"
-        - name: SEC_API_URL
-          value: "{{ .Values.security.protocol }}://{{ .Values.security.hostname }}:{{ .Values.security.port }}"
-        - name: LOG_API_URL
-          value: "{{ .Values.logging.protocol }}://{{ .Values.logging.hostname }}:{{ .Values.logging.port }}"
+        - name: 'META_API_URL'
+          value: {{ printf "%s://%s-meta:%.0f" .Values.meta.protocol .Release.Name .Values.meta.port | quote }}
+        - name: 'SEC_API_URL'
+          value: {{ printf "%s://%s-security:%.0f" .Values.security.protocol .Release.Name .Values.security.port | quote }}
+        - name: 'LOG_API_URL'
+          value: {{ printf "%s://%s-log:%.0f" .Values.logging.protocol .Release.Name .Values.logging.port | quote }}

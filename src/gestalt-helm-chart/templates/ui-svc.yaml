@@ -1,16 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gestalt-ui
+  name: {{ template "gestalt.uiName" . }}
   labels:
-    gestalt-app: ui
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-ui
+    gestalt-app: 'ui'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.uiName" . }}
 spec:
-  type: {{ .Values.ui.exposedServiceType }}
+  type: {{ .Values.ui.exposedServiceType | quote }}
   selector:
-    gestalt-app: ui
+    gestalt-app: 'ui'
   ports:
-    - name: http
+    - name: 'http'
       port: 80
       nodePort: {{ .Values.ui.nodePort }}

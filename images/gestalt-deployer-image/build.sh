@@ -6,7 +6,7 @@ VERBOSE=1
 PRINT_IMAGE_ID=0
 REGISTRY="gcr.io/galacticfog-public/gestalt"
 LABEL="deployer"
-DEFAULT_TAG="latest"
+DEFAULT_TAG="seb"
 PRE_BUILD_SCRIPT="./pre-build.sh"
 # BUILD_OUTPUT_FILE="buildoutput"
 RM_BUILDER_IMAGE=0
@@ -129,7 +129,8 @@ shift $((OPTIND -1))
 if [ ${#TAGS[@]} -gt 0 ]; then
   debug "${#TAGS[@]} tags defined '${TAGS[*]}'"
 else
-  TAGS=( "$DEFAULT_TAG" "gcp" "release" "2.4.1" "2.4" "2" )
+  TAGS=( "seb" )
+  # TAGS=( "$DEFAULT_TAG" "gcp" "release" "2.4.1" "2.4" "2" )
   debug "${#TAGS[@]} pushing default tags defined '${TAGS[*]}'"
 fi
 

@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gestalt-redis
+  name: {{ template "gestalt.redisName" . }}
   labels:
-    gestalt-app: redis
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-redis
+    gestalt-app: 'redis'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.redisName" . }}
 spec:
   selector:
-    gestalt-app: redis
+    gestalt-app: 'redis'
   ports:
-    - name: service-api
-      port: {{.Values.redis.port}}
-      targetPort: service-api
+    - name: 'service-api'
+      port: {{ .Values.redis.port }}
+      targetPort: 'service-api'
