@@ -14,6 +14,9 @@ fi
 fog context set '/root'
 exit_on_error "Error setting context, aborting"
 
+# https://gitlab.com/galacticfog/gestalt-meta/issues/597#note_139551352
+fog meta POST /migrate?version=V31
+
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
 exit_on_error "Error creating 'gestalt-system-workspace', aborting"
