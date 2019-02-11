@@ -15,7 +15,7 @@ kube_check_for_required_namespace() {
   [[ $# -ne 1 ]] && echo && exit_with_error "[${FUNCNAME[0]}] Function expects 1 parameter ($# provided) [$@], aborting."
   f_namespace_name=$1 
 
-  # # TODO: Make debug echo "Checking for existing Kubernetes namespace '$install_namespace'..."
+  log_debug echo "Checking for existing Kubernetes namespace '${f_namespace_name}'..."
   kubectl get namespace ${f_namespace_name} > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo ""

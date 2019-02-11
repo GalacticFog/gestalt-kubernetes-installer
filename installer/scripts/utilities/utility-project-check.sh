@@ -16,7 +16,7 @@
   utility_kubectl="${utility_folder}/utility-kubectl.sh"
 
   #Generated Files
-  kube_install="./installer.yaml"
+  INSTALLER_CONFIG_FILE="./installer.yaml"
 
 ############################################
 # Main base utility script

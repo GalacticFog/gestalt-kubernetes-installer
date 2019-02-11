@@ -6,9 +6,10 @@
 # delete namespaces in UUID format, assuming those namespaces were created as part of the
 # Gestalt Platform installation.
 
+# TODO: implement command-line parameters
 DEBUG=0
 
-debug() {
+log_debug() {
   [[ $DEBUG -ne 0 ]] && echo "$@"
 }
 
@@ -71,23 +72,23 @@ remove_gestalt_platform() {
 
   # First, check if the namespace is even present
 
-  kubectl get namespace $install_namespace > /dev/null 2>&1
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo "Nothing to do - Kubernetes namespace '$install_namespace' isn't present."
+    echo "Nothing to do - Kubernetes namespace '$RELEASE_NAMESPACE' isn't present."
     return 0
   fi
 
   # Remove the Gestalt Platform application manifest if the cluster has the Applications API installed.
   # Send all output to /dev/null and ignore failures in case the Application API isn't installed.
-  kubectl delete applications --timeout=60s --all --namespace $install_namespace 2>&1 1>/dev/null
+  kubectl delete applications --timeout=60s --all --namespace $RELEASE_NAMESPACE 2>&1 1>/dev/null
 
   # The echo statement resets the value of $? and prints some space to the console...
   echo ""
 
   # Remove all the Gestalt Platform standard resources and display output.
-  echo "Removing Gestalt Platform components from '$install_namespace' namespace..."
+  echo "Removing Gestalt Platform components from '$RELEASE_NAMESPACE' namespace..."
   kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
-    --timeout=30s --all --namespace $install_namespace
+    --timeout=30s --all --namespace $RELEASE_NAMESPACE
 
   if [ $? -ne 0 ]; then
   
@@ -99,7 +100,7 @@ remove_gestalt_platform() {
     
     # The --force flag helps clean up pods stuck in the 'Terminating' state
     kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
-      --grace-period=0 --force --all --namespace $install_namespace
+      --grace-period=0 --force --all --namespace $RELEASE_NAMESPACE
   fi
 }
 
@@ -132,18 +133,6 @@ do_delete_namespaces() {
   kubectl delete $@
   echo "Done deleting namespaces."
 }
-
-install_prefix=$1
-install_namespace=$2
-
-if [ -z "$install_prefix" ]; then
-  install_prefix=gestalt
-fi
-
-if [ -z "$install_namespace" ]; then
-  install_namespace=${install_prefix}-system
-fi
-
 
 # Check for pre-reqs
 check_for_required_tools
