@@ -11,7 +11,7 @@ properties:
   memory: 512
   timeout: 30
   handler: com.galacticfog.FizzBuzz;fizz
-  package_url: http://gestalt-meta.gestalt-system.svc.cluster.local:10131/assets/system/lambdas/fizzbuzz-assembly-0.1.jar
+  package_url: http://#{Config META_HOSTNAME}:#{Config META_PORT}/assets/system/lambdas/fizzbuzz-assembly-0.1.jar
   public: true
   runtime: java;scala
   periodic_info: {}

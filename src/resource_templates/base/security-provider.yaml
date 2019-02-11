@@ -10,8 +10,8 @@ properties:
       public:
         KEY: '#{Config SECURITY_KEY}'
         SECRET: '#{Config SECURITY_SECRET}'
-        HOSTNAME: gestalt-security.gestalt-system
-        PORT: '9455'
-        PROTOCOL: http
+        HOSTNAME: '#{Config SECURITY_HOSTNAME}'
+        PORT: '#{Config SECURITY_PORT}'
+        PROTOCOL: '#{Config SECURITY_PROTOCOL}'
       private: {}
   services: []

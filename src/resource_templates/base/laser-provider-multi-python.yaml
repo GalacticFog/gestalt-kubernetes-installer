@@ -12,7 +12,7 @@ properties:
     env:
       public: {}
       private:
-        ES_HOST: gestalt-elastic.gestalt-system
+        ES_HOST: '#{Config ELASTIC_HOSTNAME}'
         ES_PORT: '9200'
         ES_PROTOCOL: http
         EXECUTOR_HEARTBEAT_MILLIS: '5000'
@@ -25,11 +25,11 @@ properties:
         META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/jobs
         # This is the Meta resource ID for Jobs, which is required if using Job resources to run kubernetes jobs rather than deployments (containers)
         META_COMPUTE_RESOURCE_ID: c8ce1302-6f66-4300-8429-2574abf28d81
-        META_COMPUTE_HOST: http://gestalt-meta.gestalt-system:10131
+        META_COMPUTE_HOST: 'http://#{Config META_HOSTNAME}:#{Config META_PORT}'
         META_COMPUTE_PASSWORD: '#{Config SECURITY_SECRET}'
         META_COMPUTE_PROVIDER_ID: '#{Provider /root/default-kubernetes id}'
         META_COMPUTE_USERNAME: '#{Config SECURITY_KEY}'
-        META_HOSTNAME: gestalt-meta.gestalt-system
+        META_HOSTNAME: '#{Config META_HOSTNAME}'
         META_NETWORK_NAME: BRIDGE
         META_PASSWORD: '#{Config SECURITY_KEY}'
         META_PORT: '10131'

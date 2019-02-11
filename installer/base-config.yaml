@@ -55,13 +55,11 @@ LASER_PROVIDER_DEFINITION: laser-provider
 LASER_SERVICE_VHOST: ''
 
 # Logging
-LOGGING_HOSTNAME: gestalt-log.gestalt-system.svc.cluster.local
 LOGGING_PORT: '80'
 LOGGING_PROTOCOL: http
 LOGGING_NODEPORT: '31114'
 
 # Meta
-META_HOSTNAME: gestalt-meta.gestalt-system.svc.cluster.local
 META_PORT: '10131'
 META_PROTOCOL: http
 META_NODEPORT: 31111
@@ -74,31 +72,23 @@ CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
 # CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 # RABBIT
-RABBIT_HOSTNAME: gestalt-rabbit.gestalt-system
 RABBIT_HTTP_PORT: '15672'
 RABBIT_PORT: '5672'
 
 # Redis
-REDIS_HOSTNAME: gestalt-redis.gestalt-system
 REDIS_PORT: 6379
 
 # Security
-SECURITY_HOSTNAME: gestalt-security.gestalt-system.svc.cluster.local
 SECURITY_PORT: '9455'
 SECURITY_PROTOCOL: http
 
 # 'UI'
-UI_HOSTNAME: gestalt-ui.gestalt-system.svc.cluster.local
 UI_NODEPORT: '31112'
 UI_PORT: '80'
 UI_PROTOCOL: http
 
 # UBB - billing agent
-UBB_HOSTNAME: gestalt-ubb.gestalt-system
 UBB_PORT: 6380
-
-# Elastic search
-ELASTICSEARCH_HOST: gestalt-elastic.gestalt-system
 
 # Postgres image
 POSTGRES_IMAGE: docker.io/galacticfog/postgres:2.4.1

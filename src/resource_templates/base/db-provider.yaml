@@ -11,7 +11,7 @@ properties:
         USER: '#{Config DATABASE_USERNAME}'
         PASSWORD: '#{Config DATABASE_PASSWORD}'
         HOSTNAME: '#{Config DATABASE_HOSTNAME}'
-        PORT: '5432'
+        PORT: '#{Config DATABASE_PORT}'
         PROTOCOL: tcp #TODO: Remove if not used
         # PROTOCOL: http #TODO: Remove if not used
       private: {}

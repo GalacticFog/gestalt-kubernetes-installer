@@ -24,10 +24,8 @@ declare -A CONFIG_TO_ENV=(
   ["api.gateway.hostname"]="KONG_SERVICE_HOST"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
-  ["logging.hostname"]="LOGGING_HOSTNAME"
   ["logging.port"]="LOGGING_PORT"
   ["logging.ingress.host"]="LOGGING_SERVICE_HOST"
-  ["meta.hostname"]="META_HOSTNAME"
   ["meta.image"]="META_IMAGE"
   ["meta.port"]="META_PORT"
   ["meta.protocol"]="META_PROTOCOL"
@@ -35,17 +33,14 @@ declare -A CONFIG_TO_ENV=(
   ["policy.image"]="POLICY_IMAGE"
   ["laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
   ["rabbit.host"]="RABBIT_HOST"
-  ["rabbit.hostname"]="RABBIT_HOSTNAME"
   ["rabbit.httpPort"]="RABBIT_HTTP_PORT"
   ["rabbit.image"]="RABBIT_IMAGE"
   ["rabbit.port"]="RABBIT_PORT"
   ["laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
-  ["security.hostname"]="SECURITY_HOSTNAME"
   ["security.image"]="SECURITY_IMAGE"
   ["security.port"]="SECURITY_PORT"
   ["security.protocol"]="SECURITY_PROTOCOL"
   ["ui.image"]="UI_IMAGE"
-  ["ui.hostname"]="UI_HOSTNAME"
   ["ui.nodePort"]="UI_PORT"
   ["ui.protocol"]="UI_PROTOCOL"
   ["ui.ingress.host"]="UI_SERVICE_HOST"
@@ -193,26 +188,21 @@ getsalt_installer_setcheck_variables() {
     KONG_SERVICE_HOST \
     KONG_SERVICE_PROTOCOL \
     LOGGING_IMAGE \
-    META_HOSTNAME \
     META_IMAGE \
     META_PORT \
     META_PROTOCOL \
     NODEJS_EXECUTOR_IMAGE \
     POLICY_IMAGE \
     PYTHON_EXECUTOR_IMAGE \
-    RABBIT_HOSTNAME \
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \
     RABBIT_PORT \
-    REDIS_HOSTNAME \
     REDIS_IMAGE \
     REDIS_PORT \
     RUBY_EXECUTOR_IMAGE \
-    SECURITY_HOSTNAME \
     SECURITY_IMAGE \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
-    UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
     UI_PROTOCOL
@@ -221,9 +211,13 @@ getsalt_installer_setcheck_variables() {
     check_for_required_variables \
         GCP_TRACKING_SERVICE_IMAGE \
         GCP_UBB_IMAGE \
-        UBB_HOSTNAME \
         UBB_PORT
   fi
+
+  # Compute in-cluster hostnames
+  SECURITY_HOSTNAME="${RELEASE_NAME}-security.${RELEASE_NAMESPACE}.svc.cluster.local"
+  META_HOSTNAME="${RELEASE_NAME}-meta.${RELEASE_NAMESPACE}.svc.cluster.local"
+  UI_HOSTNAME="${RELEASE_NAME}-ui.${RELEASE_NAMESPACE}.svc.cluster.local"
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -243,7 +237,6 @@ gestalt_installer_generate_helm_config() {
 
   check_for_required_variables \
     SECURITY_IMAGE \
-    SECURITY_HOSTNAME \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
     ADMIN_USERNAME \
@@ -253,19 +246,16 @@ gestalt_installer_generate_helm_config() {
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
     RABBIT_IMAGE \
-    RABBIT_HOSTNAME \
     RABBIT_PORT \
     RABBIT_HTTP_PORT \
     ELASTICSEARCH_IMAGE \
     ELASTICSEARCH_INIT_IMAGE \
     META_IMAGE \
-    META_HOSTNAME \
     META_PORT \
     META_PROTOCOL \
     META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
-    REDIS_HOSTNAME \
     REDIS_IMAGE \
     REDIS_PORT \
     UI_IMAGE \
@@ -295,7 +285,6 @@ secrets:
 security:
   exposedServiceType: NodePort
   image: "${SECURITY_IMAGE}"
-  hostname: "${SECURITY_HOSTNAME}"
   port: "${SECURITY_PORT}"
   protocol: "${SECURITY_PROTOCOL}"
   databaseName: gestalt-security
@@ -307,7 +296,6 @@ db:
 
 rabbit:
   image: "${RABBIT_IMAGE}"
-  hostname: "${RABBIT_HOSTNAME}"
   port: ${RABBIT_PORT}
   httpPort: ${RABBIT_HTTP_PORT}
 
@@ -322,7 +310,6 @@ elastic:
 meta:
   image: ${META_IMAGE}
   exposedServiceType: NodePort
-  hostname: ${META_HOSTNAME}
   port: ${META_PORT}
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
@@ -337,7 +324,6 @@ meta:
 logging:
   image: ${LOGGING_IMAGE}
   nodePort: ${LOGGING_NODEPORT}
-  hostname: ${LOGGING_HOSTNAME}
   port: ${LOGGING_PORT}
   protocol: ${LOGGING_PROTOCOL}
 
@@ -350,7 +336,6 @@ ui:
 
 redis:
   image: ${REDIS_IMAGE}
-  hostname: ${REDIS_HOSTNAME}
   port: ${REDIS_PORT}
 EOF
 
@@ -360,7 +345,6 @@ EOF
 
 ubb:
   image: ${GCP_UBB_IMAGE}
-  hostname: ${UBB_HOSTNAME}
   port: ${UBB_PORT}
 
 trackingService:

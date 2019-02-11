@@ -3,7 +3,7 @@ name: migrate-lambda
 description: https://raw.githubusercontent.com/GalacticFog/lambda-examples/master/js_lambda/default-migrate.js
 properties:
   public: true
-  package_url: 'http://gestalt-meta.gestalt-system.svc.cluster.local:10131/assets/system/lambdas/default-migrate.js'
+  package_url: 'http://#{Config META_HOSTNAME}:#{Config META_PORT}/assets/system/lambdas/default-migrate.js'
   cpus: 0.1
   code_type: package
   compressed: false

@@ -17,6 +17,6 @@ exit_on_error "Failed install: '$cmd', aborting."
 echo
 echo "Gestalt Platform installer deployed to '${RELEASE_NAMESPACE}'.  To view the installer progress, run the following:"
 echo
-echo "  kubectl logs -n gestalt-system gestalt-installer --follow"
+echo "  kubectl logs -n ${RELEASE_NAMESPACE} ${RELEASE_NAME}-installer --follow"
 echo
 echo "Done."

@@ -6,6 +6,9 @@
 # delete namespaces in UUID format, assuming those namespaces were created as part of the
 # Gestalt Platform installation.
 
+# TODO: Figure out gestalt namespace dynamically, for now, get it from gestalt.conf
+. installer/gestalt.conf
+
 # TODO: implement command-line parameters
 DEBUG=0
 
