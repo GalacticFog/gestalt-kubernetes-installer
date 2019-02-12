@@ -8,6 +8,13 @@ if [ -z "$RELEASE_NAMESPACE" ]; then
   . ./gestalt.conf
 fi
 
+PROFILE=$(check_profile ${1})
+if [ $? -ne 0 ]; then
+  echo "$PROFILE"
+  exit 1
+fi
+debug "FOUND PROFILE $PROFILE"
+
 # Source common project configuration and utilities
 PROJECT_CHECK_FUNCTIONS='./scripts/utilities/utility-project-check.sh'
 if [ -f ${PROJECT_CHECK_FUNCTIONS} ]; then
@@ -19,7 +26,7 @@ fi
 
 INSTALLER_NAME="${RELEASE_NAME}-installer"
 
-get_installer_image_config
+INSTALLER_IMAGE=$(get_installer_image_config $PROFILE)
 
 read -r -d '' INSTALLER_YAML <<EOF
 apiVersion: v1
@@ -60,7 +67,7 @@ spec:
         name: install-data
 EOF
 
-log_debug "$INSTALLER_YAML"
+debug "$INSTALLER_YAML"
 
 echo "=> Launching install Pod ..."
 echo "$INSTALLER_YAML" | kubectl create -n ${RELEASE_NAMESPACE} -f -

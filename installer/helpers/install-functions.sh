@@ -13,8 +13,8 @@ warn_on_error() {
   [ $? -eq 0 ] || echo "[Warning] $@"
 }
 
-log_debug() {
-  [ -z $DEBUG ] || echo "[Debug] $@"
+debug() {
+  [ ${DEBUG:-0} -eq 0 ] || echo "[Debug] $@"
 }
 
 check_release_name_and_namespace() {
@@ -22,14 +22,14 @@ check_release_name_and_namespace() {
     echo "Application RELEASE_NAME is not defined - using default value 'gestalt'"
     RELEASE_NAME='gestalt'
   fi
-  log_debug "Installing Gestalt with application name '${RELEASE_NAME}'"
+  debug "Installing Gestalt with application name '${RELEASE_NAME}'"
   
   DEFAULT_NS="${RELEASE_NAME}-system"
   if [ -z "$RELEASE_NAMESPACE" ]; then
     echo "Kubernetes RELEASE_NAMESPACE is not defined - using default value '${DEFAULT_NS}'"
     RELEASE_NAMESPACE='${DEFAULT_NS}'
   fi
-  log_debug "Installing Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
+  debug "Installing Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
 }
 
 check_for_required_environment_variables() {
@@ -69,6 +69,19 @@ check_for_required_tools() {
   echo "OK - Required tools found."
 }
 
+check_profile() {
+  local PROFILE=$1
+  if [ -z "$PROFILE" ]; then
+    PROFILE=$(get_profile_from_kubecontext)
+    if [ $? -ne 0 ]; then
+      echo "$PROFILE"
+      return 1
+    fi
+  fi
+  [ -d "./profiles/$PROFILE" ] || exit_with_error "Could not find a profile definition for '$PROFILE'!"
+  echo $PROFILE
+}
+
 get_profile_from_kubecontext() {
   local kubecontext="`kubectl config current-context`"
   if [ "$kubecontext" == "docker-for-desktop" ]; then
@@ -91,7 +104,7 @@ get_profile_from_kubecontext() {
 
   echo $kubecontext | grep ^'arn:aws:' >/dev/null
   [ $? -eq 0 ] && echo "aws" && return 0
-
+  exit_with_error "Could not find a suitable profile for context '$kubecontext'. Please specify an installation profile (docker-desktop, minikube, gke, eks, aws)."
   return 1
 }
 
@@ -223,11 +236,11 @@ prompt_to_continue() {
 
   local kubecontext="`kubectl config current-context`"
 
-  do_prompt_to_continue \
-    "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
-    "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
   if [ ! -f __skip_eula ]; then
-      accept_eula
+    do_prompt_to_continue \
+      "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
+      "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
+    accept_eula
   fi
 }
 
@@ -247,18 +260,23 @@ do_prompt_to_continue() {
 }
 
 get_installer_image_config() {
-  local PROFILE=${1:-"${profile}"}
-  get_installer_from_config "./base-config.yaml"
-  get_installer_from_config "./profiles/$PROFILE/config.yaml"
+  local PROFILE=${1}
+  local INSTALLER_IMAGE
+  local FOUND=$(get_installer_from_config "./base-config.yaml")
+  [ $? -eq 0 ] && INSTALLER_IMAGE="$FOUND"
+  FOUND=$(get_installer_from_config "./profiles/$PROFILE/config.yaml")
+  [ $? -eq 0 ] && INSTALLER_IMAGE="$FOUND"
+  echo "$INSTALLER_IMAGE"
 }
 
 get_installer_from_config() {
   local CONFIG_FILE=${1}
-  local FOUND_INSTALLER_IMAGE
+  local INSTALLER_IMAGE
   if [ -f "$CONFIG_FILE" ]; then
-    FOUND_INSTALLER_IMAGE=$(grep '^INSTALLER_IMAGE' $CONFIG_FILE | grep -v '^#' | awk '{print $2}')
+    INSTALLER_IMAGE=$(grep '^INSTALLER_IMAGE' $CONFIG_FILE | grep -v '^#' | awk '{print $2}')
   fi
-  [ -z "$FOUND_INSTALLER_IMAGE" ] || INSTALLER_IMAGE="$FOUND_INSTALLER_IMAGE"
+  [ -z "$INSTALLER_IMAGE" ] && exit 1
+  echo "$INSTALLER_IMAGE"
 }
 
 generate_slack_payload() {
@@ -408,7 +426,7 @@ summarize_config() {
 }
 
 create_namespace() {
-  log_debug "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  debug "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
   kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
 
   if [ $? -ne 0 ]; then
@@ -434,7 +452,7 @@ run_helper() {
     cd ~-
     exit_on_error "Pre-install script failed, aborting."
   else
-    log_debug "No '${script}' script found for profile '${profile}'"
+    debug "No '${script}' script found for profile '${profile}'"
   fi
   echo
 }
@@ -648,6 +666,6 @@ cleanup() {
     date > $file
     kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD >> $file
 
-    log_debug "Deleting '$INSTALL_POD' pod..."
+    debug "Deleting '$INSTALL_POD' pod..."
     kubectl delete pod -n $RELEASE_NAMESPACE $INSTALL_POD
 }

@@ -16,13 +16,13 @@ if [ -z "$RELEASE_NAME" ]; then
   echo "Application RELEASE_NAME is not defined - using default value 'gestalt'"
   RELEASE_NAME='gestalt'
 fi
-log_debug "Install Gestalt with application name '${RELEASE_NAME}'"
+debug "Install Gestalt with application name '${RELEASE_NAME}'"
 
 if [ -z "$RELEASE_NAMESPACE" ]; then
   echo "Kubernetes RELEASE_NAMESPACE is not defined - using default value 'gestalt-system'"
   RELEASE_NAMESPACE='gestalt-system'
 fi
-log_debug "Install Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
+debug "Install Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
 
 # echo "Checking for required dependencies..."
 
