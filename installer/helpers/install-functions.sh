@@ -14,7 +14,7 @@ warn_on_error() {
 }
 
 log_debug() {
-  [[ -z $DEBUG ]] && echo "[Debug] $@"
+  [ -z $DEBUG ] || echo "[Debug] $@"
 }
 
 check_release_name_and_namespace() {
@@ -244,6 +244,21 @@ do_prompt_to_continue() {
           [Nn]*) echo "Aborted" ; exit  1 ;;
       esac
   done
+}
+
+get_installer_image_config() {
+  local PROFILE=${1:-"${profile}"}
+  get_installer_from_config "./base-config.yaml"
+  get_installer_from_config "./profiles/$PROFILE/config.yaml"
+}
+
+get_installer_from_config() {
+  local CONFIG_FILE=${1}
+  local FOUND_INSTALLER_IMAGE
+  if [ -f "$CONFIG_FILE" ]; then
+    FOUND_INSTALLER_IMAGE=$(grep '^INSTALLER_IMAGE' $CONFIG_FILE | grep -v '^#' | awk '{print $2}')
+  fi
+  [ -z "$FOUND_INSTALLER_IMAGE" ] || INSTALLER_IMAGE="$FOUND_INSTALLER_IMAGE"
 }
 
 generate_slack_payload() {

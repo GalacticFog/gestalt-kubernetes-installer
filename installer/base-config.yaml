@@ -119,6 +119,7 @@ SECURITY_IMAGE:              docker.io/galacticfog/gestalt-security:2.4.1
 UI_IMAGE:                    docker.io/galacticfog/gestalt-ui-react:2.4.2
 REDIS_IMAGE:                 docker.io/galacticfog/redis:2.4.1
 BASH_EXECUTOR_IMAGE:         docker.io/galacticfog/gestalt-laser-executor-bash:2.4.1
+INSTALLER_IMAGE:             docker.io/galacticfog/gestalt-installer:2.4.2
 
 # POSTGRES database settings
 # internal_database_pv_storage_class: standard - Must set to 'standard' for GCP Kubernetes installs

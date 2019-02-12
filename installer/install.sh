@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# When this script is launched from the install-gestalt-platform script, the
+# RELEASE_NAMESPACE variable should already be set.  If not, read it from the
+# ./gestalt.conf file
+if [ -z "$RELEASE_NAMESPACE" ]; then
+  source ./helpers/install-functions.sh
+  . ./gestalt.conf
+fi
+
 # Source common project configuration and utilities
 PROJECT_CHECK_FUNCTIONS='./scripts/utilities/utility-project-check.sh'
 if [ -f ${PROJECT_CHECK_FUNCTIONS} ]; then
@@ -9,14 +17,58 @@ else
   exit 1
 fi
 
+INSTALLER_NAME="${RELEASE_NAME}-installer"
+
+get_installer_image_config
+
+read -r -d '' INSTALLER_YAML <<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: '${INSTALLER_NAME}'
+  labels:
+    gestalt-app: 'installer'
+    app.kubernetes.io/name: '${RELEASE_NAME}'
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: '${INSTALLER_NAME}'
+spec:
+  restartPolicy: Never
+  imagePullSecrets:
+  - name: imagepullsecret-1
+  - name: imagepullsecret-2
+  - name: imagepullsecret-3
+  - name: imagepullsecret-4
+  - name: imagepullsecret-5
+  containers:
+  - name: '${INSTALLER_NAME}'
+    image: '${INSTALLER_IMAGE}'
+    imagePullPolicy: Always
+    args:
+    - install
+    - debug
+    env:
+    - name: RELEASE_NAME
+      value: '${RELEASE_NAME}'
+    - name: RELEASE_NAMESPACE
+      value: '${RELEASE_NAMESPACE}'
+    volumeMounts:
+    - mountPath: /install-data
+      name: install-data
+  volumes:
+    - name: install-data
+      configMap:
+        name: install-data
+EOF
+
+log_debug "$INSTALLER_YAML"
+
 echo "=> Launching install Pod ..."
-cmd="kubectl create -n ${RELEASE_NAMESPACE} -f ${INSTALLER_CONFIG_FILE}"
-$cmd
-exit_on_error "Failed install: '$cmd', aborting."
+echo "$INSTALLER_YAML" | kubectl create -n ${RELEASE_NAMESPACE} -f -
+exit_on_error "Failed to install Gestalt, aborting."
 
 echo
 echo "Gestalt Platform installer deployed to '${RELEASE_NAMESPACE}'.  To view the installer progress, run the following:"
 echo
-echo "  kubectl logs -n ${RELEASE_NAMESPACE} ${RELEASE_NAME}-installer --follow"
+echo "  kubectl logs -n ${RELEASE_NAMESPACE} ${INSTALLER_NAME} --follow"
 echo
 echo "Done."

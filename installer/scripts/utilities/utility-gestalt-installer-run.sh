@@ -11,7 +11,7 @@ gestalt_install_validate_preconditions() {
     log_debug "[${FUNCNAME[0]}] Validate that expected environment variables are set ..."
 
     check_for_required_variables \
-      RELEASE_NAME
+      RELEASE_NAME \
       RELEASE_NAMESPACE
       
     # check_for_kube
