@@ -28,6 +28,7 @@ properties:
         MAX_EXECUTOR_CPU: '4.0'
         MAX_EXECUTOR_MEM: '8192'
         META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/jobs
+        # This is the Meta resource ID for Jobs, which is required if using Job resources to run kubernetes jobs rather than deployments (containers)
         META_COMPUTE_RESOURCE_ID: c8ce1302-6f66-4300-8429-2574abf28d81
         META_COMPUTE_HOST: http://gestalt-meta.gestalt-system:10131
         META_COMPUTE_PASSWORD: '#{Config SECURITY_SECRET}'
