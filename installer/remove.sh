@@ -112,6 +112,12 @@ remove_gestalt_cluster_role_bindings() {
   kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
 }
 
+get_release_namespace() {
+  local service=${1:-gestalt-meta}
+  kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
+}
+
+
 remove_gestalt_namespaces() {
   local namespaces=$(kubectl get namespace -l meta/fqon -o name)
   if [ $? -eq 0 ] && [ ! -z "$namespaces" ]; then
@@ -143,6 +149,7 @@ check_for_kube
 
 prompt_to_continue
 
+RELEASE_NAMESPACE=$(get_release_namespace)
 remove_gestalt_platform
 
 remove_gestalt_cluster_role_bindings

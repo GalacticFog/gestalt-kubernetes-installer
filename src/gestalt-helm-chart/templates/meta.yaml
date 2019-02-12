@@ -71,7 +71,7 @@ spec:
         - name: 'RABBIT_ROUTE'
           value: 'policy'
         - name: 'META_AUDIT_ENABLED'
-          value: false
+          value: 'false'
         - name: 'META_UPGRADE_CHECK_ENABLED'
           value: {{ .Values.meta.upgradeCheckEnabled | quote }}
         - name: 'META_UPGRADE_URL'

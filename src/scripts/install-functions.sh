@@ -13,7 +13,6 @@ declare -A CONFIG_TO_ENV=(
   ["secrets.databaseUsername"]="DATABASE_USERNAME"
   ["database.hostname"]="DATABASE_HOSTNAME"
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
-  ["elastic.hostname"]="ELASTICSEARCH_HOST"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
   ["elastic.initContainer.image"]="ELASTICSEARCH_INIT_IMAGE"
   ["laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
@@ -177,7 +176,6 @@ getsalt_installer_setcheck_variables() {
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
     DOTNET_EXECUTOR_IMAGE \
-    ELASTICSEARCH_HOST \
     ELASTICSEARCH_IMAGE \
     ELASTICSEARCH_INIT_IMAGE \
     GOLANG_EXECUTOR_IMAGE \
@@ -285,7 +283,7 @@ secrets:
 security:
   exposedServiceType: NodePort
   image: "${SECURITY_IMAGE}"
-  port: "${SECURITY_PORT}"
+  port: ${SECURITY_PORT}
   protocol: "${SECURITY_PROTOCOL}"
   databaseName: gestalt-security
 
@@ -300,7 +298,6 @@ rabbit:
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
-  hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
   initContainer:
     image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -374,6 +371,9 @@ postgresql:
     type: ClusterIP
 EOF
 
+  echo "START Helm chart values -----------"
+  cat helm-config.yaml
+  echo "END Helm chart values -----------"
 }
 
 http_post() {
