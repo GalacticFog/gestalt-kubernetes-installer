@@ -203,7 +203,7 @@ check_for_prior_install() {
 
   local num_lines=$( kubectl get all -n $RELEASE_NAMESPACE --no-headers 2>/dev/null | wc -l)
   if [ $num_lines -ne 0 ]; then
-      exit_with_error "Gestalt $RELEASE_NAMESPACE deployment found, aborting."
+      exit_with_error "Gestalt resources found in $RELEASE_NAMESPACE namespace, aborting."
   fi
 
   kubectl get services --all-namespaces | grep default-kong > /dev/null

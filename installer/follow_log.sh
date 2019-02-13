@@ -1,1 +1,2 @@
-kubectl logs -n gestalt-system gestalt-installer --follow
+. gestalt.conf
+kubectl logs -n ${RELEASE_NAMESPACE} ${RELEASE_NAME}-installer --follow

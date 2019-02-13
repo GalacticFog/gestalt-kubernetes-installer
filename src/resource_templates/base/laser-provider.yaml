@@ -15,9 +15,9 @@ properties:
     env:
       public: {}
       private:
-        ES_HOST: '#{Config ELASTIC_HOSTNAME}'
-        ES_PORT: '#{Config ELASTIC_PORT}'
-        ES_PROTOCOL: '#{Config ELASTIC_PROTOCOL}'
+        ES_HOST: '#{Config ELASTICSEARCH_HOSTNAME}'
+        ES_PORT: '9200'
+        ES_PROTOCOL: 'http'
         EXECUTOR_HEARTBEAT_MILLIS: '5000'
         EXECUTOR_HEARTBEAT_TIMEOUT: '5000'
         GESTALT_SCHEDULER: 'true'

@@ -2,9 +2,6 @@
 FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
 
-RELEASE_NAME: 'gestalt'
-RELEASE_NAMESPACE: 'gestalt-system'
-
 configure_ldap: 'No'
 configure_catalog: 'No' # Set to 'Yes' to configure catalog
 
@@ -13,7 +10,7 @@ K8S_PROVIDER: 'default'
 
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
-DATABASE_HOSTNAME: gestalt-postgresql.gestalt-system.svc.cluster.local
+# DATABASE_HOSTNAME: gestalt-postgresql.gestalt-system.svc.cluster.local
 DATABASE_NAME: postgres
 DATABASE_PORT: '5432'
 

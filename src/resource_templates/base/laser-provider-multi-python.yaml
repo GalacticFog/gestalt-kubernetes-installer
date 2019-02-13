@@ -12,7 +12,7 @@ properties:
     env:
       public: {}
       private:
-        ES_HOST: '#{Config ELASTIC_HOSTNAME}'
+        ES_HOST: '#{Config ELASTICSEARCH_HOSTNAME}'
         ES_PORT: '9200'
         ES_PROTOCOL: http
         EXECUTOR_HEARTBEAT_MILLIS: '5000'

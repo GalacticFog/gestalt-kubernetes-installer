@@ -47,7 +47,7 @@ spec:
               name: {{ template "gestalt.secretsName" . }}
               key: 'db-password'
         - name: 'DATABASE_NAME'
-          value: {{ template "gestalt.securityName" . }}
+          value: {{ .Values.security.databaseName | quote }}
         - name: 'OAUTH_RATE_LIMITING_AMOUNT'
           value: '100'
         - name: 'OAUTH_RATE_LIMITING_PERIOD'

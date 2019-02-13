@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # TODO: get gestalt-system namespace and security pod name dynamically
+. gestalt.conf
 
-pod=`kubectl get pod -n gestalt-system  | grep gestalt-${1}- | awk '{print $1}'`
+pod=`kubectl get pod -n $RELEASE_NAMESPACE  | grep $RELEASE_NAME-${1}- | awk '{print $1}'`
 shift
-kubectl logs -n gestalt-system $pod $@
+kubectl logs -n $RELEASE_NAMESPACE $pod $@

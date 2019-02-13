@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# TODO: get gestalt-system namespace and security pod name dynamically
-pod=`kubectl get pod -n gestalt-system | grep gestalt-security- | awk '{print $1}'`
+. gestalt.conf
 
-kubectl cp gestalt-system/$pod:/etc/ssl/certs/java/cacerts .
+# TODO: get gestalt-system namespace and security pod name dynamically
+pod=`kubectl get pod -n ${RELEASE_NAMESPACE} | grep gestalt-security- | awk '{print $1}'`
+
+kubectl cp ${RELEASE_NAMESPACE}/$pod:/etc/ssl/certs/java/cacerts .

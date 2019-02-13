@@ -50,6 +50,11 @@ do_install() {
                 ./credentials.yaml \
                 ./profiles/$PROFILE/config.yaml \
   > ./stage/config/install-config.yaml
+
+  cat >> ./stage/config/install-config.yaml <<EOF
+RELEASE_NAME: '$RELEASE_NAME'
+RELEASE_NAMESPACE: '$RELEASE_NAMESPACE'
+EOF
     
   exit_on_error "Failed to generate config, aborting"
 

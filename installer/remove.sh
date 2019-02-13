@@ -6,9 +6,6 @@
 # delete namespaces in UUID format, assuming those namespaces were created as part of the
 # Gestalt Platform installation.
 
-# TODO: Figure out gestalt namespace dynamically, for now, get it from gestalt.conf
-. installer/gestalt.conf
-
 # TODO: implement command-line parameters
 DEBUG=0
 
@@ -113,8 +110,11 @@ remove_gestalt_cluster_role_bindings() {
 }
 
 get_release_namespace() {
-  local service=${1:-gestalt-meta}
-  kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
+  # local service=${1:-gestalt-meta}
+  # kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
+
+  . gestalt.conf
+  echo $RELEASE_NAMESPACE
 }
 
 

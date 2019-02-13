@@ -94,7 +94,7 @@ map_env_vars_for_configyaml() {
 }
 
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq -c '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq -c '.data' )
 }
 
 map_env_vars_for_configmap() {
@@ -166,7 +166,9 @@ getsalt_installer_setcheck_variables() {
     fi
   fi
 
-  # check_logging_service_host
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    export DATABASE_HOSTNAME="${RELEASE_NAME}-postgresql.${RELEASE_NAMESPACE}.svc.cluster.local"
+  fi
 
   # Check all variables in one call
   check_for_required_variables \
@@ -213,9 +215,12 @@ getsalt_installer_setcheck_variables() {
   fi
 
   # Compute in-cluster hostnames
-  SECURITY_HOSTNAME="${RELEASE_NAME}-security.${RELEASE_NAMESPACE}.svc.cluster.local"
-  META_HOSTNAME="${RELEASE_NAME}-meta.${RELEASE_NAMESPACE}.svc.cluster.local"
-  UI_HOSTNAME="${RELEASE_NAME}-ui.${RELEASE_NAMESPACE}.svc.cluster.local"
+  export SECURITY_HOSTNAME=`get_internal_hostname security`
+  export META_HOSTNAME=`get_internal_hostname meta`
+  export UI_HOSTNAME=`get_internal_hostname ui`
+  export RABBIT_HOSTNAME=`get_internal_hostname rabbit`
+  export REDIS_HOSTNAME=`get_internal_hostname redis`
+  export ELASTICSEARCH_HOSTNAME=`get_internal_hostname elastic`
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -229,6 +234,10 @@ getsalt_installer_setcheck_variables() {
 
   check_for_optional_variables \
     META_BOOTSTRAP_PARAMS
+}
+
+get_internal_hostname() {
+  echo "${RELEASE_NAME}-${1}.${RELEASE_NAMESPACE}.svc.cluster.local"
 }
 
 gestalt_installer_generate_helm_config() {
@@ -408,7 +417,7 @@ send_marketplace_eula_slack_message() {
 
 wait_for_database_pod() {
   if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
-    wait_for_system_pod "gestalt-postgresql"
+    wait_for_system_pod "${RELEASE_NAME}-postgresql"
   fi
 }
 
@@ -498,13 +507,13 @@ data:
 kind: Secret
 metadata:
   name: gestalt-security-creds
-  namespace: gestalt-system
+  namespace: $RELEASE_NAMESPACE
 type: Opaque
 EOF
 }
 
 wait_for_system_pod() {
-  wait_for_pod $1 'gestalt-system'
+  wait_for_pod $1 $RELEASE_NAMESPACE
 }
 
 wait_for_pod() {
@@ -546,7 +555,7 @@ wait_for_pod() {
 
 wait_for_security_init() {
 
-  wait_for_system_pod "gestalt-security"
+  wait_for_system_pod "${RELEASE_NAME}-security"
 
   echo "Waiting for Security to initialize..."
   secs=20
@@ -587,7 +596,7 @@ init_meta() {
 
 do_init_meta() {
 
-  wait_for_system_pod "gestalt-meta"
+  wait_for_system_pod "${RELEASE_NAME}-meta"
 
   echo "Polling $META_URL/root..."
   # Check if meta initialized (ready to bootstrap when /root returns 500)
