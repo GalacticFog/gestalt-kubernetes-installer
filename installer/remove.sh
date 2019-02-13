@@ -46,6 +46,16 @@ check_for_kube() {
   echo "OK - Kubernetes cluster '$kubecontext' is accessible."
 }
 
+find_release() {
+  # TODO Handle multiple releases
+  kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.labels['app\.kubernetes\.io/name']}" | tr ' ' '\n' | uniq
+}
+
+find_namespace() {
+  # TODO Handle multiple namespaces
+  kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.namespace}" | tr ' ' '\n' | uniq
+}
+
 prompt_to_continue(){
   echo ""
   echo "Gestalt Platform will be removed from Kubernetes cluster '`kubectl config current-context`'."
@@ -110,11 +120,11 @@ remove_gestalt_cluster_role_bindings() {
 }
 
 get_release_namespace() {
-  # local service=${1:-gestalt-meta}
-  # kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
+  local service=${1:-gestalt-meta}
+  kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
 
-  . gestalt.conf
-  echo $RELEASE_NAMESPACE
+  # . gestalt.conf
+  # echo $RELEASE_NAMESPACE
 }
 
 
@@ -147,9 +157,14 @@ do_delete_namespaces() {
 check_for_required_tools
 check_for_kube
 
+. gestalt.conf
+# echo $RELEASE_NAMESPACE
+
 prompt_to_continue
 
-RELEASE_NAMESPACE=$(get_release_namespace)
+# TODO clean up later and handle multiple releases
+# RELEASE_NAMESPACE=$(get_release_namespace)
+RELEASE_NAMESPACE=$(find_namespace)
 remove_gestalt_platform
 
 remove_gestalt_cluster_role_bindings

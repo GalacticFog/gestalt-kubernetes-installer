@@ -147,10 +147,31 @@ create_or_check_for_required_namespace() {
   if [ $? -ne 0 ]; then
     echo ""
     echo "Kubernetes namespace '$RELEASE_NAMESPACE' doesn't exist, creating..."
-    kubectl create namespace $RELEASE_NAMESPACE
-    exit_on_error "Failed to create namespace '$RELEASE_NAMESPACE', aborting."
+    create_ns "$RELEASE_NAMESPACE"
   fi
   echo "OK - Kubernetes namespace '$RELEASE_NAMESPACE' is present."
+}
+
+create_namespace() {
+  debug "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
+
+  if [ $? -ne 0 ]; then
+    create_ns "$RELEASE_NAMESPACE"
+
+    # Wait for namespace to be created
+    sleep 5
+    echo "Namespace $RELEASE_NAMESPACE created."
+  fi
+}
+
+create_ns() {
+  local NS_NAME=$1
+  echo "Creating namespace '$RELEASE_NAMESPACE'..."
+  kubectl create namespace $NS_NAME
+  exit_on_error "FAILED to create namespace '$NS_NAME', aborting."
+  kubectl label namespace $NS_NAME "app.kubernetes.io/app=gestalt" "app.kubernetes.io/name=$RELEASE_NAME"
+  exit_on_error "FAILED to label namespace '$NS_NAME' with Gestalt labels, aborting."
 }
 
 check_for_existing_namespace() {
@@ -423,21 +444,6 @@ summarize_config() {
       fi
   done
   echo ""
-}
-
-create_namespace() {
-  debug "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
-  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
-
-  if [ $? -ne 0 ]; then
-    echo "Creating namespace '$RELEASE_NAMESPACE'..."
-    kubectl create namespace $RELEASE_NAMESPACE
-    exit_on_error "Error creating namespace '$RELEASE_NAMESPACE', aborting."
-
-    # Wait for namespace to be created
-    sleep 5
-    echo "Namespace $RELEASE_NAMESPACE created."
-  fi
 }
 
 run_helper() {
