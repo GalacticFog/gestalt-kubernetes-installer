@@ -1,7 +1,7 @@
 #!/bin/bash
 
 evaluate() {
-  if [ $(echo "$1" | bc -l) == "1" ]; then
+  if [ $(echo "${1:-1}" | bc -l) == "1" ]; then
     return 0
   else
     return 1
@@ -36,6 +36,7 @@ read_cluster_allocatable_capacity() {
 
   # Example mem output for two nodes: '8071424Ki 8071424Ki'
   # Example cpu output for two nodes: '2 2'
+  # GCP reports cpu in millicores.  Example output for 3 nodes: '2690m 2690m 1525m'
 
   # echo "'$mem'"
   # echo "'$cpu'"
@@ -46,7 +47,10 @@ read_cluster_allocatable_capacity() {
   # echo "'$mem_bytes'"
   # echo "'$mem_gb'"
 
-  local total_cpu=$(echo $cpu | sed 's/ / + /g;' | bc)
+  local cpu_scale=0
+  # If the $cpu string starts with any number of digits followed by an "m" character it's in millicores
+  [[ "$cpu" =~ ^[0-9]+m ]] && cpu_scale=3
+  local total_cpu=$(echo $cpu | sed 's/ / + /g;s/m/ \/ 1000/g' | xargs -I CPU echo "scale=$cpu_scale; CPU" | bc)
   # echo "'$total_cpu'"
 
   # Set global vars
