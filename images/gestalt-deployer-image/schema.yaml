@@ -29,6 +29,7 @@ properties:
   namespace:
     type: string
     default: "gestalt-system"
+    description: 'We recommend creating a gestalt-system namespace.'
     x-google-marketplace:
       type: NAMESPACE
   reportingSecret:
@@ -67,11 +68,23 @@ properties:
   secrets.adminUser:
     type: string
     default: 'admin'
-    description: 'A username for the Gestalt admin user.'
+    description: 'This is the name of the admin account for gestalt.  This is the root account, so please make it a safe name.'
   secrets.adminPassword:
     type: string
     default: ''
-    description: "A password for the Gestalt admin user."
+    description: 'This is the name of the admin password for gestalt root account.  Please make it safe and hard to guess.'
+  ui.ingress.host:
+    type: string
+    default: ''
+    description: "This is how developers and end users will access your service.  Please make sure you have a proper DNS name and know how to point DNS at the Ingress filter for the Kubernetes clusters.  You should use a name like 'DEVPORTAL.COMPANYNAME.COM'"
+  api.gateway.hostname:
+    type: string
+    default: ''
+    description: "This will be the primary way your containers are exposed, so please make sure you have a proper DNS entry here. You should use a name like 'API.COMPANYNAME.COM'"
+  postgresql.provisionInstance:
+    type: boolean
+    detault: true
+    description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
   secrets.databaseName:
     type: string
     default: 'postgres'
@@ -83,7 +96,7 @@ properties:
   secrets.databasePassword:
     type: string
     default: ''
-    description: "An admin password for the Gestalt database."
+    description: 'This is the password for the Gestalt database.  Please make it safe and hard to guess.'
   security.port:
     type: integer
     default: 9455
@@ -108,14 +121,6 @@ properties:
     type: string
     default: "http"
     description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
-  postgresql.provisionInstance:
-    type: boolean
-    detault: true
-    description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
-  api.gateway.hostname:
-    type: string
-    default: "api.yourdomain.com"
-    description: "The DNS name to use for Gestalt's API Gateway."
   meta.port:
     type: integer
     default: 10131
@@ -260,6 +265,8 @@ required:
 - reportingSecret
 - secrets.adminPassword
 - secrets.databasePassword
+- ui.ingress.host
+- api.gateway.hostname
 
 #x-google-marketplace:
 #  clusterConstraints:
