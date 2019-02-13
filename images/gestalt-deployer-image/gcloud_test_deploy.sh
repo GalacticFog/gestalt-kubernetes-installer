@@ -14,14 +14,23 @@
 export PROJECT=$(gcloud config get-value project | tr ':' '/')
 echo "PROJECT: ${PROJECT}"
 # Set the registry to your project GCR repo.
-export REGISTRY=gcr.io/${PROJECT}
+export REGISTRY="gcr.io/${PROJECT}/gestalt"
 echo "REGISTRY: ${REGISTRY}"
-export APP_NAME=gestalt
-export DEPLOYER_TAG="$REGISTRY/$APP_NAME/deployer:seb"
-echo "DEPLOYER TAG: ${DEPLOYER_TAG}"
+export IMAGE_TAG="test"
+export DEPLOYER_IMAGE="$REGISTRY/deployer:${IMAGE_TAG}"
 
-export TEST_NAME="sebtest"
-export TEST_NAMESPACE="seb-system"
+export ADMIN_USER="gcpadmin"
+export ADMIN_PASS="gcpG35t@lt1n5t@ll"
+export TEST_NAME="gcptest"
+export TEST_NAMESPACE="gcptest-system"
+export INSTALLER_TAG="${IMAGE_TAG}"
+export INSTALLER_IMAGE="${REGISTRY}/gestalt-installer:${INSTALLER_TAG}"
+export EULA_NAME="Galactic Fog"
+export EULA_EMAIL="sample@galacticfog.com"
+export EULA_COMPANY="Galactic Fog, LLC"
+export INSTALL_DOMAIN="yourdomain.com"
+export UI_HOSTNAME="portal.${INSTALL_DOMAIN}"
+export API_HOSTNAME="apigw1.${INSTALL_DOMAIN}"
 
 # Create the test namespace if it doesn't already exist
 create_ns() {
@@ -55,17 +64,18 @@ kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketpl
 # mpdev /scripts/doctor.py
 
 # Run `mpdev install` to kick off your deployer
-mpdev /scripts/install --deployer="${DEPLOYER_TAG}" \
+mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
 --parameters="{\"name\": \"${TEST_NAME}\", \
  \"namespace\": \"${TEST_NAMESPACE}\", \
  \"reportingSecret\": \"iweuniweubniewubn\", \
- \"common.name\": \"Galactic Fog\", \
- \"common.email\": \"sample@galacticfog.com\", \
- \"common.companyName\": \"Galactic Fog, LLC\", \
- \"ui.ingress.host\": \"portal.yourdomain.com\", \
- \"api.gateway.hostname\": \"apigw1.yourdomain.com\", \
- \"secrets.adminUser\": \"gcptest\", \
- \"secrets.adminPassword\": \"gcpG35t@lt1n5t@ll\", \
+ \"common.name\": \"${EULA_NAME}\", \
+ \"common.email\": \"${EULA_EMAIL}\", \
+ \"common.companyName\": \"${EULA_COMPANY}\", \
+ \"installer.image\": \"${INSTALLER_IMAGE}\", \
+ \"ui.ingress.host\": \"${UI_HOSTNAME}\", \
+ \"api.gateway.hostname\": \"${API_HOSTNAME}\", \
+ \"secrets.adminUser\": \"${ADMIN_USER}\", \
+ \"secrets.adminPassword\": \"${ADMIN_PASS}\", \
  \"secrets.databaseName\": \"postgres\", \
  \"secrets.databaseUsername\": \"postgres\", \
  \"secrets.databasePassword\": \"@th3Sp0t!\"}"
