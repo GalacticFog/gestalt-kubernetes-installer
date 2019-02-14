@@ -76,6 +76,7 @@ mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
  \"api.gateway.hostname\": \"${API_HOSTNAME}\", \
  \"secrets.adminUser\": \"${ADMIN_USER}\", \
  \"secrets.adminPassword\": \"${ADMIN_PASS}\", \
+ \"postgresql.provisionInstance\": true, \
  \"secrets.databaseName\": \"postgres\", \
  \"secrets.databaseUsername\": \"postgres\", \
  \"secrets.databasePassword\": \"@th3Sp0t!\"}"

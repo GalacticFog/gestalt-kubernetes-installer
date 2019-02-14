@@ -13,7 +13,7 @@ secrets:
   databasePassword: 'a1b2c3d4!'
 
 installer:
-  image: gcr.io/galacticfog-public/gestalt/gestalt-installer:seb
+  image: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
 
 security:
   image: gcr.io/galacticfog-public/gestalt/gestalt-security:2.4

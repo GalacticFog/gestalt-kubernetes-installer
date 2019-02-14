@@ -38,24 +38,16 @@ properties:
       type: REPORTING_SECRET
   common.name:
     type: string
-    default: 'Firstname Lastname'
+    default: ''
     description: 'Your name.'
   common.email:
     type: string
-    default: 'you@yourdomain.com'
+    default: ''
     description: 'Your email address.'
   common.companyName:
     type: string
-    default: 'n/a'
+    default: ''
     description: 'The name of your company (if applicable).'
-  common.imagePullPolicy:
-    type: string
-    default: "Always"
-    description: "Pull new container images? (Valid values are Always, IfNotPresent or Never)"
-  common.releaseVersion:
-    type: string
-    default: "2.4"
-    description: "The release version you want to install for this Gestalt instance."
   common.serviceAccount:
     type: string
     x-google-marketplace:
@@ -73,11 +65,19 @@ properties:
     type: string
     default: ''
     description: 'This is the name of the admin password for gestalt root account.  Please make it safe and hard to guess.'
+  ui.ingress.protocol:
+    type: string
+    default: "http"
+    description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
   ui.ingress.host:
     type: string
     default: ''
     description: "This is how developers and end users will access your service.  Please make sure you have a proper DNS name and know how to point DNS at the Ingress filter for the Kubernetes clusters.  You should use a name like 'DEVPORTAL.COMPANYNAME.COM'"
-  api.gateway.hostname:
+  ui.ingress.port:
+    type: integer
+    default: 80
+    description: "The port numner for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
+  api.gateway.host:
     type: string
     default: ''
     description: "This will be the primary way your containers are exposed, so please make sure you have a proper DNS entry here. You should use a name like 'API.COMPANYNAME.COM'"
@@ -97,51 +97,6 @@ properties:
     type: string
     default: ''
     description: 'This is the password for the Gestalt database.  Please make it safe and hard to guess.'
-  security.port:
-    type: integer
-    default: 9455
-    description: "The port number Gestalt components use to connect to Gestalt Security service"
-  security.protocol:
-    type: string
-    default: "http"
-    description: "The web protocol Gestalt components use to connect to Gestalt Security service (http or https)"
-  security.databaseName:
-    type: string
-    default: "gestalt-security"
-    description: "The name of the database in which Gestalt Security service stores its data"
-  ui.ingress.host:
-    type: string
-    default: 'gestalt.yourdomain.com'
-    description: "Enter the DNS name for your Gestalt admin web interface."
-  ui.ingress.port:
-    type: integer
-    default: 80
-    description: "The port numner for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
-  ui.ingress.protocol:
-    type: string
-    default: "http"
-    description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
-  meta.port:
-    type: integer
-    default: 10131
-    description: "The in-cluster port number that components will use to access the Gestalt Meta service."
-  # TODO - Why are there two of these?
-  rabbit.port:
-    type: integer
-    default: 5672
-    description: "The in-cluster port number components will use to access the Gestalt Rabbit MQ service."
-  rabbit.httpPort:
-    type: integer
-    default: 15672
-    description: "The port number components will use to access the Gestalt Rabbit MQ service via HTTP."
-  redis.port:
-    type: integer
-    default: 6379
-    description: "The in-cluster port number components will use to access the Gestalt Redis service."
-  ubb.port:
-    type: integer
-    default: 6380
-    description: "The in-cluster port number components will use to access the Gestalt Billing service."
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   installer.image:
     type: string
@@ -263,10 +218,14 @@ required:
 - name
 - namespace
 - reportingSecret
+- common.name
+- common.email
+- common.companyName
+- secrets.adminUser
 - secrets.adminPassword
 - secrets.databasePassword
 - ui.ingress.host
-- api.gateway.hostname
+- api.gateway.host
 
 #x-google-marketplace:
 #  clusterConstraints:
