@@ -80,6 +80,8 @@ properties:
     id: '#{Provider /root/graalvm-nodejs-executor id}'
   - name: EXECUTOR_9
     id: '#{Provider /root/graalvm-llvm-executor id}'
+  - name: EXECUTOR_10
+    id: '#{Provider /root/bash-executor id}'
   services:
   - init:
       binding: eager
