@@ -48,6 +48,7 @@ create ruby-executor
 create graalvm-jvm-scala-executor
 create graalvm-nodejs-executor
 create graalvm-lvm-executor
+create bash-executor
 
 # Laser - create custom executors if applicable
 if [ "${LASER_PROVIDER_CUSTOMIZE}" == "1" ]; then
