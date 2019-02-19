@@ -37,8 +37,8 @@ properties:
       type: REPORTING_SECRET
   common.name:
     type: string
-    default: 'Firstname Lastname'
-    description: 'Your name.'
+    default: ''
+    description: 'Your full name.'
   common.email:
     type: string
     default: 'you@yourdomain.com'
@@ -71,108 +71,62 @@ properties:
   secrets.adminPassword:
     type: string
     default: ''
-    description: "A password for the Gestalt admin user."
-  secrets.databaseName:
+    description: 'This is the name of the admin password for gestalt root account.  Please make it safe and hard to guess.'
+  secrets.generatedPassword:
     type: string
-    default: 'postgres'
-    description: "A database name for the Gestalt database."
-  secrets.databaseUsername:
-    type: string
-    default: 'postgres'
-    description: "An admin username for the Gestalt database."
-  secrets.databasePassword:
-    type: string
-    default: ''
-    description: "An admin password for the Gestalt database."
-  database.hostname:
-    type: string
-    default: "gestalt-postgresql.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt database server."
-  security.hostname:
-    type: string
-    default: "gestalt-security.gestalt-system"
-    description: "The in-cloud hostname of the Gestalt Security service"
-  security.port:
-    type: integer
-    default: 9455
-    description: "The port number Gestalt components use to connect to Gestalt Security service"
-  security.protocol:
-    type: string
-    default: "http"
-    description: "The web protocol Gestalt components use to connect to Gestalt Security service (http or https)"
-  security.databaseName:
-    type: string
-    default: "gestalt-security"
-    description: "The name of the database in which Gestalt Security service stores its data"
-  ui.hostname:
-    type: string
-    default: "gestalt-ui.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt UI service host."
+    description: 'An automatically-generated admin password for the Postgres instance provisioned by Gestalt.'
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 10
+        includeSymbols: True
+        base64: False
   ui.ingress.host:
     type: string
-    default: 'gestalt.yourdomain.com'
-    description: "Enter the DNS name for your Gestalt admin web interface."
-  ui.ingress.port:
-    type: integer
-    default: 80
-    description: "The port numner for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
+    default: ''
+    description: "This is how developers and end users will access your service.  Please make sure you have a proper DNS name and know how to point DNS at the Ingress filter for the Kubernetes clusters.  You should use a name like 'DEVPORTAL.COMPANYNAME.COM'"
   ui.ingress.protocol:
     type: string
     default: "http"
-    description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
+    pattern: '^https?$'
+    description: "The web protocol for accessing your Gestalt UI service. (Either http or https)"
+  ui.ingress.port:
+    type: integer
+    default: 80
+    description: "The port number for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
+  api.gateway.host:
+    type: string
+    default: ''
+    description: "This will be the primary way your containers are exposed, so please make sure you have a proper DNS entry here. You should use a name like 'API.COMPANYNAME.COM'"
+  api.gateway.protocol:
+    type: string
+    default: "http"
+    pattern: '^https?$'
+    description: "The web protocol for accessing your Gestalt API gateway. (Either http or https)"
+  api.gateway.port:
+    type: integer
+    default: 80
+    description: "The port number for accessing your Gestalt API gateway. (Generally 80 for http or 443 for https)"
   postgresql.provisionInstance:
     type: boolean
     detault: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
-  elastic.hostname:
+  db.name:
     type: string
-    default: "gestalt-elastic.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Elasticsearch service host."
-  api.gateway.hostname:
+    default: ''
+    description: "The database name for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
+  db.username:
     type: string
-    default: "api.yourdomain.com"
-    description: "The DNS name to use for Gestalt's API Gateway."
-  meta.hostname:
+    default: ''
+    description: "The username for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
+  db.password:
     type: string
-    default: "gestalt-meta.gestalt-system.svc.cluster.local"
-    description: "The in-cluster hostname of the Gestalt Meta service host."
-  meta.port:
-    type: integer
-    default: 10131
-    description: "The in-cluster port number that components will use to access the Gestalt Meta service."
-  # TODO - Why are there two of these?
-  rabbit.host:
+    default: ''
+    description: 'The password for the Gestalt connection to your external database.  (This field is ignored if Gestalt provisions its own Postgresql database.) Please make it safe and hard to guess.'
+  db.host:
     type: string
-    default: "gestalt-rabbit.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
-  rabbit.hostname:
-    type: string
-    default: "gestalt-rabbit.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Rabbit MQ service host."
-  rabbit.port:
-    type: integer
-    default: 5672
-    description: "The in-cluster port number components will use to access the Gestalt Rabbit MQ service."
-  rabbit.httpPort:
-    type: integer
-    default: 15672
-    description: "The port number components will use to access the Gestalt Rabbit MQ service via HTTP."
-  redis.hostname:
-    type: string
-    default: "gestalt-redis.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Redis service host."
-  redis.port:
-    type: integer
-    default: 6379
-    description: "The in-cluster port number components will use to access the Gestalt Redis service."
-  ubb.hostname:
-    type: string
-    default: "gestalt-ubb.gestalt-system"
-    description: "The in-cluster hostname of the Gestalt Billing service host."
-  ubb.port:
-    type: integer
-    default: 6380
-    description: "The in-cluster port number components will use to access the Gestalt Billing service."
+    default: ''
+    description: 'The hostname for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   installer.image:
     type: string
@@ -295,7 +249,12 @@ required:
 - namespace
 - reportingSecret
 - secrets.adminPassword
-- secrets.databasePassword
+- ui.ingress.host
+- ui.ingress.protocol
+- ui.ingress.port
+- api.gateway.host
+- api.gateway.protocol
+- api.gateway.port
 
 #x-google-marketplace:
 #  clusterConstraints:

@@ -11,6 +11,6 @@ spec:
   selector:
     gestalt-app: ui
   ports:
-    - name: http
-      port: 80
+    - name: {{ .Values.ui.ingress.host }}
+      port: {{ .Values.ui.ingress.port }}
       nodePort: {{ .Values.ui.nodePort }}

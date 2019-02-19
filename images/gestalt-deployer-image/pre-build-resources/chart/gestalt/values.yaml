@@ -4,13 +4,13 @@ namespace: gestalt-system
 common:
   imagePullPolicy: Always
   releaseVersion: 2.4
+  serviceAccount: default
+  serviceAccountName: 'default'
 
 secrets:
   adminUser: 'admin'
   adminPassword: 'gestaltgcp!'
-  databaseName: 'postgres'
-  databaseUsername: 'postgres'
-  databasePassword: 'a1b2c3d4!'
+  generatedPassword: 'z1y2x3w4v5'
 
 installer:
   image: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
@@ -52,31 +52,30 @@ logging:
   hostname: gestalt-log.gestalt-system.svc.cluster.local
   port: 80
   protocol: http
-  ingress:
-    host: '/log' # will be added to the end of the ui.ingress.host
 
 ui:
   image: gcr.io/galacticfog-public/gestalt:2.4
   exposedServiceType: NodePort
-  port: 80
-  protocol: http
   nodePort: 31112
   hostname: gestalt-ui.gestalt-system.svc.cluster.local
   ingress:
-    host: localhost
+    host: 'localhost'
     port: 80
-    protocol: http
+    protocol: 'http'
 
 # Gestalt DB settings
 db:
-  # Hostname must be fully qualified
-  hostname: gestalt-postgresql.gestalt-system.svc.cluster.local
+  host: 'gestalt-postgres.gestalt-system.svc.cluster.local'
   port: 5432
-  databaseName: postgres
+  name: 'postgres'
+  username: 'postgres'
+  password: 'a1b2c3d4!'
 
 postgresql:
   image: gcr.io/galacticfog-public/gestalt/postgres:2.4
-  existingSecret: 'gestalt-secrets'
+  provisionInstance: true
+  defaultName: 'postgres'
+  defaultUser: 'postgres'
   secretKey:
     database: 'db-database'
     username: 'db-username'

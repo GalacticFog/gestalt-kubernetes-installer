@@ -45,11 +45,11 @@ spec:
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-password
-        - name: DATABASE_PORT
-          value: "{{ .Values.db.port }}"
-        - name: DATABASE_USERNAME
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: 'DATABASE_PORT'
+          value: {{ template "gestalt.dbPort" . }}
+        - name: 'DATABASE_USERNAME'
           valueFrom:
             secretKeyRef:
               name: gestalt-secrets

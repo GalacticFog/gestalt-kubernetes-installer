@@ -13,7 +13,7 @@ spec:
     metadata:
       labels:
         gestalt-app: security
-        app.kubernetes.io/name: "{{ .Release.Name }}"
+        app.kubernetes.io/name: {{ .Release.Name }}
         app.kubernetes.io/component: gestalt-security
     spec:
       imagePullSecrets:
@@ -31,21 +31,21 @@ spec:
           name: service-api
         env:
         - name: DATABASE_HOSTNAME
-          value: "{{ .Values.db.hostname }}"
+          value: {{ template "gestalt.dbHost" . }}
         - name: DATABASE_PORT
-          value: "{{ .Values.db.port }}"
+          value: {{ template "gestalt.dbPort" . }}
         - name: DATABASE_USERNAME
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-username
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
         - name: DATABASE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: gestalt-secrets
               key: db-password
         - name: DATABASE_NAME
-          value: "gestalt-security"
+          value: gestalt-security
         - name: OAUTH_RATE_LIMITING_AMOUNT
           value: "100"
         - name: OAUTH_RATE_LIMITING_PERIOD

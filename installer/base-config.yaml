@@ -89,6 +89,7 @@ UI_HOSTNAME: gestalt-ui.gestalt-system.svc.cluster.local
 UI_NODEPORT: '31112'
 UI_PORT: '80'
 UI_PROTOCOL: http
+UI_HOST: 'localhost'
 
 # UBB - billing agent
 UBB_HOSTNAME: gestalt-ubb.gestalt-system
