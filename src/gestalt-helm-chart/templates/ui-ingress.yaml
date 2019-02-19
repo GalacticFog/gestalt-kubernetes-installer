@@ -10,4 +10,4 @@ metadata:
 spec:
   backend:
     serviceName: {{ template "gestalt.uiName" . }}
-    servicePort: 80
+    servicePort: {{ .Values.ui.ingress.port }}

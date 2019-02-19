@@ -12,6 +12,7 @@ declare -A CONFIG_TO_ENV=(
   ["secrets.databasePassword"]="DATABASE_PASSWORD"
   ["secrets.databaseUsername"]="DATABASE_USERNAME"
   ["database.hostname"]="DATABASE_HOSTNAME"
+  ["postgresql.provisionInstance"]="POSTGRES_PROVISION_INSTANCE"
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
   ["elastic.initContainer.image"]="ELASTICSEARCH_INIT_IMAGE"
@@ -125,6 +126,13 @@ map_env_vars_for_configmap() {
       export $VAR_NAME="${VAR_VALUE}"
     fi
   done
+  echo "POSTGRES_PROVISION_INSTANCE = '${POSTRGES_PROVISION_INSTANCE}'"
+  if [ "$POSTGRES_PROVISION_INSTANCE" == "true" ]; then
+    PROVISION_INTERNAL_DATABASE="Yes"
+  else
+    # Don't do anything yet...
+    echo "POSTGRES_PROVISION_INSTANCE was not true..."
+  fi
 }
 
 convert_configmap_to_env_variables() {
@@ -278,16 +286,14 @@ gestalt_installer_generate_helm_config() {
 
   cat > helm-config.yaml <<EOF
 common:
-  # imagePullPolicy: IfNotPresent
   imagePullPolicy: Always
+  releaseVersion: 2.4
+  gestaltUrl: "${GESTALT_URL}"
 
 secrets:
-  databaseName: "{$DATABASE_NAME}"
-  databaseUsername: "${DATABASE_USERNAME}"
-  databasePassword: "${DATABASE_PASSWORD}"
   adminUser: "${ADMIN_USERNAME}"
   adminPassword: "${ADMIN_PASSWORD}"
-  gestaltUrl: "${GESTALT_URL}"
+  generatedPassword: "${DATABASE_PASSWORD}"
 
 security:
   exposedServiceType: NodePort
@@ -299,7 +305,9 @@ security:
 db:
   hostname: ${DATABASE_HOSTNAME}
   port: 5432
-  databaseName: postgres
+  name: "{$DATABASE_NAME}"
+  username: "${DATABASE_USERNAME}"
+  password: "${DATABASE_PASSWORD}"
 
 rabbit:
   image: "${RABBIT_IMAGE}"
@@ -338,7 +346,9 @@ ui:
   exposedServiceType: NodePort
   nodePort: ${UI_NODEPORT}
   ingress:
-    host: localhost
+    host: ${UI_HOST}
+    port: ${UI_PORT}
+    protocol: ${UI_PROTOCOL}
 
 redis:
   image: ${REDIS_IMAGE}
@@ -358,15 +368,24 @@ trackingService:
 EOF
 fi
 
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    export PROVISION_INSTANCE="true"
+  else
+    export PROVISION_INSTANCE="false"
+  fi
+
   cat >> helm-config.yaml <<EOF
 
 postgresql:
   image: "${POSTGRES_IMAGE}"
+  provisionInstance: ${PROVISION_INSTANCE}
   existingSecret: 'gestalt-secrets'
+  defaultName: 'postgres'
+  defaultUser: 'postgres'
   secretKey:
-    database: db-database
-    username: db-username
-    password: db-password
+    database: 'db-database'
+    username: 'db-username'
+    password: 'db-password'
   persistence:
     size: ${internal_database_pv_storage_size}
     storageClass: "${internal_database_pv_storage_class}"

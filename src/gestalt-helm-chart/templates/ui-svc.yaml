@@ -10,8 +10,9 @@ metadata:
 spec:
   type: {{ .Values.ui.exposedServiceType | quote }}
   selector:
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
     gestalt-app: 'ui'
   ports:
-    - name: 'http'
-      port: 80
+    - name: {{ .Values.ui.ingress.protocol | quote }}
+      port: {{ .Values.ui.ingress.port }}
       nodePort: {{ .Values.ui.nodePort }}

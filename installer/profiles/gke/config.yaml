@@ -1,15 +1,15 @@
 K8S_PROVIDER:  gke                            # ('gke')
-GESTALT_URL:   https://portal.yourdomain.com  # (Gestalt Login URL)
-KONG_URL:      https://apigw1.yourdomain.com  # (Endpoint for API Gateway)
+GESTALT_URL:   http://gestalt.zwobu.com  # (Gestalt Login URL)
+KONG_URL:      http://exec.zwobu.com  # (Endpoint for API Gateway)
 
 #(Remember to set credentials in credentials.yaml)
 
-DOTNET_EXECUTOR_0_MIN_COOL: '1'
-GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '2'
-GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '2'
-JS_EXECUTOR_0_MIN_COOL: '2'
-JVM_EXECUTOR_0_MIN_COOL: '2'
-NODEJS_EXECUTOR_0_MIN_COOL: '2'
+DOTNET_EXECUTOR_0_MIN_COOL: '0'
+GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '1'
+GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '0'
+JS_EXECUTOR_0_MIN_COOL: '0'
+JVM_EXECUTOR_0_MIN_COOL: '0'
+NODEJS_EXECUTOR_0_MIN_COOL: '0'
 
 # Default executor size bins
 EXECUTOR_SIZE_0_DEFAULT_CPU: 0.1

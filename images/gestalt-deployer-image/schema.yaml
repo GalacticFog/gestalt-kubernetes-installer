@@ -39,7 +39,7 @@ properties:
   common.name:
     type: string
     default: ''
-    description: 'Your name.'
+    description: 'Your full name.'
   common.email:
     type: string
     default: ''
@@ -65,38 +65,61 @@ properties:
     type: string
     default: ''
     description: 'This is the name of the admin password for gestalt root account.  Please make it safe and hard to guess.'
-  ui.ingress.protocol:
+  secrets.generatedPassword:
     type: string
-    default: "http"
-    description: "The web protocol for accessing your Gestalt UI service. (Generally http or https)"
+    description: 'An automatically-generated admin password for the Postgres instance provisioned by Gestalt.'
+    x-google-marketplace:
+      type: GENERATED_PASSWORD
+      generatedPassword:
+        length: 10
+        includeSymbols: True
+        base64: False
   ui.ingress.host:
     type: string
     default: ''
     description: "This is how developers and end users will access your service.  Please make sure you have a proper DNS name and know how to point DNS at the Ingress filter for the Kubernetes clusters.  You should use a name like 'DEVPORTAL.COMPANYNAME.COM'"
+  ui.ingress.protocol:
+    type: string
+    default: "http"
+    pattern: '^https?$'
+    description: "The web protocol for accessing your Gestalt UI service. (Either http or https)"
   ui.ingress.port:
     type: integer
     default: 80
-    description: "The port numner for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
+    description: "The port number for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
   api.gateway.host:
     type: string
     default: ''
     description: "This will be the primary way your containers are exposed, so please make sure you have a proper DNS entry here. You should use a name like 'API.COMPANYNAME.COM'"
+  api.gateway.protocol:
+    type: string
+    default: "http"
+    pattern: '^https?$'
+    description: "The web protocol for accessing your Gestalt API gateway. (Either http or https)"
+  api.gateway.port:
+    type: integer
+    default: 80
+    description: "The port number for accessing your Gestalt API gateway. (Generally 80 for http or 443 for https)"
   postgresql.provisionInstance:
     type: boolean
     detault: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
-  secrets.databaseName:
-    type: string
-    default: 'postgres'
-    description: "A database name for the Gestalt database."
-  secrets.databaseUsername:
-    type: string
-    default: 'postgres'
-    description: "An admin username for the Gestalt database."
-  secrets.databasePassword:
+  db.name:
     type: string
     default: ''
-    description: 'This is the password for the Gestalt database.  Please make it safe and hard to guess.'
+    description: "The database name for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
+  db.username:
+    type: string
+    default: ''
+    description: "The username for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
+  db.password:
+    type: string
+    default: ''
+    description: 'The password for the Gestalt connection to your external database.  (This field is ignored if Gestalt provisions its own Postgresql database.) Please make it safe and hard to guess.'
+  db.host:
+    type: string
+    default: ''
+    description: 'The hostname for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   installer.image:
     type: string
@@ -223,9 +246,12 @@ required:
 - common.companyName
 - secrets.adminUser
 - secrets.adminPassword
-- secrets.databasePassword
 - ui.ingress.host
+- ui.ingress.protocol
+- ui.ingress.port
 - api.gateway.host
+- api.gateway.protocol
+- api.gateway.port
 
 #x-google-marketplace:
 #  clusterConstraints:

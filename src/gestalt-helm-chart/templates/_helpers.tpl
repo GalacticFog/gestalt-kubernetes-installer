@@ -16,6 +16,55 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+  Compute Gestalt URL from ui.ingress.protocol://ui.ingress.host:ui.ingress.port
+*/}}
+{{- define "gestalt.url" -}}
+  {{- printf "%s://%s" .Values.ui.ingress.protocol .Values.ui.ingress.host -}}
+  {{- if not (or (and (eq .Values.ui.ingress.protocol "http") (eq .Values.ui.ingress.port 80.0)) (and (eq .Values.ui.ingress.protocol "https") (eq .Values.ui.ingress.port 443.0))) -}}
+    {{- printf ":%.0f" .Values.ui.ingress.port -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Define database connection parameters depending on postgresql.provisionInstance boolean
+*/}}
+{{- define "gestalt.dbHost" -}}
+  {{- if .Values.postgresql.provisionInstance -}}
+    {{- printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote -}}
+  {{- else -}}
+    {{- .Values.db.host | quote -}}
+  {{- end -}}
+{{- end -}}
+{{- define "gestalt.dbPort" -}}
+  {{- if .Values.postgresql.provisionInstance -}}
+    {{- .Values.postgresql.service.port | quote -}}
+  {{- else -}}
+    {{- .Values.db.port | quote -}}
+  {{- end -}}
+{{- end -}}
+{{- define "gestalt.dbName" -}}
+  {{- if .Values.postgresql.provisionInstance -}}
+    {{- .Values.postgresql.defaultName | quote -}}
+  {{- else -}}
+    {{- .Values.db.name | quote -}}
+  {{- end -}}
+{{- end -}}
+{{- define "gestalt.dbUsername" -}}
+  {{- if .Values.postgresql.provisionInstance -}}
+    {{- .Values.postgresql.defaultUser | quote -}}
+  {{- else -}}
+    {{- .Values.db.username | quote -}}
+  {{- end -}}
+{{- end -}}
+{{- define "gestalt.dbPassword" -}}
+  {{- if .Values.postgresql.provisionInstance -}}
+    {{- .Values.secrets.generatedPassword | quote -}}
+  {{- else -}}
+    {{- .Values.db.password | quote -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Define commonly used component and host name variables.
 */}}
 {{- define "gestalt.installerName" -}}
@@ -59,12 +108,6 @@ Define commonly used component and host name variables.
 {{- end -}}
 {{- define "gestalt.uiHost" -}}
 {{- printf "%s-ui.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote -}}
-{{- end -}}
-{{- define "gestalt.dbName" -}}
-{{- printf "%s-postgresql" .Release.Name | quote -}}
-{{- end -}}
-{{- define "gestalt.dbHost" -}}
-{{- printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote -}}
 {{- end -}}
 {{- define "gestalt.redisName" -}}
 {{- printf "%s-redis" .Release.Name | quote -}}

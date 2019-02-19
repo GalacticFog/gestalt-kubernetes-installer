@@ -50,7 +50,7 @@ spec:
               name: {{ template "gestalt.secretsName" . }}
               key: 'db-password'
         - name: 'DATABASE_PORT'
-          value: {{ .Values.db.port | quote }}
+          value: {{ template "gestalt.dbPort" . }}
         - name: 'DATABASE_USERNAME'
           valueFrom:
             secretKeyRef:
