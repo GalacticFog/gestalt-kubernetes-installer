@@ -33,15 +33,6 @@ stage_1() {
   env | sort
   echo
 
-  # Database - if not provisioning a database, delete the postgres subchart from the helm chart
-  case $PROVISION_INTERNAL_DATABASE in
-    [Nn0]*)
-      echo "Not provisioning internal database, deleting postgres chart..."
-      rm -rv /gestalt/charts/postgresql* /gestalt/requirements.*
-      ;;
-  esac
-
-
   echo "Rendering Helm templates..."
   helm template ../gestalt-helm-chart --name ${RELEASE_NAME} -f helm-config.yaml > ../gestalt.yaml
   exit_on_error "Failed: 'helm template', aborting."

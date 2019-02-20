@@ -1,9 +1,10 @@
-K8S_PROVIDER:  gke                            # ('gke')
-GESTALT_URL:   http://gestalt.zwobu.com  # (Gestalt Login URL)
-KONG_URL:      http://exec.zwobu.com  # (Endpoint for API Gateway)
+K8S_PROVIDER:  gke
+GESTALT_URL:   http://portal.yourdomain.com  # (Gestalt Login URL)
+KONG_URL:      http://api.yourdomain.com  # (Endpoint for API Gateway)
 
 #(Remember to set credentials in credentials.yaml)
 
+BASH_EXECUTOR_0_MIN_COOL: '0'
 DOTNET_EXECUTOR_0_MIN_COOL: '0'
 GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '1'
 GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '0'

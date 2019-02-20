@@ -9,9 +9,11 @@ declare -A CONFIG_TO_ENV=(
   ["common.companyName"]="EULA_COMPANY"
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
   ["secrets.adminUser"]="ADMIN_USERNAME"
-  ["secrets.databasePassword"]="DATABASE_PASSWORD"
-  ["secrets.databaseUsername"]="DATABASE_USERNAME"
-  ["database.hostname"]="DATABASE_HOSTNAME"
+  ["db.host"]="DATABASE_HOSTNAME"
+  ["db.port"]="DATABASE_PORT"
+  ["db.name"]="DATABASE_NAME"
+  ["db.username"]="DATABASE_USERNAME"
+  ["db.password"]="DATABASE_PASSWORD"
   ["postgresql.provisionInstance"]="POSTGRES_PROVISION_INSTANCE"
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
@@ -183,6 +185,8 @@ getsalt_installer_setcheck_variables() {
     ADMIN_PASSWORD \
     ADMIN_USERNAME \
     DATABASE_HOSTNAME \
+    DATABASE_PORT \
+    DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
     DOTNET_EXECUTOR_IMAGE \
@@ -257,9 +261,11 @@ gestalt_installer_generate_helm_config() {
     ADMIN_USERNAME \
     ADMIN_PASSWORD \
     POSTGRES_IMAGE \
+    DATABASE_HOSTNAME \
+    DATABASE_PORT \
     DATABASE_NAME \
-    DATABASE_PASSWORD \
     DATABASE_USERNAME \
+    DATABASE_PASSWORD \
     RABBIT_IMAGE \
     RABBIT_PORT \
     RABBIT_HTTP_PORT \
@@ -284,6 +290,12 @@ gestalt_installer_generate_helm_config() {
 
   [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    export PROVISION_INSTANCE="true"
+  else
+    export PROVISION_INSTANCE="false"
+  fi
+
   cat > helm-config.yaml <<EOF
 common:
   imagePullPolicy: Always
@@ -303,9 +315,9 @@ security:
   databaseName: gestalt-security
 
 db:
-  hostname: ${DATABASE_HOSTNAME}
-  port: 5432
-  name: "{$DATABASE_NAME}"
+  host: ${DATABASE_HOSTNAME}
+  port: ${DATABASE_PORT}
+  name: "${DATABASE_NAME}"
   username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
 
@@ -353,33 +365,10 @@ ui:
 redis:
   image: ${REDIS_IMAGE}
   port: ${REDIS_PORT}
-EOF
-
-  # Marketplace specific
-  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
-    cat >> helm-config.yaml <<EOF
-
-ubb:
-  image: ${GCP_UBB_IMAGE}
-  port: ${UBB_PORT}
-
-trackingService:
-  image: ${GCP_TRACKING_SERVICE_IMAGE}
-EOF
-fi
-
-  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
-    export PROVISION_INSTANCE="true"
-  else
-    export PROVISION_INSTANCE="false"
-  fi
-
-  cat >> helm-config.yaml <<EOF
 
 postgresql:
   image: "${POSTGRES_IMAGE}"
   provisionInstance: ${PROVISION_INSTANCE}
-  existingSecret: 'gestalt-secrets'
   defaultName: 'postgres'
   defaultUser: 'postgres'
   secretKey:
@@ -398,6 +387,19 @@ postgresql:
     port: 5432
     type: ClusterIP
 EOF
+
+  # Marketplace specific
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    cat >> helm-config.yaml <<EOF
+
+ubb:
+  image: ${GCP_UBB_IMAGE}
+  port: ${UBB_PORT}
+
+trackingService:
+  image: ${GCP_TRACKING_SERVICE_IMAGE}
+EOF
+fi
 
   echo "START Helm chart values -----------"
   cat helm-config.yaml

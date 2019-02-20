@@ -19,9 +19,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
   Compute Gestalt URL from ui.ingress.protocol://ui.ingress.host:ui.ingress.port
 */}}
 {{- define "gestalt.url" -}}
-  {{- printf "%s://%s" .Values.ui.ingress.protocol .Values.ui.ingress.host -}}
+  {{- $base_url := printf "%s://%s" .Values.ui.ingress.protocol .Values.ui.ingress.host -}}
   {{- if not (or (and (eq .Values.ui.ingress.protocol "http") (eq .Values.ui.ingress.port 80.0)) (and (eq .Values.ui.ingress.protocol "https") (eq .Values.ui.ingress.port 443.0))) -}}
-    {{- printf ":%.0f" .Values.ui.ingress.port -}}
+    {{- printf "%s:%.0f" $base_url .Values.ui.ingress.port | b64enc | quote -}}
+  {{- else -}}
+    {{- $base_url | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 
@@ -44,23 +46,23 @@ Define database connection parameters depending on postgresql.provisionInstance 
 {{- end -}}
 {{- define "gestalt.dbName" -}}
   {{- if .Values.postgresql.provisionInstance -}}
-    {{- .Values.postgresql.defaultName | quote -}}
+    {{- .Values.postgresql.defaultName | b64enc | quote -}}
   {{- else -}}
-    {{- .Values.db.name | quote -}}
+    {{- .Values.db.name | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 {{- define "gestalt.dbUsername" -}}
   {{- if .Values.postgresql.provisionInstance -}}
-    {{- .Values.postgresql.defaultUser | quote -}}
+    {{- .Values.postgresql.defaultUser | b64enc | quote -}}
   {{- else -}}
-    {{- .Values.db.username | quote -}}
+    {{- .Values.db.username | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 {{- define "gestalt.dbPassword" -}}
   {{- if .Values.postgresql.provisionInstance -}}
-    {{- .Values.secrets.generatedPassword | quote -}}
+    {{- .Values.secrets.generatedPassword | b64enc | quote -}}
   {{- else -}}
-    {{- .Values.db.password | quote -}}
+    {{- .Values.db.password | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 
