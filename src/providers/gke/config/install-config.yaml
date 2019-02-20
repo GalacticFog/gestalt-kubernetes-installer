@@ -116,6 +116,7 @@ RUBY_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-execut
 SECURITY_IMAGE:           gcr.io/galacticfog-public/gestalt/gestalt-security:2.4
 UI_IMAGE:                 gcr.io/galacticfog-public/gestalt:2.4
 REDIS_IMAGE:              gcr.io/galacticfog-public/gestalt/redis:2.4
+BASH_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-bash:2.4.1
 
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:2.4

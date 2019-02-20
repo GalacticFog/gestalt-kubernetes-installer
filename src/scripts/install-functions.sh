@@ -23,7 +23,9 @@ declare -A CONFIG_TO_ENV=(
   ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
   ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
   ["kong.image"]="KONG_IMAGE"
-  ["api.gateway.hostname"]="KONG_SERVICE_HOST"
+  ["api.gateway.protocol"]="KONG_SERVICE_PROTOCOL"
+  ["api.gateway.host"]="KONG_SERVICE_HOST"
+  ["api.gateway.port"]="KONG_SERVICE_PORT"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
   ["logging.port"]="LOGGING_PORT"
@@ -43,10 +45,10 @@ declare -A CONFIG_TO_ENV=(
   ["security.port"]="SECURITY_PORT"
   ["security.protocol"]="SECURITY_PROTOCOL"
   ["ui.image"]="UI_IMAGE"
-  ["ui.nodePort"]="UI_PORT"
-  ["ui.protocol"]="UI_PROTOCOL"
-  ["ui.ingress.host"]="UI_SERVICE_HOST"
-  ["ui.ingress.port"]="UI_SERVICE_PORT"
+  ["ui.nodePort"]="UI_NODEPORT"
+  ["ui.ingress.protocol"]="UI_PROTOCOL"
+  ["ui.ingress.host"]="UI_HOST"
+  ["ui.ingress.port"]="UI_PORT"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -71,21 +73,6 @@ getsalt_installer_load_configmap() {
   logging_lvl_validate 
   # print_env_variables #will print only if debug
 }
-
-# check_logging_service_host() {
-#   local APPEND_LOG_PATH="/log"
-#   # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
-#   if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
-#     # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
-#     [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
-#     if [ -n "$UI_SERVICE_HOST" ]; then
-#       LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
-#       [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
-#       LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
-#     fi
-#   fi
-#   echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
-# }
 
 map_env_vars_for_configyaml() {
   check_for_required_variables gestalt_config
@@ -132,8 +119,7 @@ map_env_vars_for_configmap() {
   if [ "$POSTGRES_PROVISION_INSTANCE" == "true" ]; then
     PROVISION_INTERNAL_DATABASE="Yes"
   else
-    # Don't do anything yet...
-    echo "POSTGRES_PROVISION_INSTANCE was not true..."
+    PROVISION_INTERNAL_DATABASE="No"
   fi
 }
 
@@ -174,6 +160,28 @@ getsalt_installer_setcheck_variables() {
       export KONG_SERVICE_HOST=$(echo $KONG_URL | awk -F/ '{print $3}')
       export KONG_SERVICE_PROTOCOL=$(echo $KONG_URL | awk -F: '{print $1}')
     fi
+  else
+
+    if [ -z "$GESTALT_URL" ]; then
+      if [ "$UI_PROTOCOL" == "http" && "$UI_PORT" == "80" ]; then
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
+      elif [ "$UI_PROTOCOL" == "https" && "$UI_PORT" == "443" ]; then
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
+      else
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST:$UI_PORT"
+      fi
+    fi
+
+    if [ -z "$KONG_URL" ]; then
+      if [ "$KONG_SERVICE_PROTOCOL" == "http" && "$KONG_SERVICE_PORT" == "80" ]; then
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
+      elif [ "$KONG_SERVICE_PROTOCOL" == "https" && "$KONG_SERVICE_PORT" == "443" ]; then
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
+      else
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST:$KONG_SERVICE_PORT"
+      fi
+    fi
+
   fi
 
   if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then

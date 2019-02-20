@@ -4,8 +4,6 @@ namespace: gestalt-system
 common:
   imagePullPolicy: Always
   releaseVersion: 2.4
-  serviceAccount: default
-  serviceAccountName: 'default'
 
 secrets:
   adminUser: 'admin'
