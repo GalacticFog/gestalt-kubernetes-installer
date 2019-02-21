@@ -92,6 +92,7 @@ mask_db_fields_if_provisioning_internal_db() {
 
 map_env_vars_for_configmap() {
   local JSON_DATA=$1
+  [ -z "${JSON_DATA}" ] && return
   local VAR_NAME
   local VAR_VALUE
   local PRETTY_JSON=$( echo "${JSON_DATA}" | jq -r -S )
