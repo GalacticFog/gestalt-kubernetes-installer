@@ -40,12 +40,12 @@ prompt_to_remove_namespace(){
   local NS=$1
   [ -z "$NS" ] && return
   echo ""
-  echo "Gestalt Platform will be removed the '$NS' namespace from the Kubernetes cluster '`kubectl config current-context`'."
+  echo "Do you want to remove the Gestalt namespace '$NS' from the Kubernetes cluster '`kubectl config current-context`'?"
   echo "This cannot be undone."
   echo ""
 
   while true; do
-      read -p "$* Proceed? [y/n]: " yn
+      read -p "Remove the '$NS' namespace? [y/n]: " yn
       case $yn in
           [Yy]*) do_delete_namespaces "namespace/${NS}"; break;;
           [Nn]*) break;;
