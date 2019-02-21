@@ -53,7 +53,10 @@ find_release() {
 
 find_namespace() {
   # TODO Handle multiple namespaces
-  kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.namespace}" | tr ' ' '\n' | uniq
+  local NS=$( kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.namespace}" | tr ' ' '\n' | uniq )
+  [ -z "$NS" ] && NS=$( kubectl get ns gestalt-system -o jsonpath="{$.metadata.namespace}" )
+  [ -z "$NS" ] && exit_with_error "Unable to find a Gestalt release namespace (or one named 'gestalt-system')"
+  echo "$NS"
 }
 
 prompt_to_continue(){
@@ -119,15 +122,6 @@ remove_gestalt_cluster_role_bindings() {
   kubectl get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
 }
 
-get_release_namespace() {
-  local service=${1:-gestalt-meta}
-  kubectl get svc --all-namespaces -o json | jq -r --arg SVC ${service} '.items[].metadata | select(.name==$SVC) | .namespace'
-
-  # . gestalt.conf
-  # echo $RELEASE_NAMESPACE
-}
-
-
 remove_gestalt_namespaces() {
   local namespaces=$(kubectl get namespace -l meta/fqon -o name)
   if [ $? -eq 0 ] && [ ! -z "$namespaces" ]; then
@@ -158,12 +152,10 @@ check_for_required_tools
 check_for_kube
 
 . gestalt.conf
-# echo $RELEASE_NAMESPACE
 
 prompt_to_continue
 
-# TODO clean up later and handle multiple releases
-# RELEASE_NAMESPACE=$(get_release_namespace)
+# TODO handle multiple releases in the same cluster
 RELEASE_NAMESPACE=$(find_namespace)
 remove_gestalt_platform
 
