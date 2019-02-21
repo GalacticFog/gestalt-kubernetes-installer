@@ -7,57 +7,10 @@
 # Gestalt Platform installation.
 
 # TODO: implement command-line parameters
-DEBUG=0
+DEBUG=1
+SKIP_ACKNOWLEDGEMENT=1
 
-log_debug() {
-  [[ $DEBUG -ne 0 ]] && echo "$@"
-}
-
-exit_with_error() {
-  echo "[Error] $@"
-  exit 1
-}
-
-exit_on_error() {
-  if [ $? -ne 0 ]; then
-    exit_with_error $1
-  fi
-}
-
-check_for_required_tools() {
-  which kubectl   >/dev/null 2>&1 ; exit_on_error "'kubectl' command not found, aborting."
-}
-
-check_for_kube() {
-  echo "Checking for Kubernetes..."
-  local kubecontext="`kubectl config current-context`"
-
-  if [ ! -z "$target_kube_context" ]; then
-      if [ "$kubecontext" != "$target_kube_context" ]; then
-      do_prompt_to_continue \
-        "Warning - The current Kubernetes context name '$kubecontext' does not match the expected value, '$target_kube_context'" \
-        "Proceed anyway?"
-      fi
-  fi
-
-  kube_cluster_info=$(kubectl cluster-info)
-  exit_on_error "Kubernetes cluster not accessible, aborting."
-
-  echo "OK - Kubernetes cluster '$kubecontext' is accessible."
-}
-
-find_release() {
-  # TODO Handle multiple releases
-  kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.labels['app\.kubernetes\.io/name']}" | tr ' ' '\n' | uniq
-}
-
-find_namespace() {
-  # TODO Handle multiple namespaces
-  local NS=$( kubectl get --all-namespaces svc -l "app.kubernetes.io/app=gestalt" -o jsonpath="{$.items[*].metadata.namespace}" | tr ' ' '\n' | uniq )
-  [ -z "$NS" ] && NS=$( kubectl get ns gestalt-system -o jsonpath="{$.metadata.namespace}" )
-  [ -z "$NS" ] && exit_with_error "Unable to find a Gestalt release namespace (or one named 'gestalt-system')"
-  echo "$NS"
-}
+source ./helpers/tool-functions.sh
 
 prompt_to_continue(){
   echo ""
@@ -72,13 +25,32 @@ prompt_to_continue(){
           [Nn]*) echo "Aborted" ; exit  1 ;;
       esac
   done
-  
+}
+
+prompt_to_acknowledge(){
   echo
-#  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
-#  case $value in
-#      `kubectl config current-context`) return 0  ;;
-#      *) echo "Aborted" ; exit  1 ;;
-#  esac
+  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
+  case $value in
+      `kubectl config current-context`) return 0  ;;
+      *) echo "Aborted" ; exit  1 ;;
+  esac
+}
+
+prompt_to_remove_namespace(){
+  local NS=$1
+  [ -z "$NS" ] && return
+  echo ""
+  echo "Gestalt Platform will be removed the '$NS' namespace from the Kubernetes cluster '`kubectl config current-context`'."
+  echo "This cannot be undone."
+  echo ""
+
+  while true; do
+      read -p "$* Proceed? [y/n]: " yn
+      case $yn in
+          [Yy]*) do_delete_namespaces "namespace/${NS}"; break;;
+          [Nn]*) break;;
+      esac
+  done
 }
 
 remove_gestalt_platform() {
@@ -148,19 +120,24 @@ do_delete_namespaces() {
 }
 
 # Check for pre-reqs
-check_for_required_tools
+check_for_kubectl
 check_for_kube
 
 . gestalt.conf
 
 prompt_to_continue
+[ $SKIP_ACKNOWLEDGEMENT -eq 0 ] && prompt_to_acknowledge
 
 # TODO handle multiple releases in the same cluster
-RELEASE_NAMESPACE=$(find_namespace)
+RELEASE_NAMESPACE=$(find_namespace "${RELEASE_NAMESPACE}")
+[ $? -ne 0 ] && exit 1
+
 remove_gestalt_platform
 
 remove_gestalt_cluster_role_bindings
 
 remove_gestalt_namespaces
+
+prompt_to_remove_namespace "${RELEASE_NAMESPACE}"
 
 echo "Done."

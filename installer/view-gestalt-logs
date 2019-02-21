@@ -1,8 +1,17 @@
 #!/bin/bash
 
-# TODO: get gestalt-system namespace and security pod name dynamically
+SERVICE=${1:-meta}
+
+. ./helpers/tool-functions.sh
+
 . gestalt.conf
 
-pod=`kubectl get pod -n $RELEASE_NAMESPACE  | grep $RELEASE_NAME-${1}- | awk '{print $1}'`
+RELEASE_NAMESPACE=$( find_namespace "${RELEASE_NAMESPACE}" )
+exit_on_error "Could not find a Gestalt install namespace!"
+RELEASE_NAME=$( find_release )
+exit_on_error "Could not find a Gestalt release name!"
+
+pod=`kubectl get pod -n $RELEASE_NAMESPACE  | grep "${RELEASE_NAME}-${SERVICE}-" | awk '{print $1}'`
+echo "Found pod '$pod'"
 shift
 kubectl logs -n $RELEASE_NAMESPACE $pod $@
