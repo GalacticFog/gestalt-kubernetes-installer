@@ -30,8 +30,8 @@ find_namespace() {
   local DEFAULT_NAMESPACE=${1:-"gestalt-system"}
 
   # TODO Handle multiple namespaces
-  local NS=$( kubectl get ns $DEFAULT_NAMESPACE -o jsonpath="{.metadata.name}" )
-  [ -z "$NS" ] && NS=$( kubectl get --all-namespaces ns -l "app.kubernetes.io/app=gestalt" -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | uniq )
+  local NS=$( kubectl get --all-namespaces ns -l "app.kubernetes.io/app=gestalt" -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | uniq )
+  [ -z "$NS" ] && NS=$( kubectl get ns $DEFAULT_NAMESPACE -o jsonpath="{.metadata.name}" )
   [ -z "$NS" ] && exit_with_error "Unable to find a Gestalt release namespace (or one named '${DEFAULT_NAMESPACE}')"
   echo "$NS"
 }
