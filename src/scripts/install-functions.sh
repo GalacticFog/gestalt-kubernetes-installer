@@ -14,7 +14,6 @@ declare -A CONFIG_TO_ENV=(
   ["db.name"]="DATABASE_NAME"
   ["db.username"]="DATABASE_USERNAME"
   ["db.password"]="DATABASE_PASSWORD"
-  ["postgresql.provisionInstance"]="POSTGRES_PROVISION_INSTANCE"
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
   ["elastic.initContainer.image"]="ELASTICSEARCH_INIT_IMAGE"
@@ -87,12 +86,28 @@ get_configmap_data() {
   echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq -c '.data' )
 }
 
+mask_db_fields_if_provisioning_internal_db() {
+  echo "$1" | jq -r 'del(.["db.host","db.port","db.name","db.username"]) | .["db.password"] = (.["secrets.generatedPassword"] // .["db.password"])'
+}
+
 map_env_vars_for_configmap() {
   local JSON_DATA=$1
   local VAR_NAME
   local VAR_VALUE
-  echo "ConfigMap JSON Data: $JSON_DATA"
+  local PRETTY_JSON=$( echo "${JSON_DATA}" | jq -r -S )
+  echo "ConfigMap JSON Data: $PRETTY_JSON"
   echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
+
+  local PROVISION_DB=$( echo "$JSON_DATA" | jq -r '.["postgresql.provisionInstance"]' )
+  if [ "$PROVISION_DB" == "True" ]; then
+    JSON_DATA=$( mask_db_fields_if_provisioning_internal_db "${JSON_DATA}" )
+    local MASKED_JSON=$( echo "${JSON_DATA}" | jq -r -S )
+    echo "Masked JSON Data: $MASKED_JSON"
+    export PROVISION_INTERNAL_DATABASE="Yes"
+  else
+    export PROVISION_INTERNAL_DATABASE="No"
+  fi
+
   local KEY_NAME
   for KEY_NAME in ${CONFIG_TO_ENV[@]}; do
     echo "$KEY_NAME / ${CONFIG_TO_ENV[$KEY_NAME]}"
@@ -115,12 +130,7 @@ map_env_vars_for_configmap() {
       export $VAR_NAME="${VAR_VALUE}"
     fi
   done
-  echo "POSTGRES_PROVISION_INSTANCE = '${POSTRGES_PROVISION_INSTANCE}'"
-  if [ "$POSTGRES_PROVISION_INSTANCE" == "true" ]; then
-    PROVISION_INTERNAL_DATABASE="Yes"
-  else
-    PROVISION_INTERNAL_DATABASE="No"
-  fi
+  echo "postgres connection info ${DATABASE_USERNAME}@${DATABASE_HOSTNAME}:${DATABASE_PORT}/${DATABASE_NAME}"
 }
 
 convert_configmap_to_env_variables() {
@@ -163,9 +173,9 @@ getsalt_installer_setcheck_variables() {
   else
 
     if [ -z "$GESTALT_URL" ]; then
-      if [ "$UI_PROTOCOL" == "http" && "$UI_PORT" == "80" ]; then
+      if [[ "$UI_PROTOCOL" == "http" && "$UI_PORT" == "80" ]]; then
         GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
-      elif [ "$UI_PROTOCOL" == "https" && "$UI_PORT" == "443" ]; then
+      elif [[ "$UI_PROTOCOL" == "https" && "$UI_PORT" == "443" ]]; then
         GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
       else
         GESTALT_URL="$UI_PROTOCOL://$UI_HOST:$UI_PORT"
@@ -173,9 +183,9 @@ getsalt_installer_setcheck_variables() {
     fi
 
     if [ -z "$KONG_URL" ]; then
-      if [ "$KONG_SERVICE_PROTOCOL" == "http" && "$KONG_SERVICE_PORT" == "80" ]; then
+      if [[ "$KONG_SERVICE_PROTOCOL" == "http" && "$KONG_SERVICE_PORT" == "80" ]]; then
         KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
-      elif [ "$KONG_SERVICE_PROTOCOL" == "https" && "$KONG_SERVICE_PORT" == "443" ]; then
+      elif [[ "$KONG_SERVICE_PROTOCOL" == "https" && "$KONG_SERVICE_PORT" == "443" ]]; then
         KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
       else
         KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST:$KONG_SERVICE_PORT"
@@ -299,9 +309,9 @@ gestalt_installer_generate_helm_config() {
   [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
   if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
-    export PROVISION_INSTANCE="true"
+    export PROVISION_POSTGRES_INSTANCE="true"
   else
-    export PROVISION_INSTANCE="false"
+    export PROVISION_POSTGRES_INSTANCE="false"
   fi
 
   cat > helm-config.yaml <<EOF
@@ -376,7 +386,7 @@ redis:
 
 postgresql:
   image: "${POSTGRES_IMAGE}"
-  provisionInstance: ${PROVISION_INSTANCE}
+  provisionInstance: ${PROVISION_POSTGRES_INSTANCE}
   defaultName: 'postgres'
   defaultUser: 'postgres'
   secretKey:

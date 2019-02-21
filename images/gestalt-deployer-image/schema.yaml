@@ -81,8 +81,16 @@ properties:
     description: "The port number for accessing your Gestalt API gateway. (Generally 80 for http or 443 for https)"
   postgresql.provisionInstance:
     type: boolean
-    detault: true
+    default: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
+  db.host:
+    type: string
+    default: ''
+    description: 'The hostname for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
+  db.port:
+    type: string
+    default: '5432'
+    description: 'The port number used for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   db.name:
     type: string
     default: ''
@@ -95,10 +103,6 @@ properties:
     type: string
     default: ''
     description: 'The password for the Gestalt connection to your external database.  (This field is ignored if Gestalt provisions its own Postgresql database.) Please make it safe and hard to guess.'
-  db.host:
-    type: string
-    default: ''
-    description: 'The hostname for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
   installer.image:
     type: string

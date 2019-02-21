@@ -10,9 +10,11 @@ K8S_PROVIDER: 'gke'
 
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
-# DATABASE_HOSTNAME: 'external-database-dns-name' # Does not apply if PROVISION_INTERNAL_DATABASE is set to Yes
-DATABASE_NAME: postgres
+DATABASE_HOSTNAME: 'external-database-dns-name' # Does not apply if PROVISION_INTERNAL_DATABASE is set to Yes
 DATABASE_PORT: '5432'
+DATABASE_NAME: 'postgres'
+DATABASE_USERNAME: 'postgres'
+DATABASE_PASSWORD: 'generated'
 
 CUSTOM_IMAGE_PULL_SECRET: ''
 

@@ -26,11 +26,18 @@ export TEST_NAMESPACE="gcptest-system"
 export INSTALLER_TAG="${IMAGE_TAG}"
 export INSTALLER_IMAGE="${REGISTRY}/gestalt-installer:${INSTALLER_TAG}"
 export EULA_NAME="Galactic Fog"
-export EULA_EMAIL="sample@galacticfog.com"
+export EULA_EMAIL="example@galacticfog.com"
 export EULA_COMPANY="Galactic Fog, LLC"
 export INSTALL_DOMAIN="yourdomain.com"
 export UI_HOSTNAME="portal.${INSTALL_DOMAIN}"
-export API_HOSTNAME="apigw1.${INSTALL_DOMAIN}"
+export API_HOSTNAME="api.${INSTALL_DOMAIN}"
+export PROVISION_DB="true"
+export DB_HOST="35.221.1.43"
+export DB_PORT="5432"
+export DB_NAME="postgres"
+export DB_USERNAME="postgres"
+export DB_PASSWORD="4CHaOPO0vIcbblqf"
+export GENERATED_PASSWORD="12345abcde"
 
 # Create the test namespace if it doesn't already exist
 create_ns() {
@@ -73,13 +80,16 @@ mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
  \"common.companyName\": \"${EULA_COMPANY}\", \
  \"installer.image\": \"${INSTALLER_IMAGE}\", \
  \"ui.ingress.host\": \"${UI_HOSTNAME}\", \
- \"api.gateway.hostname\": \"${API_HOSTNAME}\", \
+ \"api.gateway.host\": \"${API_HOSTNAME}\", \
  \"secrets.adminUser\": \"${ADMIN_USER}\", \
  \"secrets.adminPassword\": \"${ADMIN_PASS}\", \
- \"postgresql.provisionInstance\": true, \
- \"secrets.databaseName\": \"postgres\", \
- \"secrets.databaseUsername\": \"postgres\", \
- \"secrets.databasePassword\": \"@th3Sp0t!\"}"
+ \"secrets.generatedPassword\": \"${GENERATED_PASSWORD}\", \
+ \"postgresql.provisionInstance\": ${PROVISION_DB}, \
+ \"db.host\": \"${DB_HOST}\", \
+ \"db.port\": \"${DB_PORT}\", \
+ \"db.name\": \"${DB_NAME}\", \
+ \"db.username\": \"${DB_USERNAME}\", \
+ \"db.password\": \"${DB_PASSWORD}\"}"
 
 echo "Project ${PROJECT} install complete..."
 echo "You should see the project has been deployed at https://console.cloud.google.com/kubernetes/application?project=${PROJECT}"
