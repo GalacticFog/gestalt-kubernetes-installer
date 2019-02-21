@@ -20,10 +20,12 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 */}}
 {{- define "gestalt.url" -}}
   {{- $base_url := printf "%s://%s" .Values.ui.ingress.protocol .Values.ui.ingress.host -}}
-  {{- if not (or (and (eq .Values.ui.ingress.protocol "http") (eq .Values.ui.ingress.port 80.0)) (and (eq .Values.ui.ingress.protocol "https") (eq .Values.ui.ingress.port 443.0))) -}}
-    {{- printf "%s:%.0f" $base_url .Values.ui.ingress.port | b64enc | quote -}}
-  {{- else -}}
+  {{- if .Values.common.gestaltUrl -}}
+    {{- .Values.common.gestaltUrl | b64enc | quote -}}
+  {{- else if or (and (eq .Values.ui.ingress.protocol "http") (eq .Values.ui.ingress.port 80.0)) (and (eq .Values.ui.ingress.protocol "https") (eq .Values.ui.ingress.port 443.0)) -}}
     {{- $base_url | b64enc | quote -}}
+  {{- else -}}
+    {{- printf "%s:%.0f" $base_url .Values.ui.ingress.port | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 
