@@ -261,7 +261,7 @@ prompt_to_continue() {
     do_prompt_to_continue \
       "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
       "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
-    accept_eula
+    accept_eula $@
   fi
 }
 
@@ -303,6 +303,9 @@ get_installer_from_config() {
 generate_slack_payload() {
 
   local eula_data="$1"
+  local profile="${2:-'default'}"
+  local kubecontext="`kubectl config current-context`"
+  [ -z "$kubecontext" ] || profile+=" (${kubecontext})"
 
   . ${eula_data}_client
 
@@ -334,7 +337,7 @@ accept_eula() {
     fi
   fi
 
-  generate_slack_payload "${eula_data}"
+  generate_slack_payload "${eula_data}" $@
   
   # The send_slack_message function is in ../src/scripts/eula-functions.sh
   send_slack_message "$(read_file_data "${eula_data}")"
@@ -465,7 +468,7 @@ run_helper() {
 
 prompt_or_wait_to_continue() {
   if [ -z "$MARKETPLACE_INSTALL" ]; then
-      prompt_to_continue
+      prompt_to_continue $@
   else
     echo "About to proceed with installation, press Ctrl-C to cancel..."
     sleep 5

@@ -28,14 +28,14 @@ do_install() {
   local PROFILE
   PROFILE=$(check_profile ${1})
   if [ $? -ne 0 ]; then
-    echo "$PROFILE"
+    echo "Unable to determine profile from args '$@'"
     exit 1
   fi
 
   ./precheck.sh $PROFILE
   exit_on_error "Precheck failed, aborting"
 
-  prompt_or_wait_to_continue
+  prompt_or_wait_to_continue $PROFILE
 
   mkdir -p ./stage
   rm -r ./stage/*
