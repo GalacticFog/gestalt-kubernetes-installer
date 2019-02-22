@@ -304,8 +304,6 @@ generate_slack_payload() {
 
   local eula_data="$1"
   local profile="${2:-'default'}"
-  local kubecontext="`kubectl config current-context`"
-  [ -z "$kubecontext" ] || profile+=" (${kubecontext})"
 
   . ${eula_data}_client
 
