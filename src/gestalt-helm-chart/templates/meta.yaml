@@ -1,19 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-meta
+  name: {{ template "gestalt.metaName" . }}
   labels:
-    gestalt-app: meta
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-meta
+    gestalt-app: 'meta'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.metaName" . }}
 spec:
   replicas: 1
   template: # create pods using pod definition in this template
     metadata:
       labels:
-        gestalt-app: meta
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-meta
+        gestalt-app: 'meta'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.metaName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -22,57 +24,62 @@ spec:
       - name: imagepullsecret-4
       - name: imagepullsecret-5
       containers:
-      - name: gestalt-meta
-        image: "{{ .Values.meta.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.metaName" . }}
+        image: {{ .Values.meta.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
         - containerPort: 9000
-          name: service-api
+          name: 'service-api'
         # TODO - 
         # resources:
         #   requests:
         #     cpu: 250m
-        #     memory: "2Gi"
+        #     memory: 2Gi
         #   limits:
-        #     memory: "2Gi"
+        #     memory: 2Gi
         env:
-        - name: DATABASE_HOSTNAME
-          value: "{{ .Values.db.hostname }}"
-        - name: DATABASE_NAME
-          value: "{{ .Values.meta.databaseName }}"
-        - name: DATABASE_PASSWORD
+        - name: 'DATABASE_HOSTNAME'
+          value: {{ template "gestalt.dbHost" . }}
+        - name: 'DATABASE_NAME'
+          value: {{ .Values.meta.databaseName | quote }}
+        - name: 'DATABASE_PASSWORD'
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-password
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: 'DATABASE_USERNAME'
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
         - name: DATABASE_PORT
-          value: "{{ .Values.db.port }}"
+          value: {{ template "gestalt.dbPort" . }}
         - name: DATABASE_USERNAME
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-username
-        - name: GESTALT_SECURITY_HOSTNAME
-          value: "{{ .Values.security.hostname }}"
-        - name: GESTALT_SECURITY_PORT
-          value: "{{ .Values.security.port }}"
-        - name: GESTALT_SECURITY_PROTOCOL
-          value: "{{ .Values.security.protocol }}"
-        - name: RABBIT_HOST
-          value: "{{ .Values.rabbit.hostname }}"
-        - name: RABBIT_PORT
-          value: "{{ .Values.rabbit.port }}"
-        - name: RABBIT_HTTP_PORT
-          value: "{{ .Values.rabbit.httpPort }}"
-        - name: RABBIT_EXCHANGE
-          value: "policy-exchange"
-        - name: RABBIT_ROUTE
-          value: "policy"
-        - name: META_AUDIT_ENABLED
-          value: "false"
-        - name: META_UPGRADE_CHECK_ENABLED
-          value: "{{ .Values.meta.upgradeCheckEnabled }}"
-        - name: META_UPGRADE_URL
-          value: "{{ .Values.meta.upgradeUrl }}"
-        - name: META_UPGRADE_CHECK_HOURS
-          value: "{{ .Values.meta.upgradeCheckHours }}"
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
+        - name: 'GESTALT_SECURITY_HOSTNAME'
+          value: {{ template "gestalt.securityHost" . }}
+        - name: 'GESTALT_SECURITY_PORT'
+          value: {{ .Values.security.port | quote }}
+        - name: 'GESTALT_SECURITY_PROTOCOL'
+          value: {{ .Values.security.protocol | quote }}
+        - name: 'RABBIT_HOST'
+          value: {{ template "gestalt.rabbitHost" . }}
+        - name: 'RABBIT_PORT'
+          value: {{ .Values.rabbit.port | quote }}
+        - name: 'RABBIT_HTTP_PORT'
+          value: {{ .Values.rabbit.httpPort | quote }}
+        - name: 'RABBIT_EXCHANGE'
+          value: 'policy-exchange'
+        - name: 'RABBIT_ROUTE'
+          value: 'policy'
+        - name: 'META_AUDIT_ENABLED'
+          value: 'false'
+        - name: 'META_UPGRADE_CHECK_ENABLED'
+          value: {{ .Values.meta.upgradeCheckEnabled | quote }}
+        - name: 'META_UPGRADE_URL'
+          value: {{ .Values.meta.upgradeUrl | quote }}
+        - name: 'META_UPGRADE_CHECK_HOURS'
+          value: {{ .Values.meta.upgradeCheckHours | quote }}

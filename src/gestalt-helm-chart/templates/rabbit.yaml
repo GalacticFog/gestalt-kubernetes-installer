@@ -1,20 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-rabbit
+  name: {{ template "gestalt.rabbitName" . }}
   labels:
-    gestalt-app: rabbit
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-rabbit
+    gestalt-app: 'rabbit'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.rabbitName" . }}
 spec:
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        gestalt-app: rabbit
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-rabbit
+        gestalt-app: 'rabbit'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.rabbitName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -23,11 +25,11 @@ spec:
       - name: imagepullsecret-4
       - name: imagepullsecret-5
       containers:
-      - name: gestalt-rabbit
-        image: "{{ .Values.rabbit.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.rabbitName" . }}
+        image: {{ .Values.rabbit.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
-        - containerPort: {{.Values.rabbit.port}}
-          name: service-api
-        - containerPort: {{.Values.rabbit.httpPort}}
-          name: http-api
+        - containerPort: {{ .Values.rabbit.port }}
+          name: 'service-api'
+        - containerPort: {{ .Values.rabbit.httpPort }}
+          name: 'http-api'

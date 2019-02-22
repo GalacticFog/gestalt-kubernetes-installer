@@ -42,6 +42,7 @@ echo
 echo
 echo "Pulling Gestalt Platform images to local Docker environment..."
 pwd
-for i in `cat ../../stage/config/install-config.yaml | grep "_IMAGE: " | grep -v '#' | awk '{print $2}'` ; do
+for i in `grep "_IMAGE: " ../../stage/config/install-config.yaml | grep -v '#' | awk '{print $2}'` ; do
+  echo "pulling $i"
   pull_image $i
 done

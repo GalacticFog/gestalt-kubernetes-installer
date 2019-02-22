@@ -15,9 +15,9 @@ properties:
     env:
       public: {}
       private:
-        ES_HOST: gestalt-elastic.gestalt-system
+        ES_HOST: '#{Config ELASTICSEARCH_HOSTNAME}'
         ES_PORT: '9200'
-        ES_PROTOCOL: http
+        ES_PROTOCOL: 'http'
         EXECUTOR_HEARTBEAT_MILLIS: '5000'
         EXECUTOR_HEARTBEAT_TIMEOUT: '5000'
         GESTALT_SCHEDULER: 'true'
@@ -30,15 +30,15 @@ properties:
         META_COMPUTE_FQON: /root/environments/#{Environment /root/gestalt-system-workspace/gestalt-laser-environment id}/jobs
         # This is the Meta resource ID for Jobs, which is required if using Job resources to run kubernetes jobs rather than deployments (containers)
         META_COMPUTE_RESOURCE_ID: c8ce1302-6f66-4300-8429-2574abf28d81
-        META_COMPUTE_HOST: http://gestalt-meta.gestalt-system:10131
+        META_COMPUTE_HOST: 'http://#{Config META_HOSTNAME}:#{Config META_PORT}'
         META_COMPUTE_PASSWORD: '#{Config SECURITY_SECRET}'
         META_COMPUTE_PROVIDER_ID: '#{Provider /root/default-kubernetes id}'
         META_COMPUTE_USERNAME: '#{Config SECURITY_KEY}'
-        META_HOSTNAME: gestalt-meta.gestalt-system
+        META_HOSTNAME: '#{Config META_HOSTNAME}'
         META_NETWORK_NAME: BRIDGE
         META_PASSWORD: '#{Config SECURITY_KEY}'
-        META_PORT: '10131'
-        META_PROTOCOL: http
+        META_PORT: '#{Config META_PORT}'
+        META_PROTOCOL: '#{Config META_PROTOCOL}'
         META_USER: '#{Config SECURITY_SECRET}'
         MIN_COOL_EXECUTORS: '1'
         RABBIT_EXCHANGE: default-listen-exchange
@@ -47,8 +47,8 @@ properties:
         RABBIT_MONITOR_TOPIC: default-monitor-topic
         RABBIT_RESPONSE_EXCHANGE: default-laser-exchange
         RABBIT_RESPONSE_TOPIC: default-response-topic
-        REDIS_HOSTNAME: gestalt-redis.gestalt-system
-        REDIS_PORT: '6379'
+        REDIS_HOSTNAME: '#{Config REDIS_HOSTNAME}'
+        REDIS_PORT: '#{Config REDIS_PORT}'
         TRACKING_ENABLED: 'true'
         # SCALE_DOWN_TIME_SECONDS: '15'
         SCALE_DOWN_TIME_SECONDS: '300'
@@ -80,6 +80,8 @@ properties:
     id: '#{Provider /root/graalvm-nodejs-executor id}'
   - name: EXECUTOR_9
     id: '#{Provider /root/graalvm-llvm-executor id}'
+  - name: EXECUTOR_10
+    id: '#{Provider /root/bash-executor id}'
   services:
   - init:
       binding: eager
@@ -131,5 +133,4 @@ properties:
           container_port: 9002
           lb_port: 9002
           type: internal
-        # cmd: ./bin/gestalt-laser
         cmd: ./bin/gestalt-laser -Dhttp.port=9000 -J-Xmx1536m

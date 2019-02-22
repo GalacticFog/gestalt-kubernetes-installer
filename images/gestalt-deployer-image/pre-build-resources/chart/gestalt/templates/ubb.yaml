@@ -1,36 +1,40 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-ubb
+  name: {{ template "gestalt.ubbName" . }}
   labels:
-    gestalt-app: gestalt-ubb
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-ubb
+    gestalt-app: 'ubb'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.ubbName" . }}
 spec:
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        gestalt-app: gestalt-ubb
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-ubb
+        gestalt-app: 'ubb'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.ubbName" . }}
     spec:
       containers:
-      - name: gestalt-ubb
-        image: "{{ .Values.ubb.image }}"
+      - name: {{ template "gestalt.ubbName" . }}
+        image: {{ .Values.ubb.image | quote }}
+{{- if .Values.reportingSecret }}
         env:
-        - name: CONSUMER_ID
+        - name: 'CONSUMER_ID'
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.reportingSecret }}
-              key: consumer-id
-        - name: ENCODED_SERVICE_ACCOUNT_KEY
+              name: {{ .Values.reportingSecret | quote }}
+              key: 'consumer-id'
+        - name: 'ENCODED_SERVICE_ACCOUNT_KEY'
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.reportingSecret }}
-              key: reporting-key
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+              name: {{ .Values.reportingSecret | quote }}
+              key: 'reporting-key'
+{{- end }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
-        - containerPort: {{.Values.ubb.port}}
-          name: service-api
+        - containerPort: {{ .Values.ubb.port }}
+          name: 'service-api'

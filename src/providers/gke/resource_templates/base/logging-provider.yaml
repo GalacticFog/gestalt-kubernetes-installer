@@ -12,7 +12,7 @@ properties:
         DEFAULT_COMPUTE_TYPE: kube
         ES_COLD_DAYS: '1'
         ES_HOT_DAYS: '1'
-        ES_SERVICE_HOST: '#{Config ELASTICSEARCH_HOST}'
+        ES_SERVICE_HOST: '#{Config ELASTICSEARCH_HOSTNAME}'
         ES_SERVICE_PORT: '9300'
         ES_SNAPSHOT_REPO: 's3_repository'
   linked_providers: []

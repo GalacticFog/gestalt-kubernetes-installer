@@ -9,7 +9,7 @@ properties:
     env:
       public:
         SERVICE_HOST: '#{Config RABBIT_HOSTNAME}'
-        SERVICE_PORT: '5672'
+        SERVICE_PORT: '#{Config RABBIT_PORT}'
       private: {}
   linked_providers: []
   services: []

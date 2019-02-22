@@ -6,44 +6,11 @@
 # delete namespaces in UUID format, assuming those namespaces were created as part of the
 # Gestalt Platform installation.
 
-DEBUG=0
+# TODO: implement command-line parameters
+DEBUG=1
+SKIP_ACKNOWLEDGEMENT=1
 
-debug() {
-  [[ $DEBUG -ne 0 ]] && echo "$@"
-}
-
-exit_with_error() {
-  echo "[Error] $@"
-  exit 1
-}
-
-exit_on_error() {
-  if [ $? -ne 0 ]; then
-    exit_with_error $1
-  fi
-}
-
-check_for_required_tools() {
-  which kubectl   >/dev/null 2>&1 ; exit_on_error "'kubectl' command not found, aborting."
-}
-
-check_for_kube() {
-  echo "Checking for Kubernetes..."
-  local kubecontext="`kubectl config current-context`"
-
-  if [ ! -z "$target_kube_context" ]; then
-      if [ "$kubecontext" != "$target_kube_context" ]; then
-      do_prompt_to_continue \
-        "Warning - The current Kubernetes context name '$kubecontext' does not match the expected value, '$target_kube_context'" \
-        "Proceed anyway?"
-      fi
-  fi
-
-  kube_cluster_info=$(kubectl cluster-info)
-  exit_on_error "Kubernetes cluster not accessible, aborting."
-
-  echo "OK - Kubernetes cluster '$kubecontext' is accessible."
-}
+source ./helpers/tool-functions.sh
 
 prompt_to_continue(){
   echo ""
@@ -58,36 +25,55 @@ prompt_to_continue(){
           [Nn]*) echo "Aborted" ; exit  1 ;;
       esac
   done
-  
+}
+
+prompt_to_acknowledge(){
   echo
-#  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
-#  case $value in
-#      `kubectl config current-context`) return 0  ;;
-#      *) echo "Aborted" ; exit  1 ;;
-#  esac
+  read -p "Enter the name of the cluster to confirm deletion [`kubectl config current-context`]: " value
+  case $value in
+      `kubectl config current-context`) return 0  ;;
+      *) echo "Aborted" ; exit  1 ;;
+  esac
+}
+
+prompt_to_remove_namespace(){
+  local NS=$1
+  [ -z "$NS" ] && return
+  echo ""
+  echo "Do you want to remove the Gestalt namespace '$NS' from the Kubernetes cluster '`kubectl config current-context`'?"
+  echo "This cannot be undone."
+  echo ""
+
+  while true; do
+      read -p "Remove the '$NS' namespace? [y/n]: " yn
+      case $yn in
+          [Yy]*) do_delete_namespaces "namespace/${NS}"; break;;
+          [Nn]*) break;;
+      esac
+  done
 }
 
 remove_gestalt_platform() {
 
   # First, check if the namespace is even present
 
-  kubectl get namespace $install_namespace > /dev/null 2>&1
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
   if [ $? -ne 0 ]; then
-    echo "Nothing to do - Kubernetes namespace '$install_namespace' isn't present."
+    echo "Nothing to do - Kubernetes namespace '$RELEASE_NAMESPACE' isn't present."
     return 0
   fi
 
   # Remove the Gestalt Platform application manifest if the cluster has the Applications API installed.
   # Send all output to /dev/null and ignore failures in case the Application API isn't installed.
-  kubectl delete applications --timeout=60s --all --namespace $install_namespace 2>&1 1>/dev/null
+  kubectl delete applications --timeout=60s --all --namespace $RELEASE_NAMESPACE 2>&1 1>/dev/null
 
   # The echo statement resets the value of $? and prints some space to the console...
   echo ""
 
   # Remove all the Gestalt Platform standard resources and display output.
-  echo "Removing Gestalt Platform components from '$install_namespace' namespace..."
+  echo "Removing Gestalt Platform components from '$RELEASE_NAMESPACE' namespace..."
   kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
-    --timeout=30s --all --namespace $install_namespace
+    --timeout=30s --all --namespace $RELEASE_NAMESPACE
 
   if [ $? -ne 0 ]; then
   
@@ -98,8 +84,8 @@ remove_gestalt_platform() {
     echo ""
     
     # The --force flag helps clean up pods stuck in the 'Terminating' state
-    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,pods,rc,secrets,configmaps,pvc,ingresses \
-      --grace-period=0 --force --all --namespace $install_namespace
+    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+      --grace-period=0 --force --all --namespace $RELEASE_NAMESPACE
   fi
 }
 
@@ -133,28 +119,25 @@ do_delete_namespaces() {
   echo "Done deleting namespaces."
 }
 
-install_prefix=$1
-install_namespace=$2
-
-if [ -z "$install_prefix" ]; then
-  install_prefix=gestalt
-fi
-
-if [ -z "$install_namespace" ]; then
-  install_namespace=${install_prefix}-system
-fi
-
-
 # Check for pre-reqs
-check_for_required_tools
+check_for_kubectl
 check_for_kube
 
+. gestalt.conf
+
 prompt_to_continue
+[ $SKIP_ACKNOWLEDGEMENT -eq 0 ] && prompt_to_acknowledge
+
+# TODO handle multiple releases in the same cluster
+RELEASE_NAMESPACE=$(find_namespace "${RELEASE_NAMESPACE}")
+[ $? -ne 0 ] && exit 1
 
 remove_gestalt_platform
 
 remove_gestalt_cluster_role_bindings
 
 remove_gestalt_namespaces
+
+prompt_to_remove_namespace "${RELEASE_NAMESPACE}"
 
 echo "Done."

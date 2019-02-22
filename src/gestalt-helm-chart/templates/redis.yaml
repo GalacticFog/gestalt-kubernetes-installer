@@ -1,32 +1,34 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-redis
+  name: {{ template "gestalt.redisName" . }}
   labels:
-    gestalt-app: redis
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-redis
+    gestalt-app: 'redis'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.redisName" . }}
 spec:
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        gestalt-app: redis
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-redis
+        gestalt-app: 'redis'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.redisName" . }}
     spec:
       containers:
-      - name: gestalt-redis
-        args: ["--appendonly yes", "--auto-aof-rewrite-min-size 64mb", "--auto-aof-rewrite-percentage 100"]
-        image: "{{ .Values.redis.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.redisName" . }}
+        args: ['--appendonly yes', '--auto-aof-rewrite-min-size 64mb', '--auto-aof-rewrite-percentage 100']
+        image: {{ .Values.redis.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
-        - containerPort: {{.Values.redis.port}}
-          name: service-api
+        - containerPort: {{ .Values.redis.port }}
+          name: 'service-api'
         volumeMounts:
-        - name: redis-storage
-          mountPath: /data
+        - name: 'redis-storage'
+          mountPath: '/data'
       volumes:
-      - name: redis-storage
+      - name: 'redis-storage'
         emptyDir: {}

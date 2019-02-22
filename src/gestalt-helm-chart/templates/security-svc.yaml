@@ -1,16 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gestalt-security
+  name: {{ template "gestalt.securityName" . }}
   labels:
-    gestalt-app: security
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-security
+    gestalt-app: 'security'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.securityName" . }}
 spec:
   # type: {{ .Values.security.exposedServiceType }}
   selector:
-    gestalt-app: security
+    gestalt-app: 'security'
   ports:
-    - name: service-api
+    - name: 'service-api'
       port: {{ .Values.security.port }}
-      targetPort: service-api
+      targetPort: 'service-api'

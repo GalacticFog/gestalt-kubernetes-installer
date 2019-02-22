@@ -13,6 +13,25 @@ warn_on_error() {
   [ $? -eq 0 ] || echo "[Warning] $@"
 }
 
+debug() {
+  [ ${DEBUG:-0} -eq 0 ] || echo "[Debug] $@"
+}
+
+check_release_name_and_namespace() {
+  if [ -z "$RELEASE_NAME" ]; then
+    echo "Application RELEASE_NAME is not defined - using default value 'gestalt'"
+    RELEASE_NAME='gestalt'
+  fi
+  debug "Installing Gestalt with application name '${RELEASE_NAME}'"
+  
+  DEFAULT_NS="${RELEASE_NAME}-system"
+  if [ -z "$RELEASE_NAMESPACE" ]; then
+    echo "Kubernetes RELEASE_NAMESPACE is not defined - using default value '${DEFAULT_NS}'"
+    RELEASE_NAMESPACE='${DEFAULT_NS}'
+  fi
+  debug "Installing Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
+}
+
 check_for_required_environment_variables() {
   retval=0
 
@@ -50,6 +69,19 @@ check_for_required_tools() {
   echo "OK - Required tools found."
 }
 
+check_profile() {
+  local PROFILE=$1
+  if [ -z "$PROFILE" ]; then
+    PROFILE=$(get_profile_from_kubecontext)
+    if [ $? -ne 0 ]; then
+      echo "$PROFILE"
+      return 1
+    fi
+  fi
+  [ -d "./profiles/$PROFILE" ] || exit_with_error "Could not find a profile definition for '$PROFILE'!"
+  echo $PROFILE
+}
+
 get_profile_from_kubecontext() {
   local kubecontext="`kubectl config current-context`"
   if [ "$kubecontext" == "docker-for-desktop" ]; then
@@ -72,7 +104,7 @@ get_profile_from_kubecontext() {
 
   echo $kubecontext | grep ^'arn:aws:' >/dev/null
   [ $? -eq 0 ] && echo "aws" && return 0
-
+  exit_with_error "Could not find a suitable profile for context '$kubecontext'. Please specify an installation profile (docker-desktop, minikube, gke, eks, aws)."
   return 1
 }
 
@@ -110,68 +142,89 @@ check_cluster_capacity() {
 }
 
 create_or_check_for_required_namespace() {
-  # echo "Checking for existing Kubernetes namespace '$install_namespace'..."
-  kubectl get namespace $install_namespace > /dev/null 2>&1
+  # echo "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo ""
-    echo "Kubernetes namespace '$install_namespace' doesn't exist, creating..."
-    kubectl create namespace $install_namespace
-    exit_on_error "Failed to create namespace '$install_namespace', aborting."
+    echo "Kubernetes namespace '$RELEASE_NAMESPACE' doesn't exist, creating..."
+    create_ns "$RELEASE_NAMESPACE"
   fi
-  echo "OK - Kubernetes namespace '$install_namespace' is present."
+  echo "OK - Kubernetes namespace '$RELEASE_NAMESPACE' is present."
+}
+
+create_namespace() {
+  debug "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
+
+  if [ $? -ne 0 ]; then
+    create_ns "$RELEASE_NAMESPACE"
+
+    # Wait for namespace to be created
+    sleep 5
+    echo "Namespace $RELEASE_NAMESPACE created."
+  fi
+}
+
+create_ns() {
+  local NS_NAME=$1
+  echo "Creating namespace '$RELEASE_NAMESPACE'..."
+  kubectl create namespace $NS_NAME
+  exit_on_error "FAILED to create namespace '$NS_NAME', aborting."
+  kubectl label namespace $NS_NAME "app.kubernetes.io/app=gestalt" "app.kubernetes.io/name=$RELEASE_NAME"
+  exit_on_error "FAILED to label namespace '$NS_NAME' with Gestalt labels, aborting."
 }
 
 check_for_existing_namespace() {
-  # echo "Checking for existing Kubernetes namespace '$install_namespace'..."
-  kubectl get namespace $install_namespace > /dev/null 2>&1
+  # echo "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
   if [ $? -eq 0 ]; then
     echo ""
-    echo "Kubernetes namespace '$install_namespace' already exists, aborting.  To delete the namespace, run the following command:"
+    echo "Kubernetes namespace '$RELEASE_NAMESPACE' already exists, aborting.  To delete the namespace, run the following command:"
     echo ""
-    echo "  kubectl delete namespace $install_namespace"
+    echo "  kubectl delete namespace $RELEASE_NAMESPACE"
     echo ""
-    exit_with_error "Kubernetes namespace '$install_namespace' already exists, aborting."
+    exit_with_error "Kubernetes namespace '$RELEASE_NAMESPACE' already exists, aborting."
   fi
-  echo "OK - Kubernetes namespace '$install_namespace' does not exist."
+  echo "OK - Kubernetes namespace '$RELEASE_NAMESPACE' does not exist."
 }
 
 check_for_required_namespace() {
-  # echo "Checking for existing Kubernetes namespace '$install_namespace'..."
-  kubectl get namespace $install_namespace > /dev/null 2>&1
+  # echo "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+  kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo ""
-    echo "Kubernetes namespace '$install_namespace' doesn't exist, aborting.  To create the namespace, run the following command:"
+    echo "Kubernetes namespace '$RELEASE_NAMESPACE' doesn't exist, aborting.  To create the namespace, run the following command:"
     echo ""
-    echo "  kubectl create namespace $install_namespace"
+    echo "  kubectl create namespace $RELEASE_NAMESPACE"
     echo ""
-    echo "Then ensure that 'Full Control' grants are provided for the '$install_namespace/default' service account."
+    echo "Then ensure that 'Full Control' grants are provided for the '$RELEASE_NAMESPACE/default' service account."
     echo ""
-    exit_with_error "Kubernetes namespace '$install_namespace' doesn't exist, aborting."
+    exit_with_error "Kubernetes namespace '$RELEASE_NAMESPACE' doesn't exist, aborting."
   fi
-  echo "OK - Kubernetes namespace '$install_namespace' is present."
+  echo "OK - Kubernetes namespace '$RELEASE_NAMESPACE' is present."
 }
 
 # check_for_existing_namespace_ask() {
-#   echo "Checking for existing Kubernetes namespace '$install_namespace'..."
-#   kubectl get namespace $install_namespace > /dev/null 2>&1
+#   echo "Checking for existing Kubernetes namespace '$RELEASE_NAMESPACE'..."
+#   kubectl get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
 #   if [ $? -eq 0 ]; then
 #     while true; do
-#         read -p " Kubernetes namespace '$install_namespace' already exists, proceed? [y/n]: " yn
+#         read -p " Kubernetes namespace '$RELEASE_NAMESPACE' already exists, proceed? [y/n]: " yn
 #         case $yn in
 #             [Yy]*) return 0  ;;
 #             [Nn]*) echo "Aborted" ; exit  1 ;;
 #         esac
 #     done
 #   fi
-#   echo "OK - Kubernetes namespace '$install_namespace' does not exist."
+#   echo "OK - Kubernetes namespace '$RELEASE_NAMESPACE' does not exist."
 # }
 
 check_for_prior_install() {
   # echo "Checking for prior installation..."
 
-  local num_lines=$( kubectl get all -n $install_namespace --no-headers 2>/dev/null | wc -l)
+  local num_lines=$( kubectl get all -n $RELEASE_NAMESPACE --no-headers 2>/dev/null | wc -l)
   if [ $num_lines -ne 0 ]; then
-      exit_with_error "Gestalt $install_namespace deployment found, aborting."
+      exit_with_error "Gestalt resources found in $RELEASE_NAMESPACE namespace, aborting."
   fi
 
   kubectl get services --all-namespaces | grep default-kong > /dev/null
@@ -187,7 +240,7 @@ check_for_prior_install() {
     echo "$existing_namespaces"
     echo ""
 
-    if [ -z "$GESTALT_AUTOMATED_INSTALL" ]; then
+    if [ -z "$MARKETPLACE_INSTALL" ]; then
       do_prompt_to_continue \
         "There appear to be existing namespaces. Recommand inspecting and deleting these namespaces before continuing." \
         "Proceed anyway?"
@@ -204,11 +257,11 @@ prompt_to_continue() {
 
   local kubecontext="`kubectl config current-context`"
 
-  do_prompt_to_continue \
-    "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
-    "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
   if [ ! -f __skip_eula ]; then
-      accept_eula
+    do_prompt_to_continue \
+      "You must accept the Gestalt Enterprise End User License Agreement (http://www.galacticfog.com/gestalt-eula.html) to continue." \
+      "Accept EULA and proceed with Gestalt Platform installation to '$kubecontext'?"
+    accept_eula $@
   fi
 }
 
@@ -227,9 +280,32 @@ do_prompt_to_continue() {
   done
 }
 
+get_installer_image_config() {
+  local PROFILE=${1}
+  local INSTALLER_IMAGE
+  local FOUND=$(get_installer_from_config "./base-config.yaml")
+  [ $? -eq 0 ] && INSTALLER_IMAGE="$FOUND"
+  FOUND=$(get_installer_from_config "./profiles/$PROFILE/config.yaml")
+  [ $? -eq 0 ] && INSTALLER_IMAGE="$FOUND"
+  echo "$INSTALLER_IMAGE"
+}
+
+get_installer_from_config() {
+  local CONFIG_FILE=${1}
+  local INSTALLER_IMAGE
+  if [ -f "$CONFIG_FILE" ]; then
+    INSTALLER_IMAGE=$(grep '^INSTALLER_IMAGE' $CONFIG_FILE | grep -v '^#' | awk '{print $2}')
+  fi
+  [ -z "$INSTALLER_IMAGE" ] && exit 1
+  echo "$INSTALLER_IMAGE"
+}
+
 generate_slack_payload() {
 
   local eula_data="$1"
+  local profile="${2:-'default'}"
+  local kubecontext="`kubectl config current-context`"
+  [ -z "$kubecontext" ] || profile+=" (${kubecontext})"
 
   . ${eula_data}_client
 
@@ -261,7 +337,7 @@ accept_eula() {
     fi
   fi
 
-  generate_slack_payload "${eula_data}"
+  generate_slack_payload "${eula_data}" $@
   
   # The send_slack_message function is in ../src/scripts/eula-functions.sh
   send_slack_message "$(read_file_data "${eula_data}")"
@@ -341,7 +417,7 @@ summarize_config() {
   echo "  Configuration Summary"
   echo "=============================================="
   echo " - Kubernetes cluster: `kubectl config current-context`"
-  echo " - Kubernetes namespace: $install_namespace"
+  echo " - Kubernetes namespace: $RELEASE_NAMESPACE"
   echo " - Gestalt Admin: $gestalt_admin_username"
   # TODO: Only output if not using dynamic LBs.
   echo " - Gestalt User Interface: $gestalt_login_url"
@@ -373,21 +449,6 @@ summarize_config() {
   echo ""
 }
 
-create_namespace() {
-  # echo "Checking for existing Kubernetes namespace '$install_namespace'..."
-  kubectl get namespace $install_namespace > /dev/null 2>&1
-
-  if [ $? -ne 0 ]; then
-    echo "Creating namespace '$install_namespace'..."
-    kubectl create namespace $install_namespace
-    exit_on_error "Error creating namespace '$install_namespace', aborting."
-
-    # Wait for namespace to be created
-    sleep 5
-    echo "Namespace $install_namespace created."
-  fi
-}
-
 run_helper() {
   local script=./profiles/$profile/$1.sh
 
@@ -399,13 +460,15 @@ run_helper() {
     . $1.sh
     cd ~-
     exit_on_error "Pre-install script failed, aborting."
+  else
+    debug "No '${script}' script found for profile '${profile}'"
   fi
   echo
 }
 
 prompt_or_wait_to_continue() {
-  if [ -z "$GESTALT_AUTOMATED_INSTALL" ]; then
-      prompt_to_continue
+  if [ -z "$MARKETPLACE_INSTALL" ]; then
+      prompt_to_continue $@
   else
     echo "About to proceed with installation, press Ctrl-C to cancel..."
     sleep 5
@@ -416,9 +479,11 @@ wait_for_installer_launch() {
 
   local previous_status=""
 
-  echo "Waiting for 'gestalt-installer' pod to launch:"
+  local INSTALL_POD="${RELEASE_NAME}-installer"
+
+  echo "Waiting for '${INSTALL_POD}' pod to launch:"
   for i in `seq 1 30`; do
-    status=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
+    status=$(kubectl get pod -n ${RELEASE_NAMESPACE} ${INSTALL_POD} -ojsonpath='{.status.phase}')
 
     if [ "$status" != "$previous_status" ]; then
       echo -n " $status "
@@ -439,7 +504,7 @@ wait_for_installer_launch() {
   done
 
   echo
-  echo "Error, 'gestalt-installer' pod did not launch within the expected timeframe."  
+  echo "Error, '${INSTALL_POD}' pod did not launch within the expected timeframe."  
   return 1
 }
 
@@ -448,11 +513,13 @@ wait_for_installer_launch() {
 wait_for_install_completion() {
   local previous_status=""
 
+  local INSTALL_POD="${RELEASE_NAME}-installer"
+
   echo "Waiting for Gestalt Platform installation to complete."
   for i in `seq 1 100`; do
     echo -n "."
 
-    line=$(kubectl logs -n gestalt-system gestalt-installer --tail 20 2> /dev/null)
+    line=$(kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD --tail 20 2> /dev/null)
 
     echo "$line" | grep "^\[INSTALLATION_SUCCESS\]" > /dev/null
     if [ $? -eq 0 ]; then
@@ -466,21 +533,21 @@ wait_for_install_completion() {
       echo "Installation failed!"
       echo
       echo "---Install log (last 10 lines)---"
-      kubectl logs -n gestalt-system gestalt-installer --tail 10
+      kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD --tail 10
       echo "----End Logs------"
       echo
       exit_with_error "Installation failed.  View './logs/gestalt-installer.log' for more details."
     fi
 
-    local podstatus=$(kubectl get pod -n gestalt-system gestalt-installer -ojsonpath='{.status.phase}')
+    local podstatus=$(kubectl get pod -n $RELEASE_NAMESPACE $INSTALL_POD -ojsonpath='{.status.phase}')
     if [ "$podstatus" == "Failed" ] || [ "$podstatus" == "Error" ]; then
       echo "Installation failed!"
       echo
       echo "---Install log (last 10 lines)---"
-      kubectl logs -n gestalt-system gestalt-installer --tail 10
+      kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD --tail 10
       echo "----End Logs------"
       echo
-      exit_with_error "Installation failed - 'gestalt-installer' pod returned $podstatus status.  View ./log/gestalt-installer.log for more details."
+      exit_with_error "Installation failed - '$INSTALL_POD' pod returned $podstatus status.  View ./log/gestalt-installer.log for more details."
     fi
 
     local status=$(echo "$line" | grep "^\[Running " | tail -n 1)
@@ -499,9 +566,12 @@ wait_for_install_completion() {
 }
 
 fog_cli_login() {
-  gestalt_url=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.gestalt-url}' | base64 --decode`
-  gestalt_admin_username=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-username}' | base64 --decode`
-  gestalt_admin_password=`kubectl get secrets -n gestalt-system gestalt-secrets -ojsonpath='{.data.admin-password}' | base64 --decode`
+
+  local SECRETS_NAME="${RELEASE_NAME:-"gestalt"}-secrets"
+
+  gestalt_url=`kubectl get secrets -n $RELEASE_NAMESPACE $SECRETS_NAME -ojsonpath='{.data.gestalt-url}' | base64 --decode`
+  gestalt_admin_username=`kubectl get secrets -n $RELEASE_NAMESPACE $SECRETS_NAME -ojsonpath='{.data.admin-username}' | base64 --decode`
+  gestalt_admin_password=`kubectl get secrets -n $RELEASE_NAMESPACE $SECRETS_NAME -ojsonpath='{.data.admin-password}' | base64 --decode`
   ./fog login ${gestalt_url} -u $gestalt_admin_username -p $gestalt_admin_password
   if [ $? -ne 0 ]; then
     echo ""
@@ -599,10 +669,12 @@ download_fog_cli() {
 cleanup() {
     local file=./logs/gestalt-installer.log
 
+    local INSTALL_POD="${RELEASE_NAME}-installer"
+
     echo "Capturing installer logs to '$file'"
     date > $file
-    kubectl logs -n gestalt-system gestalt-installer >> $file
+    kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD >> $file
 
-    # TODO Debug: echo "Deleting 'gestalt-installer' pod..."
-    kubectl delete pod -n gestalt-system gestalt-installer
+    debug "Deleting '$INSTALL_POD' pod..."
+    kubectl delete pod -n $RELEASE_NAMESPACE $INSTALL_POD
 }

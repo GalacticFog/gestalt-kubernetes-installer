@@ -34,11 +34,11 @@ warn_on_error() {
 }
 
 apply_image_pull_secrets() {
-  kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
-  exit_on_error "Unable obtain secret 'kubectl get secret -n gestalt-system imagepullsecret-1 -oyaml' , aborting."
+  kubectl get secret -n $RELEASE_NAMESPACE imagepullsecret-1 -oyaml > /tmp/secret-imagepullsecret-1.yaml
+  exit_on_error "Unable obtain secret 'kubectl get secret -n $RELEASE_NAMESPACE imagepullsecret-1 -oyaml' , aborting."
   # Strip out and rename
   cat /tmp/secret-imagepullsecret-1.yaml | grep -v 'creationTimestamp:' | grep -v 'namespace:' | grep -v 'resourceVersion:' | grep -v 'selfLink:' | grep -v 'uid:' > /tmp/secret-clean-imagepullsecret-1.yaml
-  exit_on_error "Unable manipulate source secret 'gestalt-system:imagepullsecret-1' , aborting."
+  exit_on_error "Unable manipulate source secret '$RELEASE_NAMESPACE:imagepullsecret-1' , aborting."
   all_namespaces=$(kubectl get namespace -l "meta/fqon" --no-headers | awk '{print $1}')
   echo "Namespaces to process: ${all_namespaces[@]}"
   for curr_namespace in ${all_namespaces[@]}; do
@@ -111,17 +111,17 @@ import_gestalt_system_k8s_resources() {
   # We must import all container dependencies before the containers themselves.
 
   # First, import the Gestalt Secrets
-  import_secret "gestalt-system" "gestalt-secrets"
+  import_secret "$RELEASE_NAMESPACE" "${RELEASE_NAME}-secrets"
 
   # Next, import all Gestalt Volumes
-  for v in `kubectl get pvc -n gestalt-system --no-headers | awk '{print $1}'`; do
-    import_volume "gestalt-system" $v
+  for v in `kubectl get pvc -n $RELEASE_NAMESPACE --no-headers | awk '{print $1}'`; do
+    import_volume "$RELEASE_NAMESPACE" $v
   done
 
   # And finally, import all Gestalt Containers unless they're explicitly excluded
-  local excluded_containers=( "gestalt-tracking-service" "gestalt-ubb" )
-  for c in `kubectl get deploy -n gestalt-system --no-headers | awk '{print $1}'`; do 
-    is_excluded $c ${excluded_containers[@]} || import_container "gestalt-system" $c
+  local excluded_containers=( "${RELEASE_NAME}-tracking-service" "${RELEASE_NAME}-ubb" )
+  for c in `kubectl get deploy -n $RELEASE_NAMESPACE --no-headers | awk '{print $1}'`; do 
+    is_excluded $c ${excluded_containers[@]} || import_container "$RELEASE_NAMESPACE" $c
   done
 }
 

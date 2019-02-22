@@ -9,11 +9,12 @@ declare -A CONFIG_TO_ENV=(
   ["common.companyName"]="EULA_COMPANY"
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
   ["secrets.adminUser"]="ADMIN_USERNAME"
-  ["secrets.databasePassword"]="DATABASE_PASSWORD"
-  ["secrets.databaseUsername"]="DATABASE_USERNAME"
-  ["database.hostname"]="DATABASE_HOSTNAME"
+  ["db.host"]="DATABASE_HOSTNAME"
+  ["db.port"]="DATABASE_PORT"
+  ["db.name"]="DATABASE_NAME"
+  ["db.username"]="DATABASE_USERNAME"
+  ["db.password"]="DATABASE_PASSWORD"
   ["laser.dotnetExecutor.image"]="DOTNET_EXECUTOR_IMAGE"
-  ["elastic.hostname"]="ELASTICSEARCH_HOST"
   ["elastic.image"]="ELASTICSEARCH_IMAGE"
   ["elastic.initContainer.image"]="ELASTICSEARCH_INIT_IMAGE"
   ["laser.golangExecutor.image"]="GOLANG_EXECUTOR_IMAGE"
@@ -21,13 +22,13 @@ declare -A CONFIG_TO_ENV=(
   ["laser.jsExecutor.image"]="JS_EXECUTOR_IMAGE"
   ["laser.jvmExecutor.image"]="JVM_EXECUTOR_IMAGE"
   ["kong.image"]="KONG_IMAGE"
-  ["api.gateway.hostname"]="KONG_SERVICE_HOST"
+  ["api.gateway.protocol"]="KONG_SERVICE_PROTOCOL"
+  ["api.gateway.host"]="KONG_SERVICE_HOST"
+  ["api.gateway.port"]="KONG_SERVICE_PORT"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
-  ["logging.hostname"]="LOGGING_HOSTNAME"
   ["logging.port"]="LOGGING_PORT"
   ["logging.ingress.host"]="LOGGING_SERVICE_HOST"
-  ["meta.hostname"]="META_HOSTNAME"
   ["meta.image"]="META_IMAGE"
   ["meta.port"]="META_PORT"
   ["meta.protocol"]="META_PROTOCOL"
@@ -35,21 +36,18 @@ declare -A CONFIG_TO_ENV=(
   ["policy.image"]="POLICY_IMAGE"
   ["laser.pythonExecutor.image"]="PYTHON_EXECUTOR_IMAGE"
   ["rabbit.host"]="RABBIT_HOST"
-  ["rabbit.hostname"]="RABBIT_HOSTNAME"
   ["rabbit.httpPort"]="RABBIT_HTTP_PORT"
   ["rabbit.image"]="RABBIT_IMAGE"
   ["rabbit.port"]="RABBIT_PORT"
   ["laser.rubyExecutor.image"]="RUBY_EXECUTOR_IMAGE"
-  ["security.hostname"]="SECURITY_HOSTNAME"
   ["security.image"]="SECURITY_IMAGE"
   ["security.port"]="SECURITY_PORT"
   ["security.protocol"]="SECURITY_PROTOCOL"
   ["ui.image"]="UI_IMAGE"
-  ["ui.hostname"]="UI_HOSTNAME"
-  ["ui.nodePort"]="UI_PORT"
-  ["ui.protocol"]="UI_PROTOCOL"
-  ["ui.ingress.host"]="UI_SERVICE_HOST"
-  ["ui.ingress.port"]="UI_SERVICE_PORT"
+  ["ui.nodePort"]="UI_NODEPORT"
+  ["ui.ingress.protocol"]="UI_PROTOCOL"
+  ["ui.ingress.host"]="UI_HOST"
+  ["ui.ingress.port"]="UI_PORT"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -75,21 +73,6 @@ getsalt_installer_load_configmap() {
   # print_env_variables #will print only if debug
 }
 
-# check_logging_service_host() {
-#   local APPEND_LOG_PATH="/log"
-#   # If LOGGING_SERVICE_HOST is blank or undefined OR starts with a '/'
-#   if [ -z "$LOGGING_SERVICE_HOST" ] || [[ $LOGGING_SERVICE_HOST == /* ]]; then
-#     # If LOGGING_SERVICE_HOST starts with '/' append it to the UI_SERVICE_HOST as a URL local path
-#     [[ $LOGGING_SERVICE_HOST == /* ]] && APPEND_LOG_PATH="$LOGGING_SERVICE_HOST"
-#     if [ -n "$UI_SERVICE_HOST" ]; then
-#       LOGGING_SERVICE_HOST="${UI_SERVICE_HOST}"
-#       [ -n "$UI_SERVICE_PORT" ] && LOGGING_SERVICE_HOST+=":${UI_SERVICE_PORT}"
-#       LOGGING_SERVICE_HOST+=$APPEND_LOG_PATH
-#     fi
-#   fi
-#   echo "Defining LOGGING_SERVICE_HOST as '${LOGGING_SERVICE_HOST}' for the UI log proxy"
-# }
-
 map_env_vars_for_configyaml() {
   check_for_required_variables gestalt_config
   # Convert Yaml config to JSON for easier parsing
@@ -100,15 +83,32 @@ map_env_vars_for_configyaml() {
 }
 
 get_configmap_data() {
-  echo $( kubectl -n ${RELEASE_NAMESPACE:=gestalt-system} get configmap ${1} -o json | jq -c '.data' )
+  echo $( kubectl -n ${RELEASE_NAMESPACE} get configmap ${1} -o json | jq -c '.data' )
+}
+
+mask_db_fields_if_provisioning_internal_db() {
+  echo "$1" | jq -r 'del(.["db.host","db.port","db.name","db.username"]) | .["db.password"] = (.["secrets.generatedPassword"] // .["db.password"])'
 }
 
 map_env_vars_for_configmap() {
   local JSON_DATA=$1
+  [ -z "${JSON_DATA}" ] && return
   local VAR_NAME
   local VAR_VALUE
-  echo "ConfigMap JSON Data: $JSON_DATA"
+  local PRETTY_JSON=$( echo "${JSON_DATA}" | jq -r -S )
+  echo "ConfigMap JSON Data: $PRETTY_JSON"
   echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
+
+  local PROVISION_DB=$( echo "$JSON_DATA" | jq -r '.["postgresql.provisionInstance"]' )
+  if [ "$PROVISION_DB" == "True" ]; then
+    JSON_DATA=$( mask_db_fields_if_provisioning_internal_db "${JSON_DATA}" )
+    local MASKED_JSON=$( echo "${JSON_DATA}" | jq -r -S )
+    echo "Masked JSON Data: $MASKED_JSON"
+    export PROVISION_INTERNAL_DATABASE="Yes"
+  else
+    export PROVISION_INTERNAL_DATABASE="No"
+  fi
+
   local KEY_NAME
   for KEY_NAME in ${CONFIG_TO_ENV[@]}; do
     echo "$KEY_NAME / ${CONFIG_TO_ENV[$KEY_NAME]}"
@@ -131,6 +131,7 @@ map_env_vars_for_configmap() {
       export $VAR_NAME="${VAR_VALUE}"
     fi
   done
+  echo "postgres connection info ${DATABASE_USERNAME}@${DATABASE_HOSTNAME}:${DATABASE_PORT}/${DATABASE_NAME}"
 }
 
 convert_configmap_to_env_variables() {
@@ -170,19 +171,44 @@ getsalt_installer_setcheck_variables() {
       export KONG_SERVICE_HOST=$(echo $KONG_URL | awk -F/ '{print $3}')
       export KONG_SERVICE_PROTOCOL=$(echo $KONG_URL | awk -F: '{print $1}')
     fi
+  else
+
+    if [ -z "$GESTALT_URL" ]; then
+      if [[ "$UI_PROTOCOL" == "http" && "$UI_PORT" == "80" ]]; then
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
+      elif [[ "$UI_PROTOCOL" == "https" && "$UI_PORT" == "443" ]]; then
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST"
+      else
+        GESTALT_URL="$UI_PROTOCOL://$UI_HOST:$UI_PORT"
+      fi
+    fi
+
+    if [ -z "$KONG_URL" ]; then
+      if [[ "$KONG_SERVICE_PROTOCOL" == "http" && "$KONG_SERVICE_PORT" == "80" ]]; then
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
+      elif [[ "$KONG_SERVICE_PROTOCOL" == "https" && "$KONG_SERVICE_PORT" == "443" ]]; then
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST"
+      else
+        KONG_URL="$KONG_SERVICE_PROTOCOL://$KONG_SERVICE_HOST:$KONG_SERVICE_PORT"
+      fi
+    fi
+
   fi
 
-  # check_logging_service_host
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    export DATABASE_HOSTNAME="${RELEASE_NAME}-postgresql.${RELEASE_NAMESPACE}.svc.cluster.local"
+  fi
 
   # Check all variables in one call
   check_for_required_variables \
     ADMIN_PASSWORD \
     ADMIN_USERNAME \
     DATABASE_HOSTNAME \
+    DATABASE_PORT \
+    DATABASE_NAME \
     DATABASE_PASSWORD \
     DATABASE_USERNAME \
     DOTNET_EXECUTOR_IMAGE \
-    ELASTICSEARCH_HOST \
     ELASTICSEARCH_IMAGE \
     ELASTICSEARCH_INIT_IMAGE \
     GOLANG_EXECUTOR_IMAGE \
@@ -193,26 +219,21 @@ getsalt_installer_setcheck_variables() {
     KONG_SERVICE_HOST \
     KONG_SERVICE_PROTOCOL \
     LOGGING_IMAGE \
-    META_HOSTNAME \
     META_IMAGE \
     META_PORT \
     META_PROTOCOL \
     NODEJS_EXECUTOR_IMAGE \
     POLICY_IMAGE \
     PYTHON_EXECUTOR_IMAGE \
-    RABBIT_HOSTNAME \
     RABBIT_HTTP_PORT \
     RABBIT_IMAGE \
     RABBIT_PORT \
-    REDIS_HOSTNAME \
     REDIS_IMAGE \
     REDIS_PORT \
     RUBY_EXECUTOR_IMAGE \
-    SECURITY_HOSTNAME \
     SECURITY_IMAGE \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
-    UI_HOSTNAME \
     UI_IMAGE \
     UI_PORT \
     UI_PROTOCOL
@@ -221,9 +242,16 @@ getsalt_installer_setcheck_variables() {
     check_for_required_variables \
         GCP_TRACKING_SERVICE_IMAGE \
         GCP_UBB_IMAGE \
-        UBB_HOSTNAME \
         UBB_PORT
   fi
+
+  # Compute in-cluster hostnames
+  export SECURITY_HOSTNAME=`get_internal_hostname security`
+  export META_HOSTNAME=`get_internal_hostname meta`
+  export UI_HOSTNAME=`get_internal_hostname ui`
+  export RABBIT_HOSTNAME=`get_internal_hostname rabbit`
+  export REDIS_HOSTNAME=`get_internal_hostname redis`
+  export ELASTICSEARCH_HOSTNAME=`get_internal_hostname elastic`
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -239,33 +267,35 @@ getsalt_installer_setcheck_variables() {
     META_BOOTSTRAP_PARAMS
 }
 
+get_internal_hostname() {
+  echo "${RELEASE_NAME}-${1}.${RELEASE_NAMESPACE}.svc.cluster.local"
+}
+
 gestalt_installer_generate_helm_config() {
 
   check_for_required_variables \
     SECURITY_IMAGE \
-    SECURITY_HOSTNAME \
     SECURITY_PORT \
     SECURITY_PROTOCOL \
     ADMIN_USERNAME \
     ADMIN_PASSWORD \
     POSTGRES_IMAGE \
+    DATABASE_HOSTNAME \
+    DATABASE_PORT \
     DATABASE_NAME \
-    DATABASE_PASSWORD \
     DATABASE_USERNAME \
+    DATABASE_PASSWORD \
     RABBIT_IMAGE \
-    RABBIT_HOSTNAME \
     RABBIT_PORT \
     RABBIT_HTTP_PORT \
     ELASTICSEARCH_IMAGE \
     ELASTICSEARCH_INIT_IMAGE \
     META_IMAGE \
-    META_HOSTNAME \
     META_PORT \
     META_PROTOCOL \
     META_NODEPORT \
     KONG_NODEPORT \
     LOGGING_NODEPORT \
-    REDIS_HOSTNAME \
     REDIS_IMAGE \
     REDIS_PORT \
     UI_IMAGE \
@@ -279,40 +309,43 @@ gestalt_installer_generate_helm_config() {
 
   [ ${K8S_PROVIDER:=default} == 'gke' ] && internal_database_pv_storage_class="standard"
 
+  if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
+    export PROVISION_POSTGRES_INSTANCE="true"
+  else
+    export PROVISION_POSTGRES_INSTANCE="false"
+  fi
+
   cat > helm-config.yaml <<EOF
 common:
-  # imagePullPolicy: IfNotPresent
   imagePullPolicy: Always
+  releaseVersion: 2.4
+  gestaltUrl: "${GESTALT_URL}"
 
 secrets:
-  databaseName: "{$DATABASE_NAME}"
-  databaseUsername: "${DATABASE_USERNAME}"
-  databasePassword: "${DATABASE_PASSWORD}"
   adminUser: "${ADMIN_USERNAME}"
   adminPassword: "${ADMIN_PASSWORD}"
-  gestaltUrl: "${GESTALT_URL}"
+  generatedPassword: "${DATABASE_PASSWORD}"
 
 security:
   exposedServiceType: NodePort
   image: "${SECURITY_IMAGE}"
-  hostname: "${SECURITY_HOSTNAME}"
-  port: "${SECURITY_PORT}"
+  port: ${SECURITY_PORT}
   protocol: "${SECURITY_PROTOCOL}"
   databaseName: gestalt-security
 
 db:
-  hostname: ${DATABASE_HOSTNAME}
-  port: 5432
-  databaseName: postgres
+  host: ${DATABASE_HOSTNAME}
+  port: ${DATABASE_PORT}
+  name: "${DATABASE_NAME}"
+  username: "${DATABASE_USERNAME}"
+  password: "${DATABASE_PASSWORD}"
 
 rabbit:
   image: "${RABBIT_IMAGE}"
-  hostname: "${RABBIT_HOSTNAME}"
   port: ${RABBIT_PORT}
   httpPort: ${RABBIT_HTTP_PORT}
 
 elastic:
-  hostname: ${ELASTICSEARCH_HOST}
   image: ${ELASTICSEARCH_IMAGE}
   initContainer:
     image: ${ELASTICSEARCH_INIT_IMAGE}
@@ -322,7 +355,6 @@ elastic:
 meta:
   image: ${META_IMAGE}
   exposedServiceType: NodePort
-  hostname: ${META_HOSTNAME}
   port: ${META_PORT}
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
@@ -337,7 +369,6 @@ meta:
 logging:
   image: ${LOGGING_IMAGE}
   nodePort: ${LOGGING_NODEPORT}
-  hostname: ${LOGGING_HOSTNAME}
   port: ${LOGGING_PORT}
   protocol: ${LOGGING_PROTOCOL}
 
@@ -346,37 +377,23 @@ ui:
   exposedServiceType: NodePort
   nodePort: ${UI_NODEPORT}
   ingress:
-    host: localhost
+    host: ${UI_HOST}
+    port: ${UI_PORT}
+    protocol: ${UI_PROTOCOL}
 
 redis:
   image: ${REDIS_IMAGE}
-  hostname: ${REDIS_HOSTNAME}
   port: ${REDIS_PORT}
-EOF
-
-  # Marketplace specific
-  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
-    cat >> helm-config.yaml <<EOF
-
-ubb:
-  image: ${GCP_UBB_IMAGE}
-  hostname: ${UBB_HOSTNAME}
-  port: ${UBB_PORT}
-
-trackingService:
-  image: ${GCP_TRACKING_SERVICE_IMAGE}
-EOF
-fi
-
-  cat >> helm-config.yaml <<EOF
 
 postgresql:
   image: "${POSTGRES_IMAGE}"
-  existingSecret: 'gestalt-secrets'
+  provisionInstance: ${PROVISION_POSTGRES_INSTANCE}
+  defaultName: 'postgres'
+  defaultUser: 'postgres'
   secretKey:
-    database: db-database
-    username: db-username
-    password: db-password
+    database: 'db-database'
+    username: 'db-username'
+    password: 'db-password'
   persistence:
     size: ${internal_database_pv_storage_size}
     storageClass: "${internal_database_pv_storage_class}"
@@ -390,6 +407,22 @@ postgresql:
     type: ClusterIP
 EOF
 
+  # Marketplace specific
+  if [ -z ${MARKETPLACE_INSTALL+x} ]; then
+    cat >> helm-config.yaml <<EOF
+
+ubb:
+  image: ${GCP_UBB_IMAGE}
+  port: ${UBB_PORT}
+
+trackingService:
+  image: ${GCP_TRACKING_SERVICE_IMAGE}
+EOF
+fi
+
+  echo "START Helm chart values -----------"
+  cat helm-config.yaml
+  echo "END Helm chart values -----------"
 }
 
 http_post() {
@@ -424,7 +457,7 @@ send_marketplace_eula_slack_message() {
 
 wait_for_database_pod() {
   if [ "$PROVISION_INTERNAL_DATABASE" == "Yes" ]; then
-    wait_for_system_pod "gestalt-postgresql"
+    wait_for_system_pod "${RELEASE_NAME}-postgresql"
   fi
 }
 
@@ -514,13 +547,13 @@ data:
 kind: Secret
 metadata:
   name: gestalt-security-creds
-  namespace: gestalt-system
+  namespace: $RELEASE_NAMESPACE
 type: Opaque
 EOF
 }
 
 wait_for_system_pod() {
-  wait_for_pod $1 'gestalt-system'
+  wait_for_pod $1 $RELEASE_NAMESPACE
 }
 
 wait_for_pod() {
@@ -562,7 +595,7 @@ wait_for_pod() {
 
 wait_for_security_init() {
 
-  wait_for_system_pod "gestalt-security"
+  wait_for_system_pod "${RELEASE_NAME}-security"
 
   echo "Waiting for Security to initialize..."
   secs=20
@@ -603,7 +636,7 @@ init_meta() {
 
 do_init_meta() {
 
-  wait_for_system_pod "gestalt-meta"
+  wait_for_system_pod "${RELEASE_NAME}-meta"
 
   echo "Polling $META_URL/root..."
   # Check if meta initialized (ready to bootstrap when /root returns 500)

@@ -1,1 +1,2 @@
-kubectl exec -n gestalt-system gestalt-installer -ti -- bash $@
+. gestalt.conf
+kubectl exec -n $RELEASE_NAMESPACE gestalt-installer -ti -- bash $@

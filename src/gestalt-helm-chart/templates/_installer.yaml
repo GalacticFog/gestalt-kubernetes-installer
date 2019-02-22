@@ -2,11 +2,12 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: gestalt-installer
+  name: {{ template "gestalt.installerName" . }}
   labels:
-    gestalt-app: installer
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-installer
+    gestalt-app: 'installer'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.installerName" . }}
 spec:
   restartPolicy: Never
   imagePullSecrets:
@@ -16,9 +17,9 @@ spec:
   - name: imagepullsecret-4
   - name: imagepullsecret-5
   containers:
-  - name: gestalt-installer
-    image: "{{ .Values.installer.image }}"
-    imagePullPolicy: "{{ .Values.common.imagePullPolicy }}"
+  - name: {{ template "gestalt.installerName" . }}
+    image: {{ .Values.installer.image | quote }}
+    imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
     # 'deploy' arg signals deployment of gestalt platform
     # 'debug' arg signals debug output
     command:
@@ -28,8 +29,8 @@ spec:
     - ./entrypoint.sh install debug
     env:
       - name: RELEASE_NAME
-        value: "{{ .Release.Name }}"
+        value: {{ .Release.Name | quote }}
       - name: RELEASE_NAMESPACE
-        value: "{{ .Release.Namespace }}"
+        value: {{ .Release.Namespace | quote }}
       - name: REPORTING_SECRET
-        value: "{{ .Release.ReportingSecret }}"
+        value: {{ .Release.ReportingSecret | quote }}

@@ -1,20 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-security
+  name: {{ template "gestalt.securityName" . }}
   labels:
-    gestalt-app: security
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-security
+    gestalt-app: 'security'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.securityName" . }}
 spec:
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        gestalt-app: security
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-security
+        gestalt-app: 'security'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.securityName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -23,33 +25,33 @@ spec:
       - name: imagepullsecret-4
       - name: imagepullsecret-5
       containers:
-      - name: gestalt-security
-        image: "{{ .Values.security.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.securityName" . }}
+        image: {{ .Values.security.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
         - containerPort: 9000
-          name: service-api
+          name: 'service-api'
         env:
-        - name: DATABASE_HOSTNAME
-          value: "{{ .Values.db.hostname }}"
-        - name: DATABASE_PORT
-          value: "{{ .Values.db.port }}"
-        - name: DATABASE_USERNAME
+        - name: 'DATABASE_HOSTNAME'
+          value: {{ template "gestalt.dbHost" . }}
+        - name: 'DATABASE_PORT'
+          value: {{ template "gestalt.dbPort" . }}
+        - name: 'DATABASE_USERNAME'
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-username
-        - name: DATABASE_PASSWORD
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
+        - name: 'DATABASE_PASSWORD'
           valueFrom:
             secretKeyRef:
-              name: gestalt-secrets
-              key: db-password
-        - name: DATABASE_NAME
-          value: "gestalt-security"
-        - name: OAUTH_RATE_LIMITING_AMOUNT
-          value: "100"
-        - name: OAUTH_RATE_LIMITING_PERIOD
-          value: "1"
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: 'DATABASE_NAME'
+          value: {{ .Values.security.databaseName | quote }}
+        - name: 'OAUTH_RATE_LIMITING_AMOUNT'
+          value: '100'
+        - name: 'OAUTH_RATE_LIMITING_PERIOD'
+          value: '1'
       #   # Mount custom CA-Certs
       #   volumeMounts:
       #   - name: cacerts
@@ -58,5 +60,5 @@ spec:
       # volumes:
       #   - name: cacerts
       #     configMap:
-      #       name: gestalt-security-cacerts
+      #       name: {{ template "gestalt.securityName" . }}-cacerts
       #       optional: true

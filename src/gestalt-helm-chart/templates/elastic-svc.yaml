@@ -1,18 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gestalt-elastic
+  name: {{ template "gestalt.elasticName" . }}
   labels:
-    gestalt-app: elastic
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-elastic
+    gestalt-app: 'elastic'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.elasticName" . }}
 spec:
   selector:
-    gestalt-app: elastic
+    gestalt-app: 'elastic'
   ports:
-    - name: service-api
-      port: {{.Values.elastic.restPort}}
-      targetPort: rest
-    - name: http-api
-      port: {{.Values.elastic.transportPort}}
-      targetPort: transport
+    - name: 'service-api'
+      port: {{ .Values.elastic.restPort }}
+      targetPort: 'rest'
+    - name: 'http-api'
+      port: {{ .Values.elastic.transportPort }}
+      targetPort: 'transport'

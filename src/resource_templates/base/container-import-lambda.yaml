@@ -8,7 +8,7 @@ properties:
     id: '#{Provider /root/default-laser}'
     locations: []
   secrets: []
-  package_url: 'http://gestalt-meta.gestalt-system.svc.cluster.local:10131/assets/system/lambdas/container-import.jar'
+  package_url: 'http://#{Config META_HOSTNAME}:#{Config META_PORT}/assets/system/lambdas/container-import.jar'
   public: true
   compressed: false
   cpus: 0.1

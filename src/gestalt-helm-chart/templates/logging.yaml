@@ -1,19 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-log
+  name: {{ template "gestalt.loggingName" . }}
   labels:
-    gestalt-app: log
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-log
+    gestalt-app: 'log'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.loggingName" . }}
 spec:
   replicas: 1
   template: # create pods using pod definition in this template
     metadata:
       labels:
-        gestalt-app: log
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-log
+        gestalt-app: 'log'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.loggingName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -22,28 +24,28 @@ spec:
       - name: imagepullsecret-4
       - name: imagepullsecret-5
       containers:
-      - name: gestalt-log
-        image: "{{ .Values.logging.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.loggingName" . }}
+        image: {{ .Values.logging.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
         - containerPort: 9000
-          name: http
+          name: 'http'
         env:
-        - name: SERVICE_VHOST_0
-          value: "{{ .Values.logging.hostname }}"
-        - name: SERVICE_VHOST_0_PROTOCOL
-          value: "{{ .Values.logging.protocol }}"
-        - name: ES_CLUSTER_NAME
-          value: "myesdb"
-        - name: DEFAULT_COMPUTE_TYPE
-          value: "kube"
-        - name: ES_COLD_DAYS
-          value: "1"
-        - name: ES_HOT_DAYS
-          value: "1"
-        - name: ES_SERVICE_HOST
-          value: "{{ .Values.elastic.hostname }}"
-        - name: ES_SERVICE_PORT
-          value: "9300"
-        - name: ES_SNAPSHOT_REPO
-          value: "s3_repository"
+        - name: 'SERVICE_VHOST_0'
+          value: {{ template "gestalt.loggingHost" . }}
+        - name: 'SERVICE_VHOST_0_PROTOCOL'
+          value: {{ .Values.logging.protocol | quote }}
+        - name: 'ES_CLUSTER_NAME'
+          value: 'myesdb'
+        - name: 'DEFAULT_COMPUTE_TYPE'
+          value: 'kube'
+        - name: 'ES_COLD_DAYS'
+          value: '1'
+        - name: 'ES_HOT_DAYS'
+          value: '1'
+        - name: 'ES_SERVICE_HOST'
+          value: {{ template "gestalt.elasticHost" . }}
+        - name: 'ES_SERVICE_PORT'
+          value: '9300'
+        - name: 'ES_SNAPSHOT_REPO'
+          value: 's3_repository'

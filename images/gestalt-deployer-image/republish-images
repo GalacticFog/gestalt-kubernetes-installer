@@ -30,7 +30,7 @@ DEFAULT_IMAGES=(
   'gestalt-ubb-agent'
   'gestalt-redis'
   'gestalt-laser'
-  # 'gestalt-laser-executor-bash'
+  'gestalt-laser-executor-bash'
   'gestalt-laser-executor-dotnet'
   'gestalt-laser-executor-golang'
   'gestalt-laser-executor-js'

@@ -1,20 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gestalt-elastic
+  name: {{ template "gestalt.elasticName" . }}
   labels:
-    gestalt-app: elastic
-    app.kubernetes.io/name: "{{ .Release.Name }}"
-    app.kubernetes.io/component: gestalt-elastic
+    gestalt-app: 'elastic'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.elasticName" . }}
 spec:
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        gestalt-app: elastic
-        app.kubernetes.io/name: "{{ .Release.Name }}"
-        app.kubernetes.io/component: gestalt-elastic
+        gestalt-app: 'elastic'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.elasticName" . }}
     spec:
       imagePullSecrets:
       - name: imagepullsecret-1
@@ -24,7 +26,7 @@ spec:
       - name: imagepullsecret-5
       initContainers:
       - name: init-sysctl
-        image: {{ .Values.elastic.initContainer.image }}
+        image: {{ .Values.elastic.initContainer.image | quote }}
         command:
         - sh
         - -c
@@ -32,20 +34,20 @@ spec:
         securityContext:
           privileged: true
       containers:
-      - name: gestalt-elastic
-        image: "{{ .Values.elastic.image }}"
-        imagePullPolicy: {{ .Values.common.imagePullPolicy }}
+      - name: {{ template "gestalt.elasticName" . }}
+        image: {{ .Values.elastic.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
         ports:
-        - containerPort: {{.Values.elastic.restPort}}
-          name: rest
-        - containerPort: {{.Values.elastic.transportPort}}
-          name: transport
+        - containerPort: {{ .Values.elastic.restPort }}
+          name: 'rest'
+        - containerPort: {{ .Values.elastic.transportPort }}
+          name: 'transport'
         env:
-        - name: cluster.name
-          value: "myesdb"
-        - name: network.host
-          value: "0.0.0.0"
-        - name: transport.tcp.port
-          value: "9300"
-        - name: ES_JAVA_OPTS
-          value: "-Xms1536m -Xmx1536m"
+        - name: 'cluster.name'
+          value: 'myesdb'
+        - name: 'network.host'
+          value: '0.0.0.0'
+        - name: 'transport.tcp.port'
+          value: '9300'
+        - name: 'ES_JAVA_OPTS'
+          value: '-Xms1536m -Xmx1536m'

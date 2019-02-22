@@ -1,4 +1,17 @@
 #!/bin/bash
-pod=`kubectl get pod -n gestalt-system  | grep gestalt-${1}- | awk '{print $1}'`
+
+SERVICE=${1:-meta}
+
+. ./helpers/tool-functions.sh
+
+. gestalt.conf
+
+RELEASE_NAMESPACE=$( find_namespace "${RELEASE_NAMESPACE}" )
+exit_on_error "Could not find a Gestalt install namespace!"
+RELEASE_NAME=$( find_release )
+exit_on_error "Could not find a Gestalt release name!"
+
+pod=`kubectl get pod -n $RELEASE_NAMESPACE  | grep "${RELEASE_NAME}-${SERVICE}-" | awk '{print $1}'`
+echo "Found pod '$pod'"
 shift
-kubectl logs -n gestalt-system $pod $@
+kubectl logs -n $RELEASE_NAMESPACE $pod $@
