@@ -17,18 +17,22 @@ properties:
       type: REPORTING_SECRET
   common.name:
     type: string
+    title: 'Name'
     default: ''
     description: 'Your full name.'
   common.email:
     type: string
+    title: 'Email Address'
     default: ''
     description: 'Your email address.'
   common.companyName:
     type: string
+    title: 'Company Name'
     default: ''
     description: 'The name of your company (if applicable).'
   common.serviceAccount:
     type: string
+    title: 'Service Account'
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
@@ -38,14 +42,17 @@ properties:
           rulesFromRoleName: 'cluster-admin'
   secrets.adminUser:
     type: string
+    title: 'Gestalt Admin Username'
     default: 'admin'
-    description: 'This is the name of the admin account for gestalt.  This is the root account, so please make it a safe name.'
+    description: 'The username of the admin account for Gestalt.  This is the root account, so please make it a safe name.'
   secrets.adminPassword:
     type: string
+    title: 'Gestalt Admin Password'
     default: ''
-    description: 'This is the name of the admin password for gestalt root account.  Please make it safe and hard to guess.'
+    description: 'The password of the admin account for Gestalt.  Please make it safe and hard to guess.'
   secrets.generatedPassword:
     type: string
+    title: 'Generated Database Password'
     description: 'An automatically-generated admin password for the Postgres instance provisioned by Gestalt.'
     x-google-marketplace:
       type: GENERATED_PASSWORD
@@ -55,52 +62,64 @@ properties:
         base64: False
   ui.ingress.host:
     type: string
+    title: 'Gestalt Web UI Hostname or IP Address'
     default: ''
     description: "This is how developers and end users will access your service.  Please make sure you have a proper DNS name and know how to point DNS at the Ingress filter for the Kubernetes clusters.  You should use a name like 'DEVPORTAL.COMPANYNAME.COM'"
   ui.ingress.protocol:
     type: string
+    title: 'Gestalt Web UI Access Protocol'
     default: "http"
     pattern: '^https?$'
     description: "The web protocol for accessing your Gestalt UI service. (Either http or https)"
   ui.ingress.port:
     type: integer
+    title: 'Gestalt Web UI Access Port'
     default: 80
     description: "The port number for accessing your Gestalt UI service. (Generally 80 for http or 443 for https)"
   api.gateway.host:
     type: string
+    title: 'Gestalt API Gateway Hostname or IP Address'
     default: ''
     description: "This will be the primary way your containers are exposed, so please make sure you have a proper DNS entry here. You should use a name like 'API.COMPANYNAME.COM'"
   api.gateway.protocol:
     type: string
+    title: 'Gestalt API Gateway Access Protocol'
     default: "http"
     pattern: '^https?$'
     description: "The web protocol for accessing your Gestalt API gateway. (Either http or https)"
   api.gateway.port:
     type: integer
+    title: 'Gestalt API Gateway Access Port'
     default: 80
     description: "The port number for accessing your Gestalt API gateway. (Generally 80 for http or 443 for https)"
   postgresql.provisionInstance:
     type: boolean
+    title: 'Allow Gestalt to create its own Postgresql database?'
     default: true
     description: "Do you want Gestalt to provision a Postgresql database instance for you? (If not you'll need to supply and manage the database yourself.)"
   db.host:
     type: string
+    title: 'Gestalt Database Hostname or IP Address'
     default: ''
     description: 'The hostname for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   db.port:
     type: string
+    title: 'Gestalt Database Access Port'
     default: '5432'
     description: 'The port number used for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)'
   db.name:
     type: string
+    title: 'Gestalt Database Name'
     default: ''
     description: "The database name for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
   db.username:
     type: string
+    title: 'Gestalt Database Admin Username'
     default: ''
     description: "The username for the Gestalt connection to your external database. (This field is ignored if Gestalt provisions its own Postgresql database.)"
   db.password:
     type: string
+    title: 'Gestalt Database Admin Password'
     default: ''
     description: 'The password for the Gestalt connection to your external database.  (This field is ignored if Gestalt provisions its own Postgresql database.) Please make it safe and hard to guess.'
   # Each image var defined must supply a default value as GCP marketplace will look for them there.
