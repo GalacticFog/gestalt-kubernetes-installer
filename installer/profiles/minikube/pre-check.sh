@@ -15,6 +15,6 @@ EOF
 # echo "Please review your settings (`pwd`/config.yaml):"
 echo "The following Minikube specific settings will be used:"
 echo
-cat ./config.yaml | sed 's/^/    /g' | sed 's/#//g'
+cat ./config.yaml | grep -v '^#' | sed 's/ *#.*$//g' | sed 's/^/    /g'
 
 # do_prompt_to_continue "Are the settings correct?  If not, please modify `pwd`/pre-check.sh and re-start the installation."

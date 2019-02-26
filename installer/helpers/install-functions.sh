@@ -448,18 +448,20 @@ summarize_config() {
 }
 
 run_helper() {
-  local script=./profiles/$profile/$1.sh
+  local PROFILE=$1
+  local HELPER=$2
+  local script="./profiles/${PROFILE}/${HELPER}.sh"
 
-  echo "Checking for helper: $script ..."
+  echo "Checking for helper: ${script} ..."
   if [ -f "$script" ]; then
     echo ""
     echo "Running $script ..."
-    cd ./profiles/$profile/
-    . $1.sh
+    cd ./profiles/${PROFILE}/
+    . ${HELPER}.sh
     cd ~-
-    exit_on_error "Pre-install script failed, aborting."
+    exit_on_error "helper script '${script}' failed, aborting."
   else
-    debug "No '${script}' script found for profile '${profile}'"
+    debug "No '${HELPER}' script found for profile '${PROFILE}'"
   fi
   echo
 }
