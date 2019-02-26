@@ -39,6 +39,11 @@ prompt_to_acknowledge(){
 prompt_to_remove_namespace(){
   local NS=$1
   [ -z "$NS" ] && return
+  if [ "$NS" == "default" ]; then
+    # If the install namespace is 'default' just remove the gestalt namespace labels
+    kubectl label ns default "app.kubernetes.io/app-" "app.kubernetes.io/name-"
+    return
+  fi
   echo ""
   echo "Do you want to remove the Gestalt namespace '$NS' from the Kubernetes cluster '`kubectl config current-context`'?"
   echo "This cannot be undone."

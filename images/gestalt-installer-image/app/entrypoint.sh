@@ -50,6 +50,13 @@ if [ "$CMD" == 'install' ]; then
       else
         echo "No directory found /app/install/providers/${K8S_PROVIDER}"
       fi
+      echo "RELEASE_NAME:      '$RELEASE_NAME'"
+      echo "RELEASE_NAMESPACE: '$RELEASE_NAMESPACE'"
+      if [ -z "${RELEASE_NAMESPACE}" ]; then
+        echo "ENV var RELEASE_NAMESPACE is not set!"
+      else
+        [ -z "${RELEASE_NAME}" ] || kubectl label namespace $RELEASE_NAMESPACE "app.kubernetes.io/app=gestalt" "app.kubernetes.io/name=$RELEASE_NAME"
+      fi
     fi
 
     # TODO: Test the file size, or check if the configmap didn't exist
