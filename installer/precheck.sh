@@ -4,12 +4,12 @@ set -o pipefail
 . helpers/install-functions.sh
 . gestalt.conf
 
-profile=$1
+PROFILE=$1
 
-if [ -z "$profile" ]; then
+if [ -z "$PROFILE" ]; then
   exit_with_error "Must specify an installation profile (docker-desktop, minikube, gke, eks, aws)"
-elif [ ! -d ./profiles/$profile ]; then
-  exit_with_error "Invalid profile: $profile" 
+elif [ ! -d ./profiles/$PROFILE ]; then
+  exit_with_error "Invalid profile: $PROFILE" 
 fi
 
 if [ -z "$RELEASE_NAME" ]; then
@@ -31,7 +31,7 @@ check_for_required_tools
 download_fog_cli
 
 # Run profile-specific pre-check
-run_helper pre-check
+run_helper $PROFILE pre-check
 
 # Environment checks
 check_for_kube

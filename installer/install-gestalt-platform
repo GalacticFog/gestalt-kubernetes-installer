@@ -41,7 +41,7 @@ do_install() {
   rm -r ./stage/*
   mkdir -p ./stage/config
 
-  run_helper pre-stage
+  run_helper $PROFILE pre-stage
 
   cp gestalt-license.json ./stage/config/
 
@@ -61,7 +61,7 @@ EOF
   ./stage.sh
   exit_on_error "Stage failed, aborting"
 
-  run_helper pre-install
+  run_helper $PROFILE pre-install
 
   ./install.sh $PROFILE
   exit_on_error "Install failed, aborting"
@@ -79,7 +79,7 @@ EOF
 
   trap - EXIT
 
-  run_helper post-install
+  run_helper $PROFILE post-install
 
   fog_cli_login
 
