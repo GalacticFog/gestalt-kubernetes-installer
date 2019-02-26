@@ -15,7 +15,23 @@ fog context set '/root'
 exit_on_error "Error setting context, aborting"
 
 # https://gitlab.com/galacticfog/gestalt-meta/issues/597#note_139551352
-fog meta POST /migrate?version=V31
+# fog meta POST /migrate?version=V31
+
+# Meta migration v7 creates a lambda - so can not be done now, but we want rest to be run as they are added
+fog meta POST /migrate?skip=V7 > /tmp/migrate.out
+cat /tmp/migrate.out | jq .
+echo ...
+
+# Check for migration any failure
+cat /tmp/migrate.out | jq . | grep -i failure
+if [ $? -eq 0 ]; then 
+  echo "Meta migration did not fully succeed"
+  cat /tmp/migrate.out | jq . | grep -i failure -A20 -B5
+  echo
+  echo "Full log:"
+  cat /tmp/migrate.out
+  exit_with_error "Meta migration did not succeed, aborting"
+fi
 
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
@@ -82,7 +98,11 @@ wait_for_pod lsr
 #TODO: Implement a laser health check to avoid sleep?
 sleep 20  # Provide time for Laser and Meta to settle before migrating the schema
 
-fog meta POST /migrate -f meta-migrate.json > /tmp/migrate.out
+# fog meta POST /migrate -f meta-migrate.json > /tmp/migrate.out
+# cat /tmp/migrate.out | jq .
+# echo ...
+
+fog meta POST /migrate?version=V7 -f meta-migrate.json > /tmp/migrate.out
 cat /tmp/migrate.out | jq .
 echo ...
 
