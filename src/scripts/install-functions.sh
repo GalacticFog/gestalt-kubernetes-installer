@@ -100,7 +100,8 @@ map_env_vars_for_configmap() {
   echo "CONFIG_TO_ENV has ${#CONFIG_TO_ENV[@]} entries"
 
   local PROVISION_DB=$( echo "$JSON_DATA" | jq -r '.["postgresql.provisionInstance"]' )
-  if [ "$PROVISION_DB" == "True" ]; then
+  shopt -s nocasematch
+  if [] "$PROVISION_DB" =~ ^true ]]; then
     JSON_DATA=$( mask_db_fields_if_provisioning_internal_db "${JSON_DATA}" )
     local MASKED_JSON=$( echo "${JSON_DATA}" | jq -r -S )
     echo "Masked JSON Data: $MASKED_JSON"
@@ -108,6 +109,7 @@ map_env_vars_for_configmap() {
   else
     export PROVISION_INTERNAL_DATABASE="No"
   fi
+  shopt -u nocasematch
 
   local KEY_NAME
   for KEY_NAME in ${CONFIG_TO_ENV[@]}; do
