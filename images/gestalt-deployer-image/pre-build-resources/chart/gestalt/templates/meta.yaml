@@ -40,6 +40,10 @@ spec:
         #   limits:
         #     memory: 2Gi
         env:
+        - name: 'RELEASE_NAME'
+          value: {{ .Release.Name | quote }}
+        - name: 'RELEASE_NAMESPACE'
+          value: {{ .Release.Namespace | quote }}
         - name: 'DATABASE_HOSTNAME'
           value: {{ template "gestalt.dbHost" . }}
         - name: 'DATABASE_NAME'

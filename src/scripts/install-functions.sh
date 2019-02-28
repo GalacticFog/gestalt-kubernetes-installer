@@ -125,10 +125,14 @@ map_env_vars_for_configmap() {
       echo "No ENV var mapped for ConfigMap key '${KEY}'"
     else
       echo "Mapping ENV var '${VAR_NAME}' for ConfigMap key '${KEY}'"
-      VAR_VALUE=$( echo $JSON_DATA | jq ".[\"$KEY\"]" | sed 's/"//g')
-      echo "Setting ENV var '$VAR_NAME' to '$VAR_VALUE'"
       # Get the value for the key from the JSON via jq, strip the quote chars again, and make that the value of the ENV var
-      export $VAR_NAME="${VAR_VALUE}"
+      VAR_VALUE=$( echo $JSON_DATA | jq ".[\"$KEY\"]" | sed 's/"//g')
+      if [ -z "${VAR_VALUE}" ]; then
+        echo "JSON Data for ConfigMap key '${KEY}' is blank or null!"
+      else
+        echo "Setting ENV var '$VAR_NAME' to '$VAR_VALUE'"
+        export $VAR_NAME="${VAR_VALUE}"
+      fi
     fi
   done
   echo "postgres connection info ${DATABASE_USERNAME}@${DATABASE_HOSTNAME}:${DATABASE_PORT}/${DATABASE_NAME}"

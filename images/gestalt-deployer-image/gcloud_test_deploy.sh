@@ -44,7 +44,6 @@ create_ns() {
   local NS_NAME=$1
   echo "Creating namespace '$TEST_NAMESPACE'..."
   kubectl create namespace $NS_NAME
-  kubectl label namespace $NS_NAME "app.kubernetes.io/app=gestalt" "app.kubernetes.io/name=$TEST_NAME"
 }
 
 create_namespace() {
