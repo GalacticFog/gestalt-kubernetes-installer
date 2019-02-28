@@ -4,7 +4,7 @@ resource_type: Gestalt::Configuration::Provider::Lambda
 properties:
   config:
     endpoints:
-      kind: http
+    - kind: http
       url: http://<resource.properties.config.env.public.SERVICE_HOST>:<resource.properties.config.env.public.SERVICE_PORT>/status
       actions:
       - name: provider.viewmetrics
