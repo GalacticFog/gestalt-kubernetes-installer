@@ -67,7 +67,7 @@ properties:
   ui.ingress.host:
     type: string
     title: 'Gestalt Web UI Host or IP Address'
-    default: 'devportal.your-domain-name.com'
+    default: 'devportal.your-domain-name.com <-- CHANGE THIS!!!'
     description: 'The DNS name or IP address for accessing your Gestalt portal UI.'
   ui.ingress.protocol:
     type: string
@@ -83,7 +83,7 @@ properties:
   api.gateway.host:
     type: string
     title: 'Gestalt API Gateway Host or IP Address'
-    default: 'api.your-domain-name.com'
+    default: 'api.your-domain-name.com <-- CHANGE THIS!!!'
     description: 'The DNS name or IP address for accessing your Gestalt API Gateway.'
   api.gateway.protocol:
     type: string
@@ -100,7 +100,7 @@ properties:
     type: boolean
     title: 'Let Gestalt create its own database?'
     default: true
-    description: 'If not checked you must enter connection info for a Postgresql database below.'
+    description: 'If not checked you must enter connection info for a PostgreSQL database below.'
   db.host:
     type: string
     title: 'Gestalt Database Hostname or IP Address'
@@ -259,10 +259,56 @@ required:
 - api.gateway.protocol
 - api.gateway.port
 
+form:
+- widget: help
+  description: >-
+    Thank you for using Gestalt!  Here are a few recommendations for installing
+    Gestalt on your GKE cluster.
+
+    <b>Namespace:</b> create a new namespace!  We recommend that you create a
+    new namespace named <i>gestalt-system</i> rather than installing Gestalt
+    into an existing namespace or the default namespace.
+
+    <b>App instance name:</b> name it <i>gestalt</i>!  There is generally no
+    reason to install more than one instance of Gestalt on the same cluster, so
+    there is no need to append an instance number.
+
+    <b>Gestalt Service Account:</b> create a new service account!  GCP will
+    automatically create a new service account and give it all the permissions
+    Gestalt will need to manage the services and workflows on your cluster.
+
+    <b>Gestalt Web UI Host or IP Address</b> and <b>Gestalt API Gateway Host or
+    IP Address:</b> set these to a hostname within a domain you control, and
+    after completing the install, create <b>A</b> name records in your DNS system for
+    your chosen hostnames which resolve to the IP addresses GCP assigns to the
+    Ingress services for these Gestalt <i>ui</i> and <i>kng-ext</i> services.
+
+    <b>Let Gestalt create its own database?</b>  If this box is checked, Gestalt
+    will create a PostgreSQL instance for itself within the cluster.  That is
+    the easiest way to get started using Gestalt.  Uncheck this box if you want
+    to use an external PostgreSQL or Google Cloud SQL instance.
+
+    For large-scale production environments, we recommend using a <a
+    href="https://console.cloud.google.com/marketplace/details/google-cloud-platform/cloud-sql">Google
+    Cloud SQL</a> PostgreSQL database.  Our <a
+    href="https://github.com/GalacticFog/gestalt-gcp-marketplace/blob/master/README.md">Installing
+    Gestalt on Google Cloud Platform</a> includes instructions for setting up a
+    Google Cloud SQL (PostgreSQL) instance for Gestalt.
+
+    For further assistance, visit our guide to
+    <a href="https://github.com/GalacticFog/gestalt-gcp-marketplace">GCP
+    Installing Gestalt on Google Cloud Platform</a> or our
+    <a href="http://docs.galacticfog.com">Gestalt Docs web site</a>. You can
+    also reach out via our <a href="https://chat.galacticfog.com/">Slack
+    channel</a> for answers and technical support.
 #x-google-marketplace:
 #  clusterConstraints:
 #    resources:
 #    - replicas: 1
 #      requests:
-#        cpu: 5000m
+#        cpu: 500m
 #        memory: 2000Gi
+#      affinity:
+#        type: REQUIRE_MINIMUM_NODE_COUNT
+#        minimumNodeCount: 1
+# TODO - Add resource defn's for all core Gestalt components
