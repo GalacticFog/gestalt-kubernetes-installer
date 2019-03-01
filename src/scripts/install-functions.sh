@@ -101,7 +101,7 @@ map_env_vars_for_configmap() {
 
   local PROVISION_DB=$( echo "$JSON_DATA" | jq -r '.["postgresql.provisionInstance"]' )
   shopt -s nocasematch
-  if [] "$PROVISION_DB" =~ ^true ]]; then
+  if [[ "$PROVISION_DB" =~ ^true ]]; then
     JSON_DATA=$( mask_db_fields_if_provisioning_internal_db "${JSON_DATA}" )
     local MASKED_JSON=$( echo "${JSON_DATA}" | jq -r -S )
     echo "Masked JSON Data: $MASKED_JSON"
