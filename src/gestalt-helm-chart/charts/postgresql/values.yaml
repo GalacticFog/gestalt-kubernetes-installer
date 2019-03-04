@@ -21,6 +21,11 @@ secretKey:
   passwordKey: db-password
 
 
+# Set enableLivenessProbe and enableReadinessProbe to false to disable the
+# respective probes. Temporary workaround to Docker exec bug. - Seb 3/4/2019
+enableReadinessProbe: true
+enableLivenessProbe: true
+
 ## Specify initdb arguments, e.g. --data-checksums
 ## ref: https://github.com/docker-library/docs/blob/master/postgres/content.md#postgres_initdb_args
 ## ref: https://www.postgresql.org/docs/current/static/app-initdb.html
