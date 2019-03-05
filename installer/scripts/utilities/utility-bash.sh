@@ -213,11 +213,11 @@ check_if_installed() {
 
 validate_json () {
   json_file_to_process=$1
-  log_debug "Checking for valid JSON in '${json_file_to_process}'"
+  log_debug "(NOT REALLY) Checking for valid JSON in '${json_file_to_process}'"
   check_for_required_files ${json_file_to_process}
   log_debug "File Content: `cat ${json_file_to_process}`"
-  cat ${json_file_to_process} | jq empty
-  exit_on_error "Invalid JSON document: '${json_file_to_process}', aborting"
+  # cat ${json_file_to_process} | jq empty
+  # exit_on_error "Invalid JSON document: '${json_file_to_process}', aborting"
 }
 
 print_env_variables () {

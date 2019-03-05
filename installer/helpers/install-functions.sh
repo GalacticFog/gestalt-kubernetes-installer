@@ -56,16 +56,16 @@ check_for_required_tools() {
   which tr        >/dev/null 2>&1 ; exit_on_error "'tr' command not found, aborting."
   which sed       >/dev/null 2>&1 ; exit_on_error "'sed' command not found, aborting."
   which seq       >/dev/null 2>&1 ; exit_on_error "'seq' command not found, aborting."
-  which sudo      >/dev/null 2>&1 ; exit_on_error "'sudo' command not found, aborting."
+  # which sudo      >/dev/null 2>&1 ; exit_on_error "'sudo' command not found, aborting."
   which true      >/dev/null 2>&1 ; exit_on_error "'true' command not found, aborting."
   # 'read' may be implemented as a shell function rather than a separate function
   # which read      >/dev/null 2>&1 ; exit_on_error "'read' command not found, aborting."
-  which bc        >/dev/null 2>&1 ; exit_on_error "'bc' command not found, aborting."
+  # which bc        >/dev/null 2>&1 ; exit_on_error "'bc' command not found, aborting."
   which kubectl   >/dev/null 2>&1 ; exit_on_error "'kubectl' command not found, aborting."
   which curl      >/dev/null 2>&1 ; exit_on_error "'curl' command not found, aborting."
-  which unzip     >/dev/null 2>&1 ; exit_on_error "'unzip' command not found, aborting."
+  # which unzip     >/dev/null 2>&1 ; exit_on_error "'unzip' command not found, aborting."
   which tar       >/dev/null 2>&1 ; exit_on_error "'tar' command not found, aborting."
-  which jq        >/dev/null 2>&1 ; exit_on_error "'jq' command not found. To obtain do 'bew install jq', aborting."
+  # which jq        >/dev/null 2>&1 ; exit_on_error "'jq' command not found. To obtain do 'bew install jq', aborting."
   echo "OK - Required tools found."
 }
 
@@ -653,7 +653,7 @@ download_fog_cli() {
             echo
             echo "Unzipping..."
 
-            unzip -o fog.zip
+            # unzip -o fog.zip
             exit_on_error "Failed to unzip 'fog' CLI package, aborting."
 
             rm fog.zip

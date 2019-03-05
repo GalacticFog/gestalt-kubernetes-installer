@@ -10,7 +10,7 @@ else
 fi
 
 #Check for required tools
-check_if_installed base64 tr sed seq sudo true kubectl curl unzip tar jq
+check_if_installed base64 tr sed seq true kubectl curl tar
 
 log_debug "" && log_debug "[Info] Obtain current context 'kubectl config current-context' ..."
 kubectl_context=$(kubectl config current-context)

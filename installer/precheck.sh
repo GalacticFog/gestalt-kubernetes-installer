@@ -28,7 +28,7 @@ debug "Install Gestalt in Kubernetes Namespace '${RELEASE_NAMESPACE}'"
 
 check_for_required_tools
 
-download_fog_cli
+# download_fog_cli
 
 # Run profile-specific pre-check
 run_helper $PROFILE pre-check
@@ -38,4 +38,4 @@ check_for_kube
 create_or_check_for_required_namespace
 check_for_prior_install
 
-check_cluster_capacity
+# check_cluster_capacity
