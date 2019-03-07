@@ -33,6 +33,9 @@ stage_1() {
   env | sort
   echo
 
+  echo "Cleanup MacOS metadata files..."
+  find ../gestalt-helm-chart -type f -name '._*' -delete
+
   echo "Rendering Helm templates..."
   helm template ../gestalt-helm-chart --name ${RELEASE_NAME} -f helm-config.yaml > ../gestalt.yaml
   exit_on_error "Failed: 'helm template', aborting."
