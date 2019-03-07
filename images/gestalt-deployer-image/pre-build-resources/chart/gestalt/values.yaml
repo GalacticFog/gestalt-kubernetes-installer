@@ -8,7 +8,7 @@ common:
 secrets:
   adminUser: 'admin'
   adminPassword: 'gestaltgcp!'
-  generatedPassword: 'z1y2x3w4v5'
+  generatedPassword: ''
 
 installer:
   image: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4

@@ -54,20 +54,11 @@ properties:
     title: 'Gestalt Admin Password'
     default: ''
     description: 'The password of the Gestalt admin account. Set a password that is hard to guess!'
-  secrets.generatedPassword:
-    type: string
-    title: 'Generated Database Password'
-    description: 'An automatically-generated password for the Postgres database admin account.'
-    x-google-marketplace:
-      type: GENERATED_PASSWORD
-      generatedPassword:
-        length: 15
-        includeSymbols: True
-        base64: False
   ui.ingress.host:
     type: string
     title: 'Gestalt Web UI Host or IP Address'
-    default: 'devportal.your-domain-name.com <-- CHANGE THIS!!!'
+    default: '<<< CHANGE TO devportal.YOURDOMAIN.COM >>>'
+    pattern: '^[a-zA-Z0-9-\.]+$'
     description: 'The DNS name or IP address for accessing your Gestalt portal UI.'
   ui.ingress.protocol:
     type: string
@@ -83,7 +74,8 @@ properties:
   api.gateway.host:
     type: string
     title: 'Gestalt API Gateway Host or IP Address'
-    default: 'api.your-domain-name.com <-- CHANGE THIS!!!'
+    default: '<<< CHANGE TO api.YOURDOMAIN.COM >>>'
+    pattern: '^[a-zA-Z0-9-\.]+$'
     description: 'The DNS name or IP address for accessing your Gestalt API Gateway.'
   api.gateway.protocol:
     type: string
@@ -263,39 +255,39 @@ form:
 - widget: help
   description: >-
     Thank you for using Gestalt!  Here are a few recommendations for installing
-    Gestalt on your GKE cluster.
+    Gestalt on your GKE cluster.<P>
 
     <b>Namespace:</b> create a new namespace!  We recommend that you create a
     new namespace named <i>gestalt-system</i> rather than installing Gestalt
-    into an existing namespace or the default namespace.
+    into an existing namespace or the default namespace.<P>
 
     <b>App instance name:</b> name it <i>gestalt</i>!  There is generally no
     reason to install more than one instance of Gestalt on the same cluster, so
-    there is no need to append an instance number.
+    there is no need to append an instance number.<P>
 
     <b>Gestalt Service Account:</b> create a new service account!  GCP will
     automatically create a new service account and give it all the permissions
-    Gestalt will need to manage the services and workflows on your cluster.
+    Gestalt needs to manage the services and workflows on your cluster.<P>
 
     <b>Gestalt Web UI Host or IP Address</b> and <b>Gestalt API Gateway Host or
     IP Address:</b> set these to a hostname within a domain you control, and
-    after completing the install, create <b>A</b> name records in your DNS system for
+    after completing the install, create <i>A name records</i> in your DNS system for
     your chosen hostnames which resolve to the IP addresses GCP assigns to the
-    Ingress services for these Gestalt <i>ui</i> and <i>kng-ext</i> services.
+    Ingress services for the Gestalt <i>ui</i> and <i>kng-ext</i> services.<P>
 
     <b>Let Gestalt create its own database?</b>  If this box is checked, Gestalt
     will create a PostgreSQL instance for itself within the cluster.  That is
     the easiest way to get started using Gestalt.  Uncheck this box if you want
-    to use an external PostgreSQL or Google Cloud SQL instance.
+    to use an external PostgreSQL or Google Cloud SQL instance.<P>
 
     For large-scale production environments, we recommend using a <a
     href="https://console.cloud.google.com/marketplace/details/google-cloud-platform/cloud-sql">Google
     Cloud SQL</a> PostgreSQL database.  Our <a
     href="https://github.com/GalacticFog/gestalt-gcp-marketplace/blob/master/README.md">Installing
     Gestalt on Google Cloud Platform</a> includes instructions for setting up a
-    Google Cloud SQL (PostgreSQL) instance for Gestalt.
+    Google Cloud SQL (PostgreSQL) instance for Gestalt.<P>
 
-    For further assistance, visit our guide to
+    <b>For further assistance</b>, visit our guide to
     <a href="https://github.com/GalacticFog/gestalt-gcp-marketplace">GCP
     Installing Gestalt on Google Cloud Platform</a> or our
     <a href="http://docs.galacticfog.com">Gestalt Docs web site</a>. You can

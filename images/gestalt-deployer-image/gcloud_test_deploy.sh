@@ -37,7 +37,6 @@ export DB_PORT="5432"
 export DB_NAME="postgres"
 export DB_USERNAME="postgres"
 export DB_PASSWORD="4CHaOPO0vIcbblqf"
-export GENERATED_PASSWORD="12345abcde"
 
 # Create the test namespace if it doesn't already exist
 create_ns() {
@@ -82,7 +81,6 @@ mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
  \"api.gateway.host\": \"${API_HOSTNAME}\", \
  \"secrets.adminUser\": \"${ADMIN_USER}\", \
  \"secrets.adminPassword\": \"${ADMIN_PASS}\", \
- \"secrets.generatedPassword\": \"${GENERATED_PASSWORD}\", \
  \"postgresql.provisionInstance\": ${PROVISION_DB}, \
  \"db.host\": \"${DB_HOST}\", \
  \"db.port\": \"${DB_PORT}\", \
