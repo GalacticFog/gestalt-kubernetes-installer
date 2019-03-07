@@ -78,7 +78,16 @@ fi
 
 # Create other providers
 create policy-provider # Policy depends on Rabbit and Laser
-create kong-provider
+
+echo "${KONG_SERVICE_HOST}"
+
+if [ "$(check_install_category ${KONG_SERVICE_HOST})" == "1" ]; then
+  echo "processing as non-dns environment"
+  create kong-nondns-provider
+else
+  echo "processing as dns environment"
+  create kong-provider
+fi
 
 # Uncomment to enable additional kong providers, and also ensure that the gatewaymanager provider has linked providers for each kong.
 # create kong2-provider

@@ -54,11 +54,6 @@ spec:
               key: 'db-username'
         - name: DATABASE_PORT
           value: {{ template "gestalt.dbPort" . }}
-        - name: DATABASE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "gestalt.secretsName" . }}
-              key: 'db-username'
         - name: 'GESTALT_SECURITY_HOSTNAME'
           value: {{ template "gestalt.securityHost" . }}
         - name: 'GESTALT_SECURITY_PORT'
