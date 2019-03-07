@@ -62,9 +62,9 @@ Define database connection parameters depending on postgresql.provisionInstance 
 {{- end -}}
 {{- define "gestalt.dbPassword" -}}
   {{- if .Values.postgresql.provisionInstance -}}
-    {{- .Values.secrets.generatedPassword | b64enc | quote -}}
+    {{- .Values.secrets.generatedPassword | default (randAlphaNum 10) | b64enc | quote -}}
   {{- else -}}
-    {{- .Values.db.password | b64enc | quote -}}
+    {{- .Values.db.password | default (randAlphaNum 10) | b64enc | quote -}}
   {{- end -}}
 {{- end -}}
 

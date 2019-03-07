@@ -87,7 +87,11 @@ get_configmap_data() {
 }
 
 mask_db_fields_if_provisioning_internal_db() {
-  echo "$1" | jq -r 'del(.["db.host","db.port","db.name","db.username"]) | .["db.password"] = (.["secrets.generatedPassword"] // .["db.password"])'
+  echo "$1" | jq -r 'del(.["db.host","db.port","db.name","db.username","db.password"])'
+}
+
+get_db_password_from_secret() {
+  kubectl get secrets -n ${RELEASE_NAMESPACE} "${RELEASE_NAME}-secrets" -ojsonpath='{.data.db-password}' | base64 -d
 }
 
 map_env_vars_for_configmap() {
@@ -105,6 +109,8 @@ map_env_vars_for_configmap() {
     JSON_DATA=$( mask_db_fields_if_provisioning_internal_db "${JSON_DATA}" )
     local MASKED_JSON=$( echo "${JSON_DATA}" | jq -r -S )
     echo "Masked JSON Data: $MASKED_JSON"
+    DATABASE_PASSWORD=$( get_db_password_from_secret )
+    echo "Obtained db-password from '${RELEASE_NAME}-secrets' : '$DATABASE_PASSWORD'"
     export PROVISION_INTERNAL_DATABASE="Yes"
   else
     export PROVISION_INTERNAL_DATABASE="No"
