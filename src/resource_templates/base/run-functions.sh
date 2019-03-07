@@ -48,6 +48,17 @@ apply_image_pull_secrets() {
   done
 }
 
+check_install_category() {
+  local value=$1
+  if [[ $value =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ $value =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\:[0-9]+$ ]]; then
+    # Most likely IP or IP with port
+    echo 1
+  else
+    # Most likely DNS
+    echo 0
+  fi
+}
+
 get_laser_host() {
   local namespace=$(kubectl get svc --all-namespaces | grep lsr | awk '{print $1}')
   [ -z "$namespace" ] && exit_with_error "Could not find laser's namespace, aborting"
