@@ -406,6 +406,8 @@ postgresql:
     database: 'db-database'
     username: 'db-username'
     password: 'db-password'
+  enableReadinessProbe: ${POSTGRES_ENABLE_READINESS_PROBE:-"true"}
+  enableLivenessProbe: ${POSTGRES_ENABLE_LIVENESS_PROBE:-"true"}
   persistence:
     size: ${internal_database_pv_storage_size}
     storageClass: "${internal_database_pv_storage_class}"
