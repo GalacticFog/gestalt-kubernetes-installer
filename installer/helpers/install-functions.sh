@@ -482,7 +482,7 @@ wait_for_installer_launch() {
   local INSTALL_POD="${RELEASE_NAME}-installer"
 
   echo "Waiting for '${INSTALL_POD}' pod to launch:"
-  for i in `seq 1 30`; do
+  for i in `seq 1 60`; do
     status=$(kubectl get pod -n ${RELEASE_NAMESPACE} ${INSTALL_POD} -ojsonpath='{.status.phase}')
 
     if [ "$status" != "$previous_status" ]; then
@@ -514,9 +514,13 @@ wait_for_install_completion() {
   local previous_status=""
 
   local INSTALL_POD="${RELEASE_NAME}-installer"
+  local TIMEOUT=${INSTALL_POD_TIMEOUT:=600}
 
-  echo "Waiting for Gestalt Platform installation to complete."
-  for i in `seq 1 100`; do
+  local CHECK_INTERVAL=5
+  local MAX_CHECKS=$( expr $TIMEOUT / $CHECK_INTERVAL )
+
+  echo "Waiting for Gestalt Platform installation to complete. ($TIMEOUT seconds)"
+  for i in `seq 1 $MAX_CHECKS`; do
     echo -n "."
 
     line=$(kubectl logs -n $RELEASE_NAMESPACE $INSTALL_POD --tail 20 2> /dev/null)
@@ -559,7 +563,7 @@ wait_for_install_completion() {
       fi
     fi
 
-    sleep 5
+    sleep $CHECK_INTERVAL
   done
   echo
   exit_with_error "Installation did not complete within expected timeframe."
