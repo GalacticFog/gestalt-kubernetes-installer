@@ -274,7 +274,7 @@ form:
     IP Address:</b> set these to hostnames within a domain you control, and 
     after completing the install, create
     <a href="https://cloud.google.com/dns/docs/overview#supported_dns_record_types">A
-    name records</i> in your DNS system for your chosen hostnames which resolve 
+    name records</a> in your DNS system for your chosen hostnames which resolve
     to the IP addresses that GCP will assign to the Ingress resources for the 
     Gestalt <i>ui</i> and <i>kng-ext</i> services.<P>
 
