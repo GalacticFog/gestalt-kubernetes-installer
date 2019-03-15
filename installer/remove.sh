@@ -77,7 +77,7 @@ remove_gestalt_platform() {
 
   # Remove all the Gestalt Platform standard resources and display output.
   echo "Removing Gestalt Platform components from '$RELEASE_NAMESPACE' namespace..."
-  kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+  kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,persistentvolumeclaim,ingresses \
     --timeout=30s --all --namespace $RELEASE_NAMESPACE
 
   if [ $? -ne 0 ]; then
@@ -89,7 +89,7 @@ remove_gestalt_platform() {
     echo ""
     
     # The --force flag helps clean up pods stuck in the 'Terminating' state
-    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+    kubectl delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,persistentvolumeclaim,ingresses \
       --grace-period=0 --force --all --namespace $RELEASE_NAMESPACE
   fi
 }

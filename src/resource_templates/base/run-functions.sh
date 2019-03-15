@@ -49,7 +49,7 @@ apply_image_pull_secrets() {
 }
 
 get_laser_host() {
-  local namespace=$(kubectl get svc --all-namespaces | grep lsr | awk '{print $1}')
+  local namespace=$(kubectl get service --all-namespaces | grep lsr | awk '{print $1}')
   [ -z "$namespace" ] && exit_with_error "Could not find laser's namespace, aborting"
   echo "http://lsr.${namespace}.svc.cluster.local:9000"
 }
@@ -114,7 +114,7 @@ import_gestalt_system_k8s_resources() {
   import_secret "$RELEASE_NAMESPACE" "${RELEASE_NAME}-secrets"
 
   # Next, import all Gestalt Volumes
-  for v in `kubectl get pvc -n $RELEASE_NAMESPACE --no-headers | awk '{print $1}'`; do
+  for v in `kubectl get persistentvolumeclaim -n $RELEASE_NAMESPACE --no-headers | awk '{print $1}'`; do
     import_volume "$RELEASE_NAMESPACE" $v
   done
 

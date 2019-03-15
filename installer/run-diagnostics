@@ -24,9 +24,9 @@ run_diagnostics() {
 
   run kubectl get pods --all-namespaces
 
-  run kubectl get pvc --all-namespaces
+  run kubectl get persistentvolumeclaim --all-namespaces
 
-  run kubectl get svc --all-namespaces
+  run kubectl get service --all-namespaces
 
   run kubectl get all --all-namespaces
 

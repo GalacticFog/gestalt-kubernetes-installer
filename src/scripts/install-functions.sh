@@ -717,7 +717,7 @@ gestalt_cli_create_resources() {
 servicename_is_unique_or_exit() {
   local service_name=$1
   # Get a list of all services by name across all namespaces
-  local list=$(kubectl get svc --all-namespaces -ojson | jq -r '.items[].metadata.name')
+  local list=$(kubectl get service --all-namespaces -ojson | jq -r '.items[].metadata.name')
   local found="false"
   for s in $list; do
     # Trying to find a unique service name.  If the service was already found before, it's not a unique name
@@ -735,7 +735,7 @@ servicename_is_unique_or_exit() {
 get_service_namespace() {
   local service=$1
   servicename_is_unique_or_exit $service
-  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$service\") | .namespace"
+  kubectl get service --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$service\") | .namespace"
 }
 
 create_readiness_probe() {
@@ -831,7 +831,7 @@ if_kong_ingress_service_name_is_set() {
 }
 
 get_kong_service_port() {
-  kubectl -n $KONG_SERVICE_NAMESPACE get svc $KONG_INGRESS_SERVICE_NAME -o json | jq -r ".spec.ports[] | select(.name==\"public-url\") | .port"
+  kubectl -n $KONG_SERVICE_NAMESPACE get service $KONG_INGRESS_SERVICE_NAME -o json | jq -r ".spec.ports[] | select(.name==\"public-url\") | .port"
 }
 
 and_health_api_is_working() {
