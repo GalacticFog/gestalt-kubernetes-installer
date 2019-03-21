@@ -57,6 +57,9 @@ spec:
               key: {{ .Values.secretKey.password | quote }}
         - name: POD_IP
           valueFrom: { fieldRef: { fieldPath: status.podIP } }
+        # Added in attempt to get around IPv6 issue ("could not create IPv6 socket: Address family not supported by protocol")
+        - name: PGSSLMODE
+          value: disable
         ports:
         - name: postgresql
           containerPort: 5432
