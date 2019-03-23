@@ -1,3 +1,5 @@
+{{- template "gestalt.uiEnableIngress" . -}}
+{{- if .Values.ui.ingress.enableIngress -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -6,8 +8,11 @@ metadata:
     app.kubernetes.io/name: {{ .Release.Name | quote }}
     app.kubernetes.io/app: 'gestalt'
     app.kubernetes.io/component: {{ template "gestalt.uiName" . }}
+  annotations:
+{{- include "gestalt.uiIngressAnnotations" . | nindent 4 }}
   name: {{ template "gestalt.uiName" . }}
 spec:
   backend:
     serviceName: {{ template "gestalt.uiName" . }}
-    servicePort: {{ .Values.ui.ingress.port }}
+    servicePort: {{ .Values.ui.ingress.protocol | quote }}
+{{- end -}}

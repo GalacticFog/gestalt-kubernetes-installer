@@ -25,6 +25,7 @@ RUN apk upgrade --no-cache && \
     pip install --upgrade pip && \
     pip install httpie httpie-unixsocket && \
     pip install PyYaml docopt && \
+    pip install jinja2 && \
     rm -rf /var/cache/apk/*
 
 # Copy: dependencies

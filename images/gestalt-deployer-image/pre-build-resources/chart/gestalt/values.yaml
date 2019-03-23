@@ -19,6 +19,9 @@ security:
   port: 9455
   protocol: http
   databaseName: gestalt-security
+  enableReadinessProbe: false
+  enableLivenessProbe: false
+  enableIngress: false
 
 rabbit:
   image: gcr.io/galacticfog-public/gestalt/rabbit:2.4
@@ -42,6 +45,9 @@ meta:
   upgradeCheckEnabled: 'true'
   upgradeUrl: 'https://github.com/GalacticFog/gestalt-platform/tree/master/upgrades'
   upgradeCheckHours: 24
+  enableReadinessProbe: false
+  enableLivenessProbe: false
+  enableIngress: false
 
 logging:
   image: gcr.io/galacticfog-public/gestalt/gestalt-log:2.4
@@ -54,9 +60,11 @@ ui:
   exposedServiceType: NodePort
   nodePort: 31112
   ingress:
+    enableIngress: true
     host: 'localhost'
     port: 80
     protocol: 'http'
+    staticIP: ''
 
 # Gestalt DB settings
 db:

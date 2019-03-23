@@ -31,6 +31,24 @@ spec:
         ports:
         - containerPort: 9000
           name: 'service-api'
+        {{- if .Values.security.enableReadinessProbe }}
+        readinessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          httpGet:
+            path: '/health'
+            port: 'service-api'
+            scheme: 'HTTP'
+        {{- end }}
+        {{- if .Values.security.enableLivenessProbe }}
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          httpGet:
+            path: '/health'
+            port: 'service-api'
+            scheme: 'HTTP'
+        {{- end }}
         env:
         - name: 'DATABASE_HOSTNAME'
           value: {{ template "gestalt.dbHost" . }}

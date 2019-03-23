@@ -12,6 +12,76 @@ spec:
   descriptor:
     type: 'gestalt'
     versions: {{ .Values.common.releaseVersion | quote }}
+    description: |-
+      The Gestalt Framework is supported by Galactic Fog, LLC
+    maintainers:
+    - name: Galactic Fog
+      url: http://www.galacticfog.com
+    links:
+    - description: 'User Guide: Installing Gestalt on Google Cloud Platform'
+      url: http://github.com/GalacticFog/gestalt-gcp-marketplace
+    - description: 'Gestalt Documentation'
+      url: http://docs.galacticfog.com
+    - description: 'Gestalt Framework Community Slack Channel'
+      url: http://chat.galacticfog.com
+    notes: |-
+      Thank you for installing Gestalt!
+
+      After installing Gestalt on the Google Cloud Platform (GCP) Google
+      Kubernetes Engine (GKE), <b>you may need to wait for around 10 minutes<b>
+      while GKE allocates IP addresses, prepares load balancers, and propogates
+      configurations around the globe. In the meanwhile, you may get HTTP 404
+      and HTTP 500 errors until the load balancer is ready to serve the traffic.
+
+      While you're waiting, feel free to visit our 
+      [Gestalt Documentation Site](http://docs.galacticfog.com)
+      or join our [Slack channel](http://chat.galacticfog.com) for information 
+      and support!
+    info:
+    - name: Reviewing the Full Installer Logs
+      value: kubectl logs -n {{ .Release.Namespace }} gestalt-installer
+    - name: Gestalt Web UI URL
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'gestalt-url'
+    - name: Gestalt Web UI Admin Username
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'admin-username'
+    - name: Gestalt Web UI Admin Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'admin-password'
+    - name: Gestalt Database Name
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'db-database'
+    - name: Gestalt Database Admin Username
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'db-username'
+    - name: Gestalt Database Admin Password
+      type: Reference
+      valueFrom:
+        type: SecretKeyRef
+        secretKeyRef:
+          name: {{ template "gestalt.secretsName" . }}
+          key: 'db-password'
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .Release.Name | quote }}

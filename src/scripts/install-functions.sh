@@ -25,6 +25,7 @@ declare -A CONFIG_TO_ENV=(
   ["api.gateway.protocol"]="KONG_SERVICE_PROTOCOL"
   ["api.gateway.host"]="KONG_SERVICE_HOST"
   ["api.gateway.port"]="KONG_SERVICE_PORT"
+  ["api.gateway.staticIP"]="KONG_STATIC_IP"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
   ["logging.port"]="LOGGING_PORT"
@@ -48,6 +49,7 @@ declare -A CONFIG_TO_ENV=(
   ["ui.ingress.protocol"]="UI_PROTOCOL"
   ["ui.ingress.host"]="UI_HOST"
   ["ui.ingress.port"]="UI_PORT"
+  ["ui.ingress.staticIP"]="UI_STATIC_IP"
 )
 
 random() { cat /dev/urandom | env LC_CTYPE=C tr -dc $1 | head -c $2; echo; }
@@ -92,6 +94,17 @@ mask_db_fields_if_provisioning_internal_db() {
 
 get_db_password_from_secret() {
   kubectl get secrets -n ${RELEASE_NAMESPACE} "${RELEASE_NAME}-secrets" -ojsonpath='{.data.db-password}' | base64 -d
+}
+
+# We only want to create a LoadBalancer service if the static IP is not null
+# and is numeric (ie. 10.0.10.5) rather than a named IP reservation...
+should_create_loadbalancer_service_for_ip() {
+  local STATIC_IP=${1:-""}
+  if [[ "$STATIC_IP" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    true
+  else
+    false
+  fi
 }
 
 map_env_vars_for_configmap() {
@@ -143,7 +156,22 @@ map_env_vars_for_configmap() {
       fi
     fi
   done
+
+  should_create_loadbalancer_service_for_ip $UI_STATIC_IP && UI_SERVICE_TYPE="LoadBalancer"
+  should_create_loadbalancer_service_for_ip $KONG_STATIC_IP && KONG_SERVICE_TYPE="LoadBalancer"
+
   echo "postgres connection info ${DATABASE_USERNAME}@${DATABASE_HOSTNAME}:${DATABASE_PORT}/${DATABASE_NAME}"
+}
+
+# We only want to create a LoadBalancer service if the static IP is not null
+# and is numeric (ie. 10.0.10.5) rather than a named IP reservation...
+should_create_load_balancer_service_for_ip() {
+  local STATIC_IP=${1:-""}
+  if [[ "$STATIC_IP" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    true
+  else
+    false
+  fi
 }
 
 convert_configmap_to_env_variables() {
@@ -339,11 +367,14 @@ secrets:
   generatedPassword: "${DATABASE_PASSWORD}"
 
 security:
-  exposedServiceType: NodePort
+  exposedServiceType: ${SECURITY_SERVICE_TYPE:-NodePort}
   image: "${SECURITY_IMAGE}"
   port: ${SECURITY_PORT}
   protocol: "${SECURITY_PROTOCOL}"
   databaseName: gestalt-security
+  enableReadinessProbe: ${SECURITY_ENABLE_READINESS_PROBE:-"false"}
+  enableLivenessProbe: ${SECURITY_ENABLE_LIVENESS_PROBE:-"false"}
+  enableIngress: ${SECURITY_ENABLE_INGRESS:="false"}
 
 db:
   host: ${DATABASE_HOSTNAME}
@@ -366,7 +397,7 @@ elastic:
 
 meta:
   image: ${META_IMAGE}
-  exposedServiceType: NodePort
+  exposedServiceType: ${META_SERVICE_TYPE:-NodePort}
   port: ${META_PORT}
   protocol: ${META_PROTOCOL}
   databaseName: gestalt-meta
@@ -374,6 +405,9 @@ meta:
   upgradeCheckEnabled: ${META_UPGRADE_CHECK_ENABLED}
   upgradeUrl: ${META_UPGRADE_URL}
   upgradeCheckHours: ${META_UPGRADE_CHECK_HOURS}
+  enableReadinessProbe: ${META_ENABLE_READINESS_PROBE:-"true"}
+  enableLivenessProbe: ${META_ENABLE_LIVENESS_PROBE:-"true"}
+  enableIngress: ${META_ENABLE_INGRESS:="false"}
 
 # kong:
 #   nodePort: ${KONG_NODEPORT}
@@ -386,12 +420,14 @@ logging:
 
 ui:
   image: ${UI_IMAGE}
-  exposedServiceType: NodePort
+  exposedServiceType: ${UI_SERVICE_TYPE:-NodePort}
   nodePort: ${UI_NODEPORT}
   ingress:
+    enableIngress: true
     host: ${UI_HOST}
     port: ${UI_PORT}
     protocol: ${UI_PROTOCOL}
+    staticIP: '${UI_STATIC_IP}'
 
 redis:
   image: ${REDIS_IMAGE}
@@ -739,27 +775,38 @@ servicename_is_unique_or_exit() {
 }
 
 get_service_namespace() {
-  local service=$1
-  servicename_is_unique_or_exit $service
-  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$service\") | .namespace"
+  local SVC=$1
+  servicename_is_unique_or_exit $SVC
+  kubectl get svc --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$SVC\") | .namespace"
+}
+
+get_deployment_namespace() {
+  local DEPLOY=$1
+  kubectl get deployment --all-namespaces -ojson | jq -r ".items[].metadata | select(.name==\"$DEPLOY\") | .namespace"
+}
+
+get_gestalt_app_service_name() {
+  local APP=$1
+  kubectl get svc --all-namespaces -l "gestalt-app=${APP}" -o jsonpath="{.items[0].metadata.name}"
+}
+
+get_gestalt_app_deployment_name() {
+  local APP=$1
+  kubectl get deployment --all-namespaces -l "gestalt-app=${APP}" -o jsonpath="{.items[0].metadata.name}"
 }
 
 create_readiness_probe() {
   local deployment=$1
-  local service=$2
-  local container=$3
-  local endpoint=${4:="/"}
-  local port=${5:=80}
-  local namespace=$6
+  local container=${2:-"$deployment"}
+  local endpoint=${3:-"/"}
+  local port=${4:-80}
+  local namespace=${5:-$RELEASE_NAMESPACE}
 
   [ -z $deployment ] && exit_with_error "deployment name blank or undefined for create_readiness_probe"
-  [ -z $service ] && exit_with_error "service name blank or undefined for create_readiness_probe"
-  [ -z $container ] && exit_with_error "container name blank or undefined for create_readiness_probe"
+  [ -z $namespace ] && namespace=$(get_deployment_namespace $deployment)
 
-  [ -z $namespace ] && namespace=$(get_service_namespace $service)
-
-  echo "Creating ${service} readinessProbe in deployment '${namespace}/${deployment}'"
-  echo "Creating ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+  echo "Creating ${deployment} readinessProbe in deployment '${namespace}/${deployment}'"
+  echo "Creating ${deployment} readinessProbe on endpoint '${endpoint}' port '$port'"
 
   kubectl apply -f - <<EOF
 apiVersion: extensions/v1beta1
@@ -780,15 +827,15 @@ spec:
             scheme: HTTP
 EOF
 
-  exit_on_error "Could not create ${service} readinessProbe on endpoint '${endpoint}' port '$port'"
+  exit_on_error "Could not create ${deployment} readinessProbe on endpoint '${endpoint}' port '$port'"
   
-  echo "SUCCESS created readiness probe for '${service}' on endpoint '${endpoint}' port '$port'!"
+  echo "SUCCESS created readiness probe for '${deployment}' on endpoint '${endpoint}' port '$port'!"
 }
 
 create_ingress() {
   local service=$1
-  local port=${2:=80}
-  local namespace=$3
+  local port=${2:-80}
+  local namespace=${3:-$RELEASE_NAMESPACE}
 
   [ -z $service ] && exit_with_error "service name blank or undefined for create_ingress"
 
@@ -840,45 +887,165 @@ get_kong_service_port() {
   kubectl -n $KONG_SERVICE_NAMESPACE get svc $KONG_INGRESS_SERVICE_NAME -o json | jq -r ".spec.ports[] | select(.name==\"public-url\") | .port"
 }
 
-and_health_api_is_working() {
-  local run_cmd=$*
-  echo "---------- Checking health API for '$run_cmd' ----------"
-  local kong_service_port=$(get_kong_service_port)
-  local health_url="http://${KONG_INGRESS_SERVICE_NAME}.${KONG_SERVICE_NAMESPACE}:${kong_service_port}/health"
+endpoint_is_working() {
+  local SVC=$1
+  local PORT=${2:-80}
+  local ENDPOINT=${3:-"/"}
+  local NAMESPACE=${4:-$RELEASE_NAMESPACE}
+
+  local URL="http://${SVC}.${NAMESPACE}:${PORT}${ENDPOINT}"
 
   local try_limit=5
-  local exit_code=1
   local tries=0
-
-  echo "Attempting to hit URL $health_url"
-  curl_cmd="curl -i -s -S --connect-timeout 5 --stderr - $health_url"
+  local exit_code=1
+  echo "Attempting to hit URL $URL"
+  curl_cmd="curl -i -s -S --fail --connect-timeout 5 --stderr - $URL"
   while [ $exit_code -ne 0 -a $tries -lt $try_limit ]; do
-    echo "Running '$curl_cmd'"
+    tries=`expr $tries + 1`
+    echo "Running try $tries '$curl_cmd'"
     response="$($curl_cmd)"
     exit_code=$?
     echo "${response}"
     echo "exit code was $exit_code"
     if [ $exit_code -eq 0 ]; then
-      echo "---------- Health API success at ${health_url} ---------"
-      $run_cmd
-      return $?
+      echo "---------- SUCCESS requesting $URL ---------"
     else
-      echo "---------- Health API FAILED at ${health_url} ----------"
+      echo "---------- FAILED requesting $URL ----------"
     fi
-    echo "Retrying in 10 seconds..."
-    sleep 10
-    tries=`expr $tries + 1`
+    if [ $exit_code -ne 0 -a $tries -lt $try_limit ]; then
+      echo "Retrying in 10 seconds..."
+      sleep 10
+    fi
   done
-  echo "Healthcheck FAILED at API endpoint ${health_url} ----------"
-  return $exit_code
+  [ $exit_code -ne 0 ] && echo "---------- $tries FAILED requests for $URL ----------"
+  [ $exit_code -eq 0 ]
+}
+
+if_security_healthcheck_is_working() {
+  local run_cmd=$*
+  echo "---------- Checking Security Health API for '$run_cmd' ----------"
+  local SVC=$( get_security_service_name )
+  local PORT=$( get_security_service_port )
+
+  if endpoint_is_working $SVC $PORT "/health"; then
+    echo "---------- Security Health API success ---------"
+    $run_cmd
+  else
+    echo "---------- Security Health API FAILED ---------"
+    false
+  fi
+}
+
+if_meta_healthcheck_is_working() {
+  local run_cmd=$*
+  echo "---------- Checking Meta Health API for '$run_cmd' ----------"
+  local SVC=$( get_meta_service_name )
+  local PORT=$( get_meta_service_port )
+
+  if endpoint_is_working $SVC $PORT "/health"; then
+    echo "---------- Meta Health API success ---------"
+    $run_cmd
+  else
+    echo "---------- Meta Health API FAILED ---------"
+    false
+  fi
+}
+
+and_kong_healthcheck_is_working() {
+  local run_cmd=$*
+  echo "---------- Checking Kong Health API for '$run_cmd' ----------"
+  local PORT=$( get_kong_service_port )
+
+  if endpoint_is_working $KONG_INGRESS_SERVICE_NAME $PORT "/health" $KONG_SERVICE_NAMESPACE; then
+    echo "---------- Kong Health API success ---------"
+    $run_cmd
+  else
+    echo "---------- Kong Health API FAILED ---------"
+    false
+  fi
+}
+
+rebuild_kong_ingress() {
+  echo "Rebuilding the Kong Ingress after adding readinessProbe"
+  local ING_YAML=$( kubectl -n $KONG_SERVICE_NAMESPACE get ingress kng -o yaml )
+  echo "---------- Kong INGRESS YAML ---------"
+  echo "$ING_YAML"
+  echo "---------- Kong INGRESS YAML ---------"
+  echo "Deleting Kong Ingesss"
+  kubectl -n $KONG_SERVICE_NAMESPACE delete ingress kng
+  echo "Sleeping 30 seconds"
+  sleep 30
+  echo "Recreating Kong Ingress"
+  echo "$ING_YAML" | kubectl create -f -
+}
+
+must_rebuild_kong_ingress_for_gke() {
+  [ "${K8S_PROVIDER:=default}" == 'gke' ] && [ "$KONG_SERVICE_TYPE" == "NodePort" ]
 }
 
 create_kong_readiness_probe() {
-  # create_readiness_probe deployment service container [endpoint_path] [port] [namespace]
-  create_readiness_probe kng $KONG_INGRESS_SERVICE_NAME kng "/health" 8000 $KONG_SERVICE_NAMESPACE
+  # create_readiness_probe deployment [container] [endpoint_path] [port] [namespace]
+  create_readiness_probe kng kng "/health" 8000 $KONG_SERVICE_NAMESPACE
+  if must_rebuild_kong_ingress_for_gke ; then
+    rebuild_kong_ingress
+  fi
 }
 
 create_kong_ingress_v2() {
   # create_ingress service [port] [namespace]
-  create_ingress $KONG_INGRESS_SERVICE_NAME 8000 $KONG_SERVICE_NAMESPACE
+  create_ingress $KONG_INGRESS_SERVICE_NAME 'public-url' $KONG_SERVICE_NAMESPACE
+}
+
+get_security_service_name() {
+  [ -z "$SECURITY_INGRESS_SERVICE_NAME" ] && SECURITY_INGRESS_SERVICE_NAME=$( get_gestalt_app_service_name security )
+  echo "$SECURITY_INGRESS_SERVICE_NAME"
+}
+
+get_security_service_port() {
+  local SVC=$( get_security_service_name )
+  kubectl -n $RELEASE_NAMESPACE get svc $SVC -o json | jq -r ".spec.ports[] | select(.name==\"service-api\") | .port"
+}
+
+get_security_deployment_name() {
+  [ -z "$SECURITY_DEPLOYMENT_NAME" ] && SECURITY_DEPLOYMENT_NAME=$( get_gestalt_app_deployment_name security )
+  echo "$SECURITY_DEPLOYMENT_NAME"
+}
+
+create_security_readiness_probe() {
+  local DEPLOYMENT=$( get_security_deployment_name )
+  # create_readiness_probe deployment [container] [endpoint_path] [port] [namespace]
+  create_readiness_probe $DEPLOYMENT $DEPLOYMENT "/health" service-api
+}
+
+create_security_ingress() {
+  local SVC=$( get_security_service_name )
+  # create_ingress service [port] [namespace]
+  create_ingress $SVC service-api
+}
+
+get_meta_service_name() {
+  [ -z "$META_INGRESS_SERVICE_NAME" ] && META_INGRESS_SERVICE_NAME=$( get_gestalt_app_service_name meta )
+  echo "$META_INGRESS_SERVICE_NAME"
+}
+
+get_meta_service_port() {
+  local SVC=$( get_meta_service_name )
+  kubectl -n $RELEASE_NAMESPACE get svc $SVC -o json | jq -r ".spec.ports[] | select(.name==\"http-api\") | .port"
+}
+
+get_meta_deployment_name() {
+  [ -z "$META_DEPLOYMENT_NAME" ] && META_DEPLOYMENT_NAME=$( get_gestalt_app_deployment_name meta )
+  echo "$META_DEPLOYMENT_NAME"
+}
+
+create_meta_readiness_probe() {
+  local DEPLOYMENT=$( get_meta_deployment_name )
+  # create_readiness_probe deployment [container] [endpoint_path] [port] [namespace]
+  create_readiness_probe $DEPLOYMENT $DEPLOYMENT "/health" service-api
+}
+
+create_meta_ingress() {
+  local SVC=$( get_meta_service_name )
+  # create_ingress service [port] [namespace]
+  create_ingress $SVC http-api
 }

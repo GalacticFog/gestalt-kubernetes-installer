@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+"""
+Usage:
+    jinja2format (--version|--help)
+    jinja2format [<template_file>] [<output_file>]
+
+Arguments:
+    <template_file>          
+    <output_file>          
+"""
+
+import os, sys
+import docopt
+from jinja2 import Template
+__version__ = "0.1"
+
+def format_template(template_file, output_file):
+    template = Template(template_file.read(), trim_blocks=True, lstrip_blocks=True)
+    output_file.write(template.render(**os.environ))
+
+if __name__ == '__main__':
+    args = docopt.docopt(
+        __doc__,
+        version="version "+__version__
+    )
+
+    template_file = sys.stdin
+    if args.get('<template_file>'):
+        template_file = open(args.get('<template_file>'), 'r')
+    with template_file:
+        output_file = sys.stdout
+        if args.get('<output_file>'):
+            output_file = open(args.get('<output_file>'), 'w')
+        with output_file:
+            format_template(template_file, output_file)

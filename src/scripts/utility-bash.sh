@@ -229,6 +229,8 @@ convert_json_to_env_variables() {
     # log_debug "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
     echo "Setting: export eval ${curr_variable_name}=${curr_variable_value}"
     export eval ${curr_variable_name}=${curr_variable_value}
+    echo "exporting $curr_variable_name"
+    export ${curr_variable_name}
   done
 
   log_debug "[${FUNCNAME[0]}][After processing ${json_file_to_process}] All environment variables: [`env | sort`]"

@@ -12,4 +12,6 @@ cd ~-
 
 fog apply -d hierarchy
 
-fog apply -d dev_sandbox_samples --context /sandbox/dev-sandbox/dev
+if [ -z "$SKIP_SANDBOX_SAMPLES" ]; then
+  fog apply -d dev_sandbox_samples --context /sandbox/dev-sandbox/dev
+fi

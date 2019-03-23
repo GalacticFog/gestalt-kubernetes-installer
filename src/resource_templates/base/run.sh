@@ -33,6 +33,20 @@ if [ $? -eq 0 ]; then
   exit_with_error "Meta migration did not succeed, aborting"
 fi
 
+export NODNS_INSTALL="$(check_install_category ${KONG_SERVICE_HOST})"
+
+# format templates
+for filename in *.jinja2; do
+  # chopping off .jinja2 ext
+  yaml_filename=${filename%???????}
+  echo "Converting resource template '$filename' to '$yaml_filename'"
+  jinja2format ${filename} > ${yaml_filename}
+  echo "vvvvvvvvvv resource template YAML $yaml_filename vvvvvvvvvv"
+  cat ${yaml_filename}
+  echo
+  echo "^^^^^^^^^^ resource template YAML $yaml_filename ^^^^^^^^^^"
+done
+
 # Set up hierarchy
 fog create workspace --name 'gestalt-system-workspace' --description "Gestalt System Workspace"
 exit_on_error "Error creating 'gestalt-system-workspace', aborting"
@@ -81,13 +95,18 @@ create policy-provider # Policy depends on Rabbit and Laser
 
 echo "${KONG_SERVICE_HOST}"
 
-if [ "$(check_install_category ${KONG_SERVICE_HOST})" == "1" ]; then
-  echo "processing as non-dns environment"
-  create kong-nondns-provider
-else
-  echo "processing as dns environment"
-  create kong-provider
-fi
+# if [ "$(check_install_category ${KONG_SERVICE_HOST})" == "1" ]; then
+#   echo "processing as non-dns environment"
+#   create kong-nondns-provider
+# elif [ "${KONG_SERVICE_TYPE:-NodePort}" == "LoadBalancer" ]; then
+#   echo "processing kong as a loadbalancer service"
+#   create kong-lb-provider
+# else
+#   echo "processing as dns environment"
+#   create kong-provider
+# fi
+
+create kong-provider
 
 # Uncomment to enable additional kong providers, and also ensure that the gatewaymanager provider has linked providers for each kong.
 # create kong2-provider

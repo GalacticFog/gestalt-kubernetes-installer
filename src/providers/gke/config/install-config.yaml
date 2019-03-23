@@ -1,12 +1,11 @@
 # Installer debug settings
-FOG_CLI_DEBUG: 'false'      # Change to 'true' to enable debugging output in the fog CLI (useful for debugging)
+FOG_CLI_DEBUG: 'false'
 GESTALT_INSTALL_LOGGING_LVL: info   # Change to 'debug' for more logging info
 
 configure_ldap: 'No'
 configure_catalog: 'No' # Set to 'Yes' to configure catalog
 
 K8S_PROVIDER: 'gke'
-# K8S_PROVIDER: 'default'
 
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
@@ -43,9 +42,13 @@ EXECUTOR_SIZE_1_DEFAULT_MEM: 2048
 
 # Kong
 KONG_SERVICE_PROTOCOL: http
-KONG_INGRESS_SERVICE_NAME: kng-ext
+KONG_INGRESS_SERVICE_NAME: kng
+KONG_SERVICE_TYPE: NodePort
+KONG_STATIC_IP: ''
 KONG_MANAGEMENT_NODEPORT: ''
 KONG_NODEPORT: '31113'
+KONG_ENABLE_HEALTHCHECK: true
+KONG_ENABLE_INGRESS: false
 
 # Laser
 LASER_NODEPORT: ''
@@ -66,10 +69,13 @@ META_NODEPORT: 31111
 META_UPGRADE_CHECK_ENABLED: 'true' # 'false' to disable
 META_UPGRADE_URL: 'https://github.com/GalacticFog/gestalt-platform/tree/master/upgrades'
 META_UPGRADE_CHECK_HOURS: '24' # Change how frequently check: '1'
+META_ENABLE_READINESS_PROBE: false
+META_ENABLE_LIVENESS_PROBE: false
+META_ENABLE_HEALTHCHECK: false
+META_ENABLE_INGRESS: false
 
 # Catalog
 CATALOG_URL: https://galacticfog.gitlab.io/gestalt-catalog-ui
-# CATALOG_URL: http://localhost:9000/gestalt-catalog-ui/
 
 # RABBIT
 RABBIT_HTTP_PORT: '15672'
@@ -79,23 +85,27 @@ RABBIT_PORT: '5672'
 REDIS_PORT: 6379
 
 # Security
+SECURITY_SERVICE_TYPE: 'NodePort'
 SECURITY_PORT: '9455'
 SECURITY_PROTOCOL: http
+SECURITY_ENABLE_READINESS_PROBE: false
+SECURITY_ENABLE_LIVENESS_PROBE: false
+SECURITY_ENABLE_HEALTHCHECK: false
+SECURITY_ENABLE_INGRESS: false
 
 # 'UI'
 UI_NODEPORT: '31112'
 UI_PORT: '80'
 UI_PROTOCOL: http
+UI_HOST: 'localhost'
+UI_SERVICE_TYPE: 'NodePort'
+UI_STATIC_IP: ''
 
 # UBB - billing agent
 UBB_PORT: 6380
 
-# Elastic search
-
-# Postgres image
-POSTGRES_IMAGE: gcr.io/galacticfog-public/gestalt/postgres:2.4
-
 # Images
+BASH_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-bash:2.4
 DOTNET_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4
 ELASTICSEARCH_IMAGE:      gcr.io/galacticfog-public/gestalt/elasticsearch-docker:2.4
 ELASTICSEARCH_INIT_IMAGE: gcr.io/galacticfog-public/gestalt/busybox:2.4
@@ -104,6 +114,7 @@ GRAALVM_EXECUTOR_IMAGE:   gcr.io/galacticfog-public/gestalt/gestalt-laser-execut
 GWM_EXECUTOR_IMAGE:       gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4
 GWM_IMAGE:                gcr.io/galacticfog-public/gestalt/gestalt-api-gateway:2.4
 HYPER_EXECUTOR_IMAGE:     gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-hyper:2.4
+INSTALLER_IMAGE:          gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
 JS_EXECUTOR_IMAGE:        gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-js:2.4
 JVM_EXECUTOR_IMAGE:       gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-jvm:2.4
 KONG_IMAGE:               gcr.io/galacticfog-public/gestalt/kong:2.4
@@ -112,21 +123,20 @@ LOGGING_IMAGE:            gcr.io/galacticfog-public/gestalt/gestalt-log:2.4
 META_IMAGE:               gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
 NODEJS_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-nodejs:2.4
 POLICY_IMAGE:             gcr.io/galacticfog-public/gestalt/gestalt-policy:2.4
+POSTGRES_IMAGE:           gcr.io/galacticfog-public/gestalt/postgres:2.4
 PYTHON_EXECUTOR_IMAGE:    gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-python:2.4
 RABBIT_IMAGE:             gcr.io/galacticfog-public/gestalt/rabbit:2.4
+REDIS_IMAGE:              gcr.io/galacticfog-public/gestalt/redis:2.4
 RUBY_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-ruby:2.4
 SECURITY_IMAGE:           gcr.io/galacticfog-public/gestalt/gestalt-security:2.4
 UI_IMAGE:                 gcr.io/galacticfog-public/gestalt:2.4
-REDIS_IMAGE:              gcr.io/galacticfog-public/gestalt/redis:2.4
-BASH_EXECUTOR_IMAGE:      gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-bash:2.4.1
 
 # GKE specific
 GCP_TRACKING_SERVICE_IMAGE:  gcr.io/galacticfog-public/gestalt-tracking-service:2.4
 GCP_UBB_IMAGE:               gcr.io/galacticfog-public/gestalt-ubb-agent:2.4
 
 # POSTGRES database settings
-internal_database_pv_storage_class: standard   # Must set to 'standard' for GCP Kubernetes installs
-# internal_database_pv_storage_class: hostpath
+internal_database_pv_storage_class: standard
 internal_database_pv_storage_size: 100Mi
 postgres_persistence_subpath: postgres
 postgres_memory_request: 100Mi

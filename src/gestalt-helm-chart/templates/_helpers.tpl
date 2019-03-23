@@ -30,6 +30,35 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+  Compute UI Ingress annotations based on the value of static IP
+*/}}
+{{- define "gestalt.uiIngressAnnotations" -}}
+  {{- if and .Values.ui.ingress.staticIP ( regexMatch "[A-Za-z]" .Values.ui.ingress.staticIP ) -}}
+kubernetes.io/ingress.global-static-ip-name: {{ .Values.ui.ingress.staticIP | quote }}
+gestalt-ingress-enabled: {{ .Values.ui.ingress.enableIngress | quote }}
+  {{- else if and .Values.ui.ingress.staticIP ( regexMatch "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$" .Values.ui.ingress.staticIP ) -}}
+gestalt-static-ip: {{ .Values.ui.ingress.staticIP | quote }}
+gestalt-ingress-enabled: {{ .Values.ui.ingress.enableIngress | quote }}
+  {{- else -}}
+gestalt-ingress-enabled: {{ .Values.ui.ingress.enableIngress | quote }}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+  Sets the value of .Values.ui.ingress.enableIngress when there is a staticIP defined.
+  true if the static IP contains any letters (it's not an IP address)
+  false if the static IP is actually an IP address (should use a LoadBalancer Service)
+  The return value of the "set" operator is assigned to the $garbage variable and discarded
+  when the variable passes out of scope.
+*/}}
+{{- define "gestalt.uiEnableIngress" -}}
+  {{- if and .Values.ui.ingress.staticIP ( regexMatch "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$" .Values.ui.ingress.staticIP ) -}} 
+    {{- $garbage := set .Values.ui.ingress "enableIngress" false -}}
+    {{- $garbage := set .Values.ui "exposedServiceType" "LoadBalancer" -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
 Define database connection parameters depending on postgresql.provisionInstance boolean
 */}}
 {{- define "gestalt.dbHost" -}}

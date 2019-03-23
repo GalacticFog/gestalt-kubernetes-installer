@@ -16,11 +16,12 @@
   # Sources
   sources_folder="./src"
   source_yaml2json="${sources_folder}/yaml2json"
+  source_jinja2format="${sources_folder}/jinja2format"
   # Generated files and folders
   dependencies_folder="./deps"
 
   all_source_me="${utility_bash} ${utility_gestalt} ${conf_gestalt_install}"
-  all_check_me="${source_yaml2json}"
+  all_check_me="${source_yaml2json} ${source_jinja2format}"
 
 ############################################
 # Check / Source expected configurations and scripts
@@ -52,7 +53,8 @@
     kubectl_download_url \
     fog_download_url \
     helm_download_url \
-    source_yaml2json
+    source_yaml2json \
+    source_jinja2format
 
 ########################################################################################
 # END

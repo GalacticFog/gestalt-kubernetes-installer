@@ -1,3 +1,4 @@
+{{- template "gestalt.uiEnableIngress" . -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,6 +10,9 @@ metadata:
     app.kubernetes.io/component: {{ template "gestalt.uiName" . }}
 spec:
   type: {{ .Values.ui.exposedServiceType | quote }}
+  {{- if and ( eq .Values.ui.exposedServiceType "LoadBalancer" ) .Values.ui.ingress.staticIP }}
+  loadBalancerIP: {{ .Values.ui.ingress.staticIP | quote }}
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ .Release.Name | quote }}
     gestalt-app: 'ui'
