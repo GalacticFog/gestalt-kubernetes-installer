@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/app: 'gestalt'
     app.kubernetes.io/component: {{ template "gestalt.securityName" . }}
 spec:
-  # type: {{ .Values.security.exposedServiceType }}
+  type: {{ .Values.security.exposedServiceType }}
   selector:
     gestalt-app: 'security'
   ports:

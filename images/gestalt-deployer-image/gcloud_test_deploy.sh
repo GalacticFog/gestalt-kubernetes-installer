@@ -30,13 +30,15 @@ export EULA_EMAIL="example@galacticfog.com"
 export EULA_COMPANY="Galactic Fog, LLC"
 export INSTALL_DOMAIN="yourdomain.com"
 export UI_HOSTNAME="portal.${INSTALL_DOMAIN}"
+export UI_STATIC_IP="35.245.210.40"
 export API_HOSTNAME="api.${INSTALL_DOMAIN}"
+export API_STATIC_IP="35.245.250.210"
 export PROVISION_DB="true"
 export DB_HOST="35.221.1.43"
 export DB_PORT="5432"
 export DB_NAME="postgres"
 export DB_USERNAME="postgres"
-export DB_PASSWORD="4CHaOPO0vIcbblqf"
+export DB_PASSWORD="9mfwC8dI6Axyf4qz"
 
 # Create the test namespace if it doesn't already exist
 create_ns() {
@@ -73,12 +75,16 @@ mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
 --parameters="{\"name\": \"${TEST_NAME}\", \
  \"namespace\": \"${TEST_NAMESPACE}\", \
  \"reportingSecret\": \"iweuniweubniewubn\", \
+ \"meta.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-meta:test\", \
+ \"laser.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-laser:test\", \
  \"common.name\": \"${EULA_NAME}\", \
  \"common.email\": \"${EULA_EMAIL}\", \
  \"common.companyName\": \"${EULA_COMPANY}\", \
  \"installer.image\": \"${INSTALLER_IMAGE}\", \
  \"ui.ingress.host\": \"${UI_HOSTNAME}\", \
+ \"ui.ingress.staticIP\": \"${UI_STATIC_IP}\", \
  \"api.gateway.host\": \"${API_HOSTNAME}\", \
+ \"api.gateway.staticIP\": \"${API_STATIC_IP}\", \
  \"secrets.adminUser\": \"${ADMIN_USER}\", \
  \"secrets.adminPassword\": \"${ADMIN_PASS}\", \
  \"postgresql.provisionInstance\": ${PROVISION_DB}, \

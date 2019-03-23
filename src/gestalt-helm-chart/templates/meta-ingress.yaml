@@ -1,0 +1,16 @@
+{{- if .Values.meta.enableIngress -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    gestalt-app: 'meta'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.metaName" . }}
+  name: {{ template "gestalt.metaName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  backend:
+    serviceName: {{ template "gestalt.metaName" . }}
+    servicePort: http-api
+{{- end -}}

@@ -8,11 +8,15 @@ metadata:
     chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | quote }}
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
 spec:
   template:
     metadata:
       labels:
         app: {{ template "postgresql.fullname" . }}
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
     spec:
       {{- if .Values.affinity }}
       affinity:

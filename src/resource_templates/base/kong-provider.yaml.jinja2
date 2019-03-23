@@ -47,19 +47,34 @@ properties:
           timeout_seconds: 20
         provider:
           id: '#{Provider /root/default-kubernetes id}'
-        labels: {}
+        labels: 
+          app.kubernetes.io/app: 'gestalt'
+          app.kubernetes.io/name: '#{Config RELEASE_NAME}'
         port_mappings:
-
         # Public port for API Gateway used by API clients
         - name: public-url
           protocol: tcp
           container_port: 8000
           expose_endpoint: true
+          service_port: #{Config KONG_NODEPORT}
+        {% if KONG_SERVICE_TYPE == "LoadBalancer" %}
+          type: loadBalancer
+          lb_ip: '#{Config KONG_STATIC_IP}'
+          lb_port: 80
+          virtual_hosts: []
+        {% else %}
           type: external # type should be set to 'external' to be a Kubernetes NodePort
-          service_port: #{Config KONG_NODEPORT} # Set to desired NodePort           
+          {% if K8S_PROVIDER == "gke" and KONG_STATIC_IP != "" %}
+          ingress_global_static_ip_name: '#{Config KONG_STATIC_IP}'
+          {% endif %}
+          {% if NODNS_INSTALL == "1" %}
+          virtual_hosts: []
+          {% else %}
+          lb_port: 80
           virtual_hosts:
           - '#{Config KONG_SERVICE_HOST}'
-
+          {% endif %}
+        {% endif %}
         # Service port used by Gateway manager
         - name: service
           protocol: tcp

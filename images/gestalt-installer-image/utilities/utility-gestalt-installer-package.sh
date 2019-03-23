@@ -73,12 +73,25 @@ get_helm() {
 get_yaml2json() {
 
   if [ ! -f ${dependencies_folder}/yaml2json ]; then
-    echo "Getting yaml2json from '${helm_download_url}'"
+    echo "Getting yaml2json from '${source_yaml2json}'"
     cp ${source_yaml2json} ${dependencies_folder}/yaml2json
     exit_on_error "Failed to get yaml2json from '${sources_folder}/yaml2json' to '${dependencies_folder}', aborting." 
     chmod +x ${dependencies_folder}/yaml2json
   else
     log_info "OK - 'yaml2json' already present, skipping"
+  fi
+  
+}
+
+get_jinja2format() {
+
+  if [ ! -f ${dependencies_folder}/jinja2format ]; then
+    echo "Getting jinja2format from '${source_jinja2format}'"
+    cp ${source_jinja2format} ${dependencies_folder}/jinja2format
+    exit_on_error "Failed to get jinja2format from '${sources_folder}/jinja2format' to '${dependencies_folder}', aborting." 
+    chmod +x ${dependencies_folder}/jinja2format
+  else
+    log_info "OK - 'jinja2format' already present, skipping"
   fi
   
 }

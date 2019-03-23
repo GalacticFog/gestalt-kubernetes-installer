@@ -17,6 +17,7 @@ get_kubectl
 get_fog_cli
 get_helm
 get_yaml2json
+get_jinja2format
 echo "======================================================"
 echo "Pre-Build: Step 2: Gather Installer App Folder Contents"
 if [ -d ./app/install ]; then

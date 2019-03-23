@@ -30,6 +30,24 @@ spec:
         ports:
         - containerPort: 9000
           name: 'service-api'
+        {{- if .Values.meta.enableReadinessProbe }}
+        readinessProbe:
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          httpGet:
+            path: '/health'
+            port: 'service-api'
+            scheme: 'HTTP'
+        {{- end }}
+        {{- if .Values.meta.enableLivenessProbe }}
+        livenessProbe:
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          httpGet:
+            path: '/health'
+            port: 'service-api'
+            scheme: 'HTTP'
+        {{- end }}
         # TODO - 
         # resources:
         #   requests:

@@ -2,16 +2,18 @@
 kind: NetworkPolicy
 apiVersion: {{ template "postgresql.networkPolicy.apiVersion" . }}
 metadata:
-  name: "{{ template "postgresql.fullname" . }}"
+  name: {{ template "postgresql.fullname" . | quote }}
   labels:
     app: {{ template "postgresql.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
 spec:
   podSelector:
     matchLabels:
-      app: "{{ template "postgresql.fullname" . }}"
+      app: {{ template "postgresql.fullname" . | quote }}
   ingress:
     # Allow inbound connections
     - ports:

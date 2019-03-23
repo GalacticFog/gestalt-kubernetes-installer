@@ -44,6 +44,12 @@ properties:
         - type: ClusterRole
           rulesType: PREDEFINED
           rulesFromRoleName: 'cluster-admin'
+  common.gkeIngressAvailable:
+    type: boolean
+    # changes to false if GKE cluster is on-prem
+    default: true
+    x-google-marketplace:
+      type: INGRESS_AVAILABLE
   secrets.adminUser:
     type: string
     title: 'Gestalt Admin Username'
@@ -54,9 +60,13 @@ properties:
     title: 'Gestalt Admin Password'
     default: ''
     description: 'The password of the Gestalt admin account. Set a password that is hard to guess!'
+  ui.ingress.staticIP:
+    type: string
+    title: 'Gestalt Web UI Static IP or Reservation'
+    default: ''
   ui.ingress.host:
     type: string
-    title: 'Gestalt Web UI Host or IP Address'
+    title: 'Gestalt Web UI Host'
     default: '<<< CHANGE TO devportal.YOURDOMAIN.COM >>>'
     pattern: '^[a-zA-Z0-9-\.]+$'
     description: 'The DNS name or IP address for accessing your Gestalt portal UI.'
@@ -71,9 +81,13 @@ properties:
     title: 'Gestalt Web UI Access Port'
     default: 80
     description: 'The port for accessing your Gestalt portal UI. (80 if http | 443 if https)'
+  api.gateway.staticIP:
+    type: string
+    title: 'Gestalt API Gateway Static IP or Reservation'
+    default: ''
   api.gateway.host:
     type: string
-    title: 'Gestalt API Gateway Host or IP Address'
+    title: 'Gestalt API Gateway Host'
     default: '<<< CHANGE TO api.YOURDOMAIN.COM >>>'
     pattern: '^[a-zA-Z0-9-\.]+$'
     description: 'The DNS name or IP address for accessing your Gestalt API Gateway.'
@@ -270,13 +284,35 @@ form:
     automatically create a new service account and give it all the permissions
     Gestalt needs to manage the services and workflows on your cluster.<P>
 
-    <b>Gestalt Web UI Host or IP Address</b> and <b>Gestalt API Gateway Host or
-    IP Address:</b> set these to hostnames within a domain you control, and 
-    after completing the install, create
+    <b>Gestalt Web UI Static IP or Reservation</b> and <b>Gestalt API Gateway
+    Static IP or Reservation:</b> if you have
+    <a href="https://cloud.google.com/compute/docs/ip-addresses/#reservedaddress">static
+    external IP addresses</a>
+    reserved for the Gestalt web UI and/or API gateway (see
+    <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#reserve_new_static">Reserving
+    a new static external IP address</a>). First, determine whether your static
+    IP reservation is
+    <a href="https://cloud.google.com/compute/docs/regions-zones/global-regional-zonal-resources">regional
+    or global<a>. <b><i>For a regional static external IP reservation</i></b>,
+    <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#list_ip">find
+    the reserved IP number</a> and <b><i>enter the IP number</i></b> in this 
+    field.  <b><i>For a global static external IP reservation</i></b>, 
+    <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#list_ip">find 
+    the name of the reservation</a> and <b><i>enter the name of the reservation</i></b>
+    in this field rather than the IP number itself. If you have not reserved external 
+    static IP addresses for your Gestalt services, just leave these fields blank. GCP
+    will then assign ephemeral IP addresses to each service.<P>
+
+    <b>Gestalt Web UI Hostname</b> and <b>Gestalt API Gateway Hostname:</b> enter
+    hostnames within a domain you control in these fields, and create
     <a href="https://cloud.google.com/dns/docs/overview#supported_dns_record_types">A
-    name records</a> in your DNS system for your chosen hostnames which resolve
-    to the IP addresses that GCP will assign to the Ingress resources for the 
-    Gestalt <i>ui</i> and <i>kng-ext</i> services.<P>
+    name records</a> in
+    <a href="https://cloud.google.com/dns/docs/quickstart#create_a_new_record">Google
+    Cloud DNS</a> (or your external DNS system) that resolve these hostnames
+    to the IP addresses for the Gestalt Web UI and API Gateway services. If you
+    have not reserved static IP addresses for your Gestalt services, you will
+    need to create DNS entries for the ephermeral IP addresses GCP assigns to each
+    Gestalt service after deploying Gestalt to your cluster.<P>
 
     <b>Let Gestalt create its own database?</b>  If this box is checked, Gestalt
     will create a PostgreSQL instance for itself within the cluster.  That is
@@ -286,7 +322,7 @@ form:
     For large-scale production environments, we recommend using a <a
     href="https://console.cloud.google.com/marketplace/details/google-cloud-platform/cloud-sql">Google
     Cloud SQL</a> PostgreSQL database.  Our <a
-    href="https://github.com/GalacticFog/gestalt-gcp-marketplace/blob/master/README.md">Installing
+    href="https://github.com/GalacticFog/gestalt-gcp-marketplace">Installing
     Gestalt on Google Cloud Platform</a> includes instructions for setting up a
     Google Cloud SQL (PostgreSQL) instance for Gestalt.<P>
 
