@@ -268,7 +268,7 @@ required:
 form:
 - widget: help
   description: >-
-    Thank you for using Gestalt!<P><br>
+    <br><b>Thank you for using Gestalt!</b><P><br>
 
     <b><i>Here are a few tips for installing Gestalt on your GKE cluster.</i></b><P>
 
@@ -293,13 +293,13 @@ form:
     a new static external IP address</a>). First, determine whether your static
     IP reservation is
     <a href="https://cloud.google.com/compute/docs/regions-zones/global-regional-zonal-resources">regional
-    or global<a>. <b><i>For a regional static external IP reservation</i></b>,
+    or global</a>.<br><b><i>For a regional static external IP reservation</i></b>,
     <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#list_ip">find
-    the reserved IP number</a> and <b><i>enter the IP number</i></b> in this 
-    field.  <b><i>For a global static external IP reservation</i></b>, 
-    <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#list_ip">find 
+    the reserved IP number</a> and <b><i>enter the IP number</i></b> in this
+    field.<br><b><i>For a global static external IP reservation</i></b>,
+    <a href="https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address#list_ip">find
     the name of the reservation</a> and <b><i>enter the name of the reservation</i></b>
-    in this field rather than the IP number itself. If you have not reserved external 
+    in this field rather than the IP number itself.<br>If you have not reserved external
     static IP addresses for your Gestalt services, just leave these fields blank. GCP
     will then assign ephemeral IP addresses to each service.<P>
 
