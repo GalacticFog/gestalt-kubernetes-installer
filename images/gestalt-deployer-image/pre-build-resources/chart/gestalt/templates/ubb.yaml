@@ -19,6 +19,13 @@ spec:
         app.kubernetes.io/component: {{ template "gestalt.ubbName" . }}
     spec:
       containers:
+      - name: {{ template "gestalt.ubbNginxName" . }}
+        image: {{ .Values.ubb.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
+        command: ["nginx", "-g", "daemon off;"]
+        ports:
+        - containerPort: {{ .Values.ubb.port }}
+          name: 'service-api'
       - name: {{ template "gestalt.ubbName" . }}
         image: {{ .Values.ubb.image | quote }}
 {{- if .Values.reportingSecret }}
@@ -35,6 +42,3 @@ spec:
               key: 'reporting-key'
 {{- end }}
         imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
-        ports:
-        - containerPort: {{ .Values.ubb.port }}
-          name: 'service-api'

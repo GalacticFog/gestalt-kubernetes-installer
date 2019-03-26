@@ -25,13 +25,13 @@ spec:
     - description: 'Gestalt Framework Community Slack Channel'
       url: http://chat.galacticfog.com
     notes: |-
-      Thank you for installing Gestalt!
+      *Thank you for installing Gestalt!*
 
-      After installing Gestalt on the Google Cloud Platform (GCP) Google
-      Kubernetes Engine (GKE), <b>you may need to wait for around 10 minutes<b>
+      After installing Gestalt on a Google Cloud Platform (GCP) Google
+      Kubernetes Engine (GKE) cluster, *you may need to wait for around 10 minutes*
       while GKE allocates IP addresses, prepares load balancers, and propogates
-      configurations around the globe. In the meanwhile, you may get HTTP 404
-      and HTTP 500 errors until the load balancer is ready to serve the traffic.
+      configurations around the globe. You may get HTTP 404
+      and HTTP 500 errors until GKE has finished setting everything up.
 
       While you're waiting, feel free to visit our 
       [Gestalt Documentation Site](http://docs.galacticfog.com)
