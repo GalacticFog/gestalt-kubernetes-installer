@@ -151,6 +151,9 @@ Define commonly used component and host name variables.
 {{- define "gestalt.ubbName" -}}
 {{- printf "%s-ubb" .Release.Name | quote -}}
 {{- end -}}
+{{- define "gestalt.ubbNginxName" -}}
+{{- printf "%s-ubb-nginx" .Release.Name | quote -}}
+{{- end -}}
 {{- define "gestalt.ubbHost" -}}
 {{- printf "%s-ubb.%s" .Release.Name .Release.Namespace | quote -}}
 {{- end -}}
