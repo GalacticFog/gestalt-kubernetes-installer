@@ -1,0 +1,89 @@
+image: docker:latest
+
+services:
+- docker:dind
+
+stages:
+- build
+- mark-stable
+
+variables:
+  DOCKER_IMG: "galacticfog/gestalt-installer"
+
+build-and-publish:
+  stage: build
+  services:
+    - docker:dind
+  script:
+    - |
+      echo "Install Dependencies:"
+      apk add --update --no-cache bash gawk sed grep curl wget git jq tar
+    - | 
+      echo "Login Docker Registry:"
+      echo ${DOCKER_PWD} | docker login ${DOCKER_REGISTRY} --username ${DOCKER_USER} --password-stdin
+    - |
+      echo "Determine current branch:"
+      if  [ "`git rev-parse tags/$CI_COMMIT_REF_NAME 2>/dev/null`" = "tags/$CI_COMMIT_REF_NAME" ]; then
+        BRANCH_NAME=$CI_COMMIT_REF_NAME;
+      else
+        BRANCH_NAME=$(git branch -a --contains $(git rev-parse tags/$CI_COMMIT_REF_NAME)|grep origin|awk -F/ '{print $3}');
+      fi;
+    - |
+      echo "Determine version"
+      cd images/gestalt-installer-image/
+      VERSION=$(grep 'LABEL com.galacticfog.version=' Dockerfile | awk -F '"' '{print $2}')
+      DOCKER_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}}
+      echo "DOCKER_TAG=${DOCKER_TAG}"
+    - |
+      echo "Get license definitions:"
+      git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/galacticfog/license-definitions.git"
+    - |
+      echo "Run pre-build:"
+      ./pre-build.sh
+    - |
+      echo "Run build:"
+      build_log="./buildoutput"
+      echo building $DOCKER_IMG:$DOCKER_TAG
+      docker build -t $DOCKER_IMG:$DOCKER_TAG .
+      docker push     $DOCKER_IMG:$DOCKER_TAG
+    - |
+      if [ ${BRANCH_NAME} == "master" ]; then
+         docker tag $DOCKER_IMG:$DOCKER_TAG $DOCKER_IMG:latest
+         docker push $DOCKER_IMG:latest
+      fi
+
+.deploy_template: &mark_stable_image
+  stage: mark-stable
+  script:
+    - |
+      echo "Install Dependencies:"
+      apk add --update --no-cache bash gawk sed grep curl wget git jq tar
+    - |
+      echo "Lookup proper docker tag same way as docker image build does"
+      cd images/gestalt-installer-image/
+      VERSION=$(grep 'LABEL com.galacticfog.version=' Dockerfile | awk -F '"' '{print $2}')
+      DOCKER_TAG=${CI_BUILD_TAG-$VERSION-${CI_BUILD_REF:0:8}}
+    - |
+      echo "Clone and configure release management repository:"
+      git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/galacticfog/release-management.git"
+      cd release-management
+      git remote set-url origin https://${CI_BOT_USER}:${CI_BOT_TOKEN}@gitlab.com/galacticfog/release-management.git
+      git config --global user.email "ci@galacticfog.com"
+      git config --global user.name "CI Job"
+    - |
+      echo "Update latest dev-stable version"
+      echo ${DOCKER_TAG} > ./versions/dev-stable/${DOCKER_IMG}
+      git add .
+      git commit -m "CI: Mark dev-stable: ${DOCKER_IMG}:${DOCKER_TAG}"
+      git push origin master
+
+auto-mark-image:
+  <<: *mark_stable_image
+  only: 
+    - master
+
+manual-mark-image:
+  <<: *mark_stable_image
+  except: 
+    - master
+  when: manual
