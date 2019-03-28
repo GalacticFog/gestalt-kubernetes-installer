@@ -1,0 +1,200 @@
+#!/bin/bash
+#
+# Removes Gestalt Platform components from the Kubernetes cluster in the current kubectl context
+#
+# First deletes Gestalt components from the 'gestalt-system' namespace, then prompts user to 
+# delete namespaces in UUID format, assuming those namespaces were created as part of the
+# Gestalt Platform installation.
+
+DEBUG=1
+SKIP_ACKNOWLEDGEMENT=0
+source ./helpers/tool-functions.sh
+
+prompt_to_continue(){
+  while true; do
+      read -p "$*Proceed to delete Gestalt Platform from context '$KUBE_CONTEXT'? [y/n]: " yn
+      case $yn in
+          [Yy]*) break;;
+          [Nn]*) echo "Aborted" ; exit  1 ;;
+      esac
+  done
+}
+
+print_cluster_info() {
+  local SECRETS_NAME
+  SECRETS_NAME=$( kubectl --context=$KUBE_CONTEXT -n ${RELEASE_NAMESPACE} get secret -l "app.kubernetes.io/app=gestalt" -o jsonpath="{.items[*].metadata.name}" )
+  if [ -z "$SECRETS_NAME" ]; then
+    echo "Warning: Unable to find Gestalt secrets in namespace '${RELEASE_NAMESPACE}'"
+    ensure_correct_kubecontext
+    kubectl --context=$KUBE_CONTEXT get configmap,secret,svc,deploy -n ${RELEASE_NAMESPACE}
+  else
+    gestalt_url=$( kubectl --context=$KUBE_CONTEXT get secrets -n $RELEASE_NAMESPACE $SECRETS_NAME -ojsonpath='{.data.gestalt-url}' | base64 --decode )
+    
+    echo
+    echo "    Gestalt Endpoint: $gestalt_url"
+    echo
+  fi
+}
+
+# Check for a specially named ConfigMap - if present, read the 'description' field from it and display to the user
+# Instruct the user to delete the configmap before proceeding
+# 
+# TODO: check_for_uninstall_guard() {
+
+# }
+
+prompt_to_acknowledge(){
+  echo
+  read -p "(Enter '$KUBE_CONTEXT' to confirm): " value
+  case $value in
+      $KUBE_CONTEXT) return 0  ;;
+      *) echo "Aborted" ; exit  1 ;;
+  esac
+}
+
+prompt_to_remove_namespace(){
+  local NS=$1
+  [ -z "$NS" ] && return
+  if [ "$NS" == "default" ]; then
+    # If the install namespace is 'default' just remove the gestalt namespace labels
+    ensure_correct_kubecontext
+    kubectl --context=$KUBE_CONTEXT label ns default "app.kubernetes.io/app-" "app.kubernetes.io/name-"
+    return
+  fi
+  echo ""
+  echo "Do you want to remove the Gestalt namespace '$NS' from the Kubernetes cluster '$KUBE_CONTEXT'?"
+  echo "This cannot be undone."
+  echo ""
+
+  while true; do
+      read -p "Remove the '$NS' namespace? [y/n]: " yn
+      case $yn in
+          [Yy]*) do_delete_namespaces "namespace/${NS}"; break;;
+          [Nn]*) break;;
+      esac
+  done
+}
+
+safety_timeout() {
+  echo
+  echo "Removing Gestalt Platform from '$KUBE_CONTEXT' in 5 seconds, press Ctrl-C to abort"
+  echo
+  sleep 5
+}
+
+# Ensure that the kubernetes context hasn't changed since we ran the remove script.
+# This is redundant when explicitly specifiying the context as in 'kubectl --context=$KUBE_CONTEXT'
+# however using both utility functions may not all explicityly use the context.
+ensure_correct_kubecontext() {
+  local current_context=`kubectl config current-context`
+  if [ "$KUBE_CONTEXT" != "$current_context" ]; then
+    echo "ERROR! kube context expected to be '$KUBE_CONTEXT', but is $current_context.  Aborting."
+    exit 1
+  fi
+}
+
+remove_gestalt_platform() {
+  ensure_correct_kubecontext
+
+  # First, check if the namespace is even present
+
+  kubectl --context=$KUBE_CONTEXT get namespace $RELEASE_NAMESPACE > /dev/null 2>&1
+  if [ $? -ne 0 ]; then
+    echo "Nothing to do - Kubernetes namespace '$RELEASE_NAMESPACE' isn't present."
+    return 0
+  fi
+
+  # Remove the Gestalt Platform application manifest if the cluster has the Applications API installed.
+  # Send all output to /dev/null and ignore failures in case the Application API isn't installed.
+  ensure_correct_kubecontext
+  kubectl --context=$KUBE_CONTEXT delete applications --timeout=60s --all --namespace $RELEASE_NAMESPACE 2>&1 1>/dev/null
+
+  # The echo statement resets the value of $? and prints some space to the console...
+  echo ""
+
+  # Remove all the Gestalt Platform standard resources and display output.
+  echo "Removing Gestalt Platform components from '$RELEASE_NAMESPACE' namespace..."
+  ensure_correct_kubecontext
+  kubectl --context=$KUBE_CONTEXT delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+    --timeout=30s --all --namespace $RELEASE_NAMESPACE
+
+  if [ $? -ne 0 ]; then
+  
+    # Removal was unsuccessful, try force removal
+
+    echo ""
+    echo "Warning: 'kubectl delete' failed, re-attempting with forceful delete..."
+    echo ""
+    
+    ensure_correct_kubecontext
+
+    # The --force flag helps clean up pods stuck in the 'Terminating' state
+    kubectl --context=$KUBE_CONTEXT delete daemonsets,replicasets,statefulsets,services,deployments,jobs,pods,rc,secrets,configmaps,pvc,ingresses \
+      --grace-period=0 --force --all --namespace $RELEASE_NAMESPACE
+  fi
+}
+
+remove_gestalt_cluster_role_bindings() {
+  echo "Removing gestalt cluster role bindings..."
+  ensure_correct_kubecontext
+  kubectl --context=$KUBE_CONTEXT get clusterrolebinding -l meta/fqon -o name | xargs kubectl delete
+}
+
+remove_gestalt_namespaces() {
+  ensure_correct_kubecontext
+  local namespaces=$(kubectl --context=$KUBE_CONTEXT get namespace -l meta/fqon -o name)
+  if [ $? -eq 0 ] && [ ! -z "$namespaces" ]; then
+    echo ""
+    echo "Warning: There are existing namespaces that appear to be from a prior install:"
+    echo "$namespaces"
+    echo ""
+
+    while true; do
+        read -p "$* Delete these namespaces? [y/n]: " yn
+        case $yn in
+            [Yy]*) do_delete_namespaces $namespaces ; break ;;
+            [Nn]*) break ;;
+        esac
+    done
+  else
+    echo "No gestalt namespaces found"
+  fi
+}
+
+do_delete_namespaces() {
+  ensure_correct_kubecontext
+  kubectl --context=$KUBE_CONTEXT delete $@
+  echo "Done deleting namespaces."
+}
+
+source gestalt.conf
+
+check_for_kubectl
+
+KUBE_CONTEXT=`kubectl config current-context`
+
+[ $SKIP_ACKNOWLEDGEMENT -eq 0 ] && prompt_to_acknowledge
+
+check_for_kube
+
+print_cluster_info
+
+# TODO: check_for_uninstall_guard
+
+prompt_to_continue
+
+# TODO handle multiple releases in the same cluster
+RELEASE_NAMESPACE=$(find_namespace "${RELEASE_NAMESPACE}")
+[ $? -ne 0 ] && exit 1
+
+safety_timeout
+
+remove_gestalt_platform
+
+remove_gestalt_cluster_role_bindings
+
+remove_gestalt_namespaces
+
+prompt_to_remove_namespace "${RELEASE_NAMESPACE}"
+
+echo "Done."

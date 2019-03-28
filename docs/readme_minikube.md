@@ -81,7 +81,7 @@ You may occasionally need to remove the Gestalt platform from Minikube either to
 The `remove-gestalt-platform` script should take care of most of the removal process automatically.
 
 ```sh
-./remove.sh
+./remove-gestalt-platform
 ```
 
 If you want to delete all of Gestalt's data as well, simply remove the persistent volume used by Gestalt's postgres database.

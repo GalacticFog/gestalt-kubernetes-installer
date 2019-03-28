@@ -17,7 +17,7 @@ vi ./profile/<profile>/config.yaml      # Change Host settings
 
 # Removing Gestalt Platform
 
-Run `./remove.sh` and follow the prompts.
+Run `./remove-gestalt-platform` and follow the prompts.
 
 
 # Troubleshooting
