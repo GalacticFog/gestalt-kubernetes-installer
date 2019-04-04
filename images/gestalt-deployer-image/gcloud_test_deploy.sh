@@ -16,7 +16,7 @@ echo "PROJECT: ${PROJECT}"
 # Set the registry to your project GCR repo.
 export REGISTRY="gcr.io/${PROJECT}/gestalt"
 echo "REGISTRY: ${REGISTRY}"
-export IMAGE_TAG="test"
+export IMAGE_TAG="2.4"
 export DEPLOYER_IMAGE="$REGISTRY/deployer:${IMAGE_TAG}"
 
 export ADMIN_USER="gcpadmin"
@@ -29,16 +29,22 @@ export EULA_NAME="Galactic Fog"
 export EULA_EMAIL="example@galacticfog.com"
 export EULA_COMPANY="Galactic Fog, LLC"
 export INSTALL_DOMAIN="yourdomain.com"
-export UI_HOSTNAME="portal.${INSTALL_DOMAIN}"
-export UI_STATIC_IP="35.245.210.40"
-export API_HOSTNAME="api.${INSTALL_DOMAIN}"
-export API_STATIC_IP="35.245.250.210"
+#export UI_HOSTNAME="portal.${INSTALL_DOMAIN}"
+export UI_HOSTNAME="gestalt.${INSTALL_DOMAIN}"
+#export UI_STATIC_IP="gestalt-gcp-test-portal" # portal.yourdomain.com
+#export UI_STATIC_IP="35.244.211.39" # portal.yourdomain.com
+export UI_STATIC_IP="35.245.210.40" # gestalt.yourdomain.com
+#export API_HOSTNAME="api.${INSTALL_DOMAIN}"
+export API_HOSTNAME="exec.${INSTALL_DOMAIN}"
+#export API_STATIC_IP="gestalt-gcp-test-api" # api.yourdomain.com
+#export API_STATIC_IP="35.227.198.48" # api.yourdomain.com
+export API_STATIC_IP="35.245.250.210" # exec.yourdomain.com
 export PROVISION_DB="true"
-export DB_HOST="35.221.1.43"
+export DB_HOST=""
 export DB_PORT="5432"
 export DB_NAME="postgres"
 export DB_USERNAME="postgres"
-export DB_PASSWORD="9mfwC8dI6Axyf4qz"
+export DB_PASSWORD=""
 
 # Create the test namespace if it doesn't already exist
 create_ns() {
@@ -75,8 +81,10 @@ mpdev /scripts/install --deployer="${DEPLOYER_IMAGE}" \
 --parameters="{\"name\": \"${TEST_NAME}\", \
  \"namespace\": \"${TEST_NAMESPACE}\", \
  \"reportingSecret\": \"iweuniweubniewubn\", \
- \"meta.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-meta:test\", \
- \"laser.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-laser:test\", \
+ \"meta.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-meta:${IMAGE_TAG}\", \
+ \"laser.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-laser:${IMAGE_TAG}\", \
+ \"trackingService.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-tracking-service:${IMAGE_TAG}\", \
+ \"ubb.image\": \"gcr.io/galacticfog-public/gestalt/gestalt-ubb-agent:${IMAGE_TAG}\", \
  \"common.name\": \"${EULA_NAME}\", \
  \"common.email\": \"${EULA_EMAIL}\", \
  \"common.companyName\": \"${EULA_COMPANY}\", \

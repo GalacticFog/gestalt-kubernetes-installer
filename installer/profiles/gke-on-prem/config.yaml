@@ -5,15 +5,10 @@ KONG_URL:      http://api.gke-on-prem.galacticfog.com  # (Endpoint for API Gatew
 UI_SERVICE_TYPE: LoadBalancer
 UI_STATIC_IP: 10.0.10.251
 KONG_SERVICE_TYPE: LoadBalancer
-KONG_NODEPORT: 80
 KONG_STATIC_IP: 10.0.10.252
-KONG_INGRESS_SERVICE_NAME: kng-lb
 
 # Database
 PROVISION_INTERNAL_DATABASE: 'Yes'              # Set to 'No' to utilize an external database
-#DATABASE_HOSTNAME: 35.236.242.225
-#DATABASE_NAME: postgres
-#DATABASE_PORT: '5432'
 
 #(Remember to set credentials in credentials.yaml)
 
@@ -34,6 +29,7 @@ EXECUTOR_SIZE_1_DEFAULT_MEM: 2048
 
 # Images
 BASH_EXECUTOR_IMAGE:          gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-bash:2.4
+DATABASE_WAIT_IMAGE:          gcr.io/galacticfog-public/gestalt/wait-for-db:2.4
 DOTNET_EXECUTOR_IMAGE:        gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4
 ELASTICSEARCH_IMAGE:          gcr.io/galacticfog-public/gestalt/elasticsearch-docker:5.3.1
 ELASTICSEARCH_INIT_IMAGE:     busybox:1.29.3
@@ -47,8 +43,7 @@ JVM_EXECUTOR_IMAGE:           gcr.io/galacticfog-public/gestalt/gestalt-laser-ex
 KONG_IMAGE:                   gcr.io/galacticfog-public/gestalt/kong:2.4
 LASER_IMAGE:                  gcr.io/galacticfog-public/gestalt/gestalt-laser:2.4
 LOGGING_IMAGE:                gcr.io/galacticfog-public/gestalt/gestalt-log:2.4
-# META_IMAGE:                   gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
-META_IMAGE:                   gcr.io/galacticfog-public/gestalt/gestalt-meta:latest
+META_IMAGE:                   gcr.io/galacticfog-public/gestalt/gestalt-meta:2.4
 NODEJS_EXECUTOR_IMAGE:        gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-nodejs:2.4
 POLICY_IMAGE:                 gcr.io/galacticfog-public/gestalt/gestalt-policy:2.4
 POSTGRES_IMAGE:               gcr.io/galacticfog-public/gestalt/postgres:2.4

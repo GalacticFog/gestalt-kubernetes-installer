@@ -4,7 +4,8 @@ resource_type: Gestalt::Configuration::Provider::GatewayManager
 properties:
   config:
     env:
-      public: {}
+      public:
+        KONG_0_META_ID: #{Provider /root/default-kong}
       private:
         GATEWAY_DATABASE_NAME: gateway-db
   linked_providers:

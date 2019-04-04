@@ -44,6 +44,18 @@ gestalt-ingress-enabled: {{ .Values.ui.ingress.enableIngress | quote }}
   {{- end -}}
 {{- end -}}
 
+{{- define "gestalt.apiGatewayAnnotations" -}}
+  {{- if and .Values.api.gateway.staticIP ( regexMatch "[A-Za-z]" .Values.api.gateway.staticIP ) -}}
+kubernetes.io/ingress.global-static-ip-name: {{ .Values.api.gateway.staticIP | quote }}
+gestalt-ingress-enabled: {{ .Values.api.gateway.enableIngress | quote }}
+  {{- else if and .Values.api.gateway.staticIP ( regexMatch "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$" .Values.api.gateway.staticIP ) -}}
+gestalt-static-ip: {{ .Values.api.gateway.staticIP | quote }}
+gestalt-ingress-enabled: {{ .Values.api.gateway.enableIngress | quote }}
+  {{- else -}}
+gestalt-ingress-enabled: {{ .Values.api.gateway.enableIngress | quote }}
+  {{- end -}}
+{{- end -}}
+
 {{/*
   Sets the value of .Values.ui.ingress.enableIngress when there is a staticIP defined.
   true if the static IP contains any letters (it's not an IP address)
@@ -55,6 +67,13 @@ gestalt-ingress-enabled: {{ .Values.ui.ingress.enableIngress | quote }}
   {{- if and .Values.ui.ingress.staticIP ( regexMatch "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$" .Values.ui.ingress.staticIP ) -}} 
     {{- $garbage := set .Values.ui.ingress "enableIngress" false -}}
     {{- $garbage := set .Values.ui "exposedServiceType" "LoadBalancer" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- define "gestalt.apiGatewayEnableIngress" -}}
+  {{- if and .Values.api.gateway.staticIP ( regexMatch "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$" .Values.api.gateway.staticIP ) -}} 
+    {{- $garbage := set .Values.api.gateway "enableIngress" false -}}
+    {{- $garbage := set .Values.api "exposedServiceType" "LoadBalancer" -}}
   {{- end -}}
 {{- end -}}
 
@@ -141,6 +160,12 @@ Define commonly used component and host name variables.
 {{- end -}}
 {{- define "gestalt.uiHost" -}}
 {{- printf "%s-ui.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote -}}
+{{- end -}}
+{{- define "gestalt.apiGatewayName" -}}
+{{- printf "kng" | quote -}}
+{{- end -}}
+{{- define "gestalt.apiGatewayHost" -}}
+{{- printf "kng.%s.svc.cluster.local" .Release.Namespace | quote -}}
 {{- end -}}
 {{- define "gestalt.redisName" -}}
 {{- printf "%s-redis" .Release.Name | quote -}}

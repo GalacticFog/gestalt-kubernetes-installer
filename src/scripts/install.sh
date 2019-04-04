@@ -40,6 +40,10 @@ stage_1() {
   helm template ../gestalt-helm-chart --name ${RELEASE_NAME} -f helm-config.yaml > ../gestalt.yaml
   exit_on_error "Failed: 'helm template', aborting."
 
+  echo "vvvvvvvvvv HELM CHART vvvvvvvvvv"
+  cat ../gestalt.yaml
+  echo "^^^^^^^^^^ HELM CHART ^^^^^^^^^^"
+
   echo "Creating Kubernetes resources..."
   kubectl create -n $RELEASE_NAMESPACE -f ../gestalt.yaml
   exit_on_error "Failed 'kubectl apply', aborting."
@@ -86,13 +90,11 @@ stage_2() {
   echo "---------- START HEALTHCHECK CREATION ----------"
   [ "${META_ENABLE_HEALTHCHECK:-x}" == "true" ] && if_meta_healthcheck_is_working create_meta_readiness_probe
   [ "${SECURITY_ENABLE_HEALTHCHECK:-x}" == "true" ] && if_security_healthcheck_is_working create_security_readiness_probe
-  [ "${KONG_ENABLE_HEALTHCHECK:-x}" == "true" ] && if_kong_ingress_service_name_is_set and_kong_healthcheck_is_working create_kong_readiness_probe
   echo "---------- END HEALTHCHECK CREATION ----------"
 
   echo "---------- START INGRESS CREATION ----------"
   [ "${META_ENABLE_INGRESS:-x}" == "true" ] && create_meta_ingress
   [ "${SECURITY_ENABLE_INGRESS:-x}" == "true" ] && create_security_ingress
-  [ "${KONG_ENABLE_INGRESS:-x}" == "true" ] && create_kong_ingress_v2
   echo "---------- END INGRESS CREATION ----------"
 }
 

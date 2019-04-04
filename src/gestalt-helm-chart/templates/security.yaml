@@ -24,6 +24,29 @@ spec:
       - name: imagepullsecret-3
       - name: imagepullsecret-4
       - name: imagepullsecret-5
+      initContainers:
+      - name: 'wait-for-db'
+        image: {{ .Values.db.waitImage | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
+        env:
+        - name: 'PGHOST'
+          value: {{ template "gestalt.dbHost" . }}
+        - name: 'PGDATABASE'
+          value: {{ .Values.security.databaseName | quote }}
+        - name: 'PGPASS'
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: 'PGUSER'
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
+        - name: 'PGPORT'
+          value: {{ template "gestalt.dbPort" . }}
+        - name: 'PGCONNECT_TIMEOUT'
+          value: '3'
       containers:
       - name: {{ template "gestalt.securityName" . }}
         image: {{ .Values.security.image | quote }}

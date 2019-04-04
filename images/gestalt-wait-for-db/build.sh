@@ -4,12 +4,13 @@ PUBLISH=1
 SILENT=0
 VERBOSE=1
 PRINT_IMAGE_ID=0
-REGISTRY="gcr.io/galacticfog-public/gestalt"
-LABEL="deployer"
+#REGISTRY="gcr.io/galacticfog-public/gestalt"
+REGISTRY="galacticfog"
+LABEL="wait-for-db"
 DEFAULT_TAG="latest"
 # DEFAULT_TAGS=( "$DEFAULT_TAG" "test" )
-DEFAULT_TAGS=( "$DEFAULT_TAG" "release" "gcp" "2" "2.4" "2.4.4" )
-PRE_BUILD_SCRIPT="./pre-build.sh"
+DEFAULT_TAGS=( "$DEFAULT_TAG" "release" "latest" "2" "2.4" "2.4.1" )
+# PRE_BUILD_SCRIPT="./pre-build.sh"
 # BUILD_OUTPUT_FILE="buildoutput"
 RM_BUILDER_IMAGE=0
 declare -a TAGS

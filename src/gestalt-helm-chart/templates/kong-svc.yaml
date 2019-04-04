@@ -1,0 +1,31 @@
+{{- template "gestalt.apiGatewayEnableIngress" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "gestalt.apiGatewayName" . }}
+  labels:
+    gestalt-app: 'kng'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.apiGatewayName" . }}
+spec:
+  type: {{ .Values.api.exposedServiceType | quote }}
+  {{- if and ( eq .Values.api.exposedServiceType "LoadBalancer" ) .Values.api.gateway.staticIP }}
+  loadBalancerIP: {{ .Values.api.gateway.staticIP | quote }}
+  {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    gestalt-app: 'kng'
+  ports:
+  - name: api-service
+    port: {{ .Values.api.gateway.port }}
+    nodePort: {{ .Values.api.gateway.nodePort }}
+    protocol: TCP
+    targetPort: 8000
+  - name: admin-service
+    port: {{ .Values.api.admin.port }}
+    {{- if .Values.api.admin.nodePort }}
+    nodePort: {{ .Values.api.admin.nodePort }}
+    {{- end }}
+    protocol: TCP
+    targetPort: 8001

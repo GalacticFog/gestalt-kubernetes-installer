@@ -9,6 +9,7 @@ declare -A CONFIG_TO_ENV=(
   ["common.companyName"]="EULA_COMPANY"
   ["secrets.adminPassword"]="ADMIN_PASSWORD"
   ["secrets.adminUser"]="ADMIN_USERNAME"
+  ["db.waitImage"]="DATABASE_WAIT_IMAGE"
   ["db.host"]="DATABASE_HOSTNAME"
   ["db.port"]="DATABASE_PORT"
   ["db.name"]="DATABASE_NAME"
@@ -25,7 +26,11 @@ declare -A CONFIG_TO_ENV=(
   ["api.gateway.protocol"]="KONG_SERVICE_PROTOCOL"
   ["api.gateway.host"]="KONG_SERVICE_HOST"
   ["api.gateway.port"]="KONG_SERVICE_PORT"
+  ["api.gateway.nodePort"]="KONG_NODEPORT"
   ["api.gateway.staticIP"]="KONG_STATIC_IP"
+  ["api.admin.protocol"]="KONG_ADMIN_PROTOCOL"
+  ["api.admin.port"]="KONG_ADMIN_PORT"
+  ["api.admin.nodePort"]="KONG_ADMIN_NODEPORT"
   ["logging.image"]="LOGGING_IMAGE"
   ["logging.protocol"]="LOGGING_PROTOCOL"
   ["logging.port"]="LOGGING_PORT"
@@ -292,6 +297,7 @@ getsalt_installer_setcheck_variables() {
   export RABBIT_HOSTNAME=`get_internal_hostname rabbit`
   export REDIS_HOSTNAME=`get_internal_hostname redis`
   export ELASTICSEARCH_HOSTNAME=`get_internal_hostname elastic`
+  export KONG_ADMIN_HOSTNAME="kng.${RELEASE_NAMESPACE}.svc.cluster.local"
 
   export SECURITY_URL="$SECURITY_PROTOCOL://$SECURITY_HOSTNAME:$SECURITY_PORT"
   export META_URL="$META_PROTOCOL://$META_HOSTNAME:$META_PORT"
@@ -377,6 +383,7 @@ security:
   enableIngress: ${SECURITY_ENABLE_INGRESS:="false"}
 
 db:
+  waitImage: "${DATABASE_WAIT_IMAGE}"
   host: ${DATABASE_HOSTNAME}
   port: ${DATABASE_PORT}
   name: "${DATABASE_NAME}"
@@ -409,9 +416,6 @@ meta:
   enableLivenessProbe: ${META_ENABLE_LIVENESS_PROBE:-"true"}
   enableIngress: ${META_ENABLE_INGRESS:="false"}
 
-# kong:
-#   nodePort: ${KONG_NODEPORT}
-
 logging:
   image: ${LOGGING_IMAGE}
   nodePort: ${LOGGING_NODEPORT}
@@ -428,6 +432,21 @@ ui:
     port: ${UI_PORT}
     protocol: ${UI_PROTOCOL}
     staticIP: '${UI_STATIC_IP}'
+
+api:
+  image: ${KONG_IMAGE}
+  exposedServiceType: ${KONG_SERVICE_TYPE:-NodePort}
+  gateway:
+    enableIngress: true
+    host: ${KONG_SERVICE_HOST}
+    port: ${KONG_SERVICE_PORT}
+    nodePort: ${KONG_NODEPORT}
+    protocol: ${KONG_SERVICE_PROTOCOL}
+    staticIP: '${KONG_STATIC_IP}'
+  admin:
+    port: ${KONG_ADMIN_PORT}
+    nodePort: ${KONG_ADMIN_NODEPORT}
+    protocol: ${KONG_ADMIN_PROTOCOL}
 
 redis:
   image: ${REDIS_IMAGE}
@@ -513,7 +532,7 @@ wait_for_database_pod() {
 
 wait_for_database() {
   echo "Waiting for database service..."
-  secs=30
+  secs=10
   for i in `seq 1 20`; do
     echo "Attempting database connection. (attempt $i)"
     ./psql.sh -c '\l'
@@ -617,7 +636,7 @@ wait_for_pod() {
   fi
 
   echo "Waiting for $pod to launch"
-  for i in `seq 1 60`; do
+  for i in `seq 1 120`; do
     status=$(kubectl get pod $scope --no-headers | grep ${pod}- | awk "{print \$$index}")
 
     if [ "$status" != "$previous_status" ]; then

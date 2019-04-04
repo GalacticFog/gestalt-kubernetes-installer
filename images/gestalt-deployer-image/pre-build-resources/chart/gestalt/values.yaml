@@ -66,8 +66,24 @@ ui:
     protocol: 'http'
     staticIP: ''
 
+api:
+  image: gcr.io/galacticfog-public/gestalt/kong:2.4
+  exposedServiceType: NodePort
+  gateway:
+    enableIngress: true
+    host: 'localhost'
+    port: 80
+    nodePort: 31113
+    protocol: 'http'
+    staticIP: ''
+  admin:
+    port: 8001
+    nodePort: 31133
+    protocol: 'http'
+
 # Gestalt DB settings
 db:
+  waitImage: gcr.io/galacticfog-public/gestalt/wait-for-db:test
   host: 'gestalt-postgres.gestalt-system.svc.cluster.local'
   port: 5432
   name: 'postgres'
