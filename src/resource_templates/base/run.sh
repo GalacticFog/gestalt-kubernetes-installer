@@ -63,6 +63,7 @@ create security-provider
 create kubernetes-provider
 create rabbit-provider
 create logging-provider
+create kong-provider
 
 # Link the logging provider to the CaaS provider
 fog meta patch-provider --provider '/root/default-kubernetes' -f link-logging-provider.yaml
@@ -92,25 +93,6 @@ fi
 
 # Create other providers
 create policy-provider # Policy depends on Rabbit and Laser
-
-echo "${KONG_SERVICE_HOST}"
-
-# if [ "$(check_install_category ${KONG_SERVICE_HOST})" == "1" ]; then
-#   echo "processing as non-dns environment"
-#   create kong-nondns-provider
-# elif [ "${KONG_SERVICE_TYPE:-NodePort}" == "LoadBalancer" ]; then
-#   echo "processing kong as a loadbalancer service"
-#   create kong-lb-provider
-# else
-#   echo "processing as dns environment"
-#   create kong-provider
-# fi
-
-create kong-provider
-
-# Uncomment to enable additional kong providers, and also ensure that the gatewaymanager provider has linked providers for each kong.
-# create kong2-provider
-# create kong3-external-provider
 
 create gatewaymanager-provider  # Create the gateway manager provider after 
                                 # kong providers, as it uses the kong providers as linked providers
@@ -150,11 +132,6 @@ if [ "$configure_catalog" == "Yes" ]; then
   create catalog-provider-inline
 fi
 
-# Create GKE healthchecks
-if [ "$K8S_PROVIDER" == "gke" ]; then
-  create_gke_healthchecks
-fi
-
 echo "TODO: ensure there's a configure_ldap variable here"
 if [ "$configure_ldap" == "Yes" ]; then
   ## LDAP setup
@@ -185,4 +162,3 @@ import_gestalt_system_k8s_resources
 # Wait for pods to start before moving on to the next stage, which creates APIs.  API
 # creation will fail if the GWM and/or Kong images haven't started yet (images may still be being pulled down)
 wait_for_pod gwm
-wait_for_pod kng

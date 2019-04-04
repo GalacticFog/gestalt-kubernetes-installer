@@ -2,8 +2,6 @@ K8S_PROVIDER:  gke
 GESTALT_URL:   http://portal.yourdomain.com  # (Gestalt Login URL)
 KONG_URL:      http://api.yourdomain.com  # (Endpoint for API Gateway)
 
-KONG_ENABLE_HEALTHCHECK: true 
-KONG_ENABLE_INGRESS: false 
 KONG_SERVICE_TYPE: 'NodePort'
 KONG_STATIC_IP: ''
 
@@ -28,6 +26,7 @@ EXECUTOR_SIZE_1_DEFAULT_CPU: 0.2
 EXECUTOR_SIZE_1_DEFAULT_MEM: 2048
 
 BASH_EXECUTOR_IMAGE:          gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-bash:2.4
+DATABASE_WAIT_IMAGE:          gcr.io/galacticfog-public/gestalt/wait-for-db:2.4
 DOTNET_EXECUTOR_IMAGE:        gcr.io/galacticfog-public/gestalt/gestalt-laser-executor-dotnet:2.4
 ELASTICSEARCH_IMAGE:          gcr.io/galacticfog-public/gestalt/elasticsearch-docker:2.4
 ELASTICSEARCH_INIT_IMAGE:     busybox:1.29.3

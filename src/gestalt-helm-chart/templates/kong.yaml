@@ -1,0 +1,131 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "gestalt.apiGatewayName" . }}
+  labels:
+    gestalt-app: 'kng'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.apiGatewayName" . }}
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        gestalt-app: 'kng'
+        app.kubernetes.io/name: {{ .Release.Name | quote }}
+        app.kubernetes.io/app: 'gestalt'
+        app.kubernetes.io/component: {{ template "gestalt.apiGatewayName" . }}
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret-1
+      - name: imagepullsecret-2
+      - name: imagepullsecret-3
+      - name: imagepullsecret-4
+      - name: imagepullsecret-5
+      initContainers:
+      - name: 'wait-for-db'
+        image: {{ .Values.db.waitImage | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
+        env:
+        - name: 'PGHOST'
+          value: {{ template "gestalt.dbHost" . }}
+        - name: 'PGDATABASE'
+          value: {{ .Values.meta.databaseName | quote }}
+        - name: 'PGPASS'
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: 'PGUSER'
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
+        - name: 'PGPORT'
+          value: {{ template "gestalt.dbPort" . }}
+        - name: 'PGCONNECT_TIMEOUT'
+          value: '3'
+      containers:
+      - name: {{ template "gestalt.apiGatewayName" . }}
+        image: {{ .Values.api.image | quote }}
+        imagePullPolicy: {{ .Values.common.imagePullPolicy | quote }}
+        ports:
+        - containerPort: 8000
+          name: api-service
+          protocol: TCP
+        - containerPort: 8001
+          name: admin-service
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8001
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 20
+        resources:
+          limits:
+            memory: 1024M
+          requests:
+            cpu: 200m
+            memory: 1024M
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: PUBLIC_URL_VHOST_0
+          value: {{ .Values.api.gateway.host | quote }}
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-username'
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "gestalt.secretsName" . }}
+              key: 'db-password'
+        - name: POSTGRES_PROTOCOL
+          value: tcp
+        - name: POSTGRES_HOSTNAME
+          value: {{ template "gestalt.dbHost" . }}
+        - name: POSTGRES_PORT
+          value: {{ template "gestalt.dbPort" . }}
+        - name: POSTGRES_NAME
+          value: kong-db
+        - name: KONG_LUA_PACKAGE_PATH
+          value: /usr/local/custom/?.lua;;
+        - name: KONG_CLUSTER_ADVERTISE
+          value: $(POD_IP):7946
+        - name: KONG_CLUSTER_LISTEN
+          value: $(POD_IP):7946
+        - name: KONG_CUSTOM_PLUGINS
+          value: gestalt-security-kong
+        - name: PASSWORD
+          value: currently
+        - name: USERNAME
+          value: unused
+        # Not sure what to do with the POSTGRES_META_ID env var if loading Kong via a Helm template
+        - name: POSTGRES_META_ID
+          value: ''

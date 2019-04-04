@@ -1,0 +1,18 @@
+{{- template "gestalt.apiGatewayEnableIngress" . -}}
+{{- if .Values.api.gateway.enableIngress -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    gestalt-app: 'kng'
+    app.kubernetes.io/name: {{ .Release.Name | quote }}
+    app.kubernetes.io/app: 'gestalt'
+    app.kubernetes.io/component: {{ template "gestalt.apiGatewayName" . }}
+  annotations:
+{{- include "gestalt.apiGatewayAnnotations" . | nindent 4 }}
+  name: {{ template "gestalt.apiGatewayName" . }}
+spec:
+  backend:
+    serviceName: {{ template "gestalt.apiGatewayName" . }}
+    servicePort: 'api-service'
+{{- end -}}
