@@ -36,15 +36,15 @@ properties:
         container_type: DOCKER
         image: '#{Config KONG_IMAGE}'
         force_pull: true
-        health_checks:
-        - grace_period_seconds: 300
-          interval_seconds: 60
-          max_consecutive_failures: 3
-          path: /
-          port_index: 1
-          port_type: index
-          protocol: HTTP
-          timeout_seconds: 20
+        health_checks: []
+        # - grace_period_seconds: 300
+        #   interval_seconds: 60
+        #   max_consecutive_failures: 3
+        #   path: /
+        #   port_index: 1
+        #   port_type: index
+        #   protocol: HTTP
+        #   timeout_seconds: 20
         provider:
           id: '#{Provider /root/default-kubernetes id}'
         labels: {}
