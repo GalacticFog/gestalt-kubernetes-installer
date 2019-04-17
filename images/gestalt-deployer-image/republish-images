@@ -10,12 +10,12 @@ VERBOSE=1
 RUN_BASE=`basename $0`
 SOURCE_REGISTRY="galacticfog"
 declare -a SOURCE_TAGS
-DEFAULT_SOURCE_TAG="2.4.1"
+DEFAULT_SOURCE_TAG="2.4.4"
 TARGET_REGISTRY="gcr.io/galacticfog-public"
 APP_REGISTRY="gestalt"
 MAIN_APP_IMAGE="gestalt-ui-react"
 declare -a TARGET_TAGS
-DEFAULT_TARGET_TAGS=( "latest" "release" "gcp" "2.4.1" "2.4" "2" )
+DEFAULT_TARGET_TAGS=( "latest" "release" "gcp" "2.4.4" "2.4" "2" )
 declare -a IMAGES
 DEFAULT_IMAGES=(
   'gestalt-installer'
@@ -45,6 +45,7 @@ DEFAULT_IMAGES=(
   'postgres'
   'elasticsearch-docker'
   'busybox'
+  'wait-for-db'
 )
 
 debug() {
