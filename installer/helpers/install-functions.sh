@@ -104,7 +104,12 @@ get_profile_from_kubecontext() {
 
   echo $kubecontext | grep ^'arn:aws:' >/dev/null
   [ $? -eq 0 ] && echo "aws" && return 0
-  exit_with_error "Could not find a suitable profile for context '$kubecontext'. Please specify an installation profile (docker-desktop, minikube, gke, eks, aws)."
+
+  local kubeserver=$( kubectl config view --minify=true -o=json | jq -r '.clusters[].cluster.server' )
+  echo $kubeserver | grep -e '\.azmk8s\.' >/dev/null
+  [ $? -eq 0 ] && echo "aks" && return 0
+
+  exit_with_error "Could not find a suitable profile for context '$kubecontext'. Please specify an installation profile (docker-desktop, minikube, gke, eks, aws, aks)."
   return 1
 }
 

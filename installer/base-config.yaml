@@ -136,7 +136,6 @@ SECURITY_IMAGE:               docker.io/galacticfog/gestalt-security:2.4.1
 UI_IMAGE:                     docker.io/galacticfog/gestalt-ui-react:2.4.5
 
 # POSTGRES database settings
-# internal_database_pv_storage_class: standard - Must set to 'standard' for GCP Kubernetes installs
 internal_database_pv_storage_class: hostpath
 internal_database_pv_storage_size: 100Mi
 postgres_persistence_subpath: postgres

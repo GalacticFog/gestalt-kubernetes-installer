@@ -52,3 +52,10 @@ SECURITY_IMAGE:               gcr.io/galacticfog-public/gestalt/gestalt-security
 UI_IMAGE:                     gcr.io/galacticfog-public/gestalt:2.4
 
 INSTALLER_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
+
+# POSTGRES database settings
+internal_database_pv_storage_class: standard
+internal_database_pv_storage_size: 100Mi
+postgres_persistence_subpath: postgres
+postgres_memory_request: 100Mi
+postgres_cpu_request: 100m

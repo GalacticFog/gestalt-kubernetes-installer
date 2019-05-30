@@ -1,0 +1,35 @@
+K8S_PROVIDER:  aks
+GESTALT_URL:   http://portal.yourdomain.com  # (Gestalt Login URL)
+KONG_URL:      http://api.yourdomain.com  # (Endpoint for API Gateway)
+
+KONG_SERVICE_TYPE: 'LoadBalancer'
+# KONG_STATIC_IP: ''
+
+UI_SERVICE_TYPE: 'LoadBalancer'
+# UI_STATIC_IP: ''
+
+# (Remember to set credentials in credentials.yaml)
+
+# BASH_EXECUTOR_0_MIN_COOL: '0'
+# DOTNET_EXECUTOR_0_MIN_COOL: '0'
+# GRAALVM_JVM_EXECUTOR_0_MIN_COOL: '1'
+# GRAALVM_NODEJS_EXECUTOR_0_MIN_COOL: '0'
+# JS_EXECUTOR_0_MIN_COOL: '0'
+# JVM_EXECUTOR_0_MIN_COOL: '0'
+# NODEJS_EXECUTOR_0_MIN_COOL: '0'
+
+# Default executor size bins
+# EXECUTOR_SIZE_0_DEFAULT_CPU: 0.1
+# EXECUTOR_SIZE_0_DEFAULT_MEM: 1024
+
+# EXECUTOR_SIZE_1_DEFAULT_CPU: 0.2
+# EXECUTOR_SIZE_1_DEFAULT_MEM: 2048
+
+# INSTALLER_IMAGE: gcr.io/galacticfog-public/gestalt/gestalt-installer:2.4
+
+# POSTGRES database settings
+internal_database_pv_storage_class: default
+internal_database_pv_storage_size: 5Gi
+postgres_persistence_subpath: postgres
+postgres_memory_request: 100Mi
+postgres_cpu_request: 100m
